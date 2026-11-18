@@ -1,0 +1,5 @@
+import { MandatsClient } from './client';
+
+export default function Page() {
+  return <MandatsClient />;
+}
