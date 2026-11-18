@@ -17,7 +17,7 @@ const URL = env(ENV, 'NEXT_PUBLIC_SUPABASE_URL');
 const ANON = env(ENV, 'NEXT_PUBLIC_SUPABASE_ANON_KEY');
 const SERVICE = env(ENV, 'SUPABASE_SERVICE_ROLE_KEY');
 const DB = env(ENV, 'DATABASE_URL');
-const BASE = 'http://localhost:3023';
+const BASE = process.env.BANC_BASE ?? 'http://localhost:3023';
 const EMAIL = `banc+${Date.now()}@joblive.test`;
 
 let étape = '';

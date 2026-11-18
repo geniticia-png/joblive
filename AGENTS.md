@@ -127,3 +127,24 @@ paresseux), et verts AVEC la soudure.
 dans hPanel + Site URL Supabase pointant joblive.app pour le
 magic link en prod (localhost:3023 déjà couvert pour le banc).
 
+## LA MISE EN LIGNE — joblive.app répond (18/11, 23h)
+
+L'app hPanel créée par la direction (Node 22, repo GitHub, sortie
+.next) — et **https://joblive.app répond 200 en notre robe** (les
+trois voix typographiques dans le HTML). **LE BANC EN LIGNE :
+24/24 VERT** (banc-naissance.cjs, `BANC_BASE=https://joblive.app`) —
+la même chaîne entière que le banc local, sur le vrai domaine :
+mandat, code W8F-689, photos scellées à la prise et servies du
+bucket, publication, timeline par code (sceau + note + bouton doux),
+vu_le, « Tout va bien » anti-doublon, dashboard, LA DOSE, révocation,
+code inconnu élégant, PURGE zéro ligne. Manifest PWA servi (3 icônes,
+theme #123F3D), sw.js 200, icônes 200. Les variables hPanel étaient
+donc bien posées (les nôtres, pas ceux du guide Hostinger).
+
+Restent deux réglages de finition : **joblive.fr en redirection**
+vers joblive.app (hPanel → Domaines), et **Supabase → Authentication
+→ URL Configuration** : Site URL `https://joblive.app` + Redirect
+URLs `https://joblive.app/**` (le magic link doit atterrir en prod —
+le banc a testé par mot de passe, pas encore par lien magique).
+
+
