@@ -147,4 +147,23 @@ vers joblive.app (hPanel → Domaines), et **Supabase → Authentication
 URLs `https://joblive.app/**` (le magic link doit atterrir en prod —
 le banc a testé par mot de passe, pas encore par lien magique).
 
+## LA REDIRECTION VIT + LA LEÇON DU PROXY (18/11, 23h15)
+
+**joblive.fr → 301 → https://joblive.app** : posée par la direction
+(guidée par l'IA hPanel : Domaines → Gérer → DNS/Nameservers →
+onglet Redirections, 301 permanente, SANS enregistrement A/CNAME),
+vérifiée à la machine, les deux variantes. **L'INCIDENT DU SOIR** :
+le push 8d6b554 a redéployé l'app — et le rebuild a DÉBRANCHÉ le
+proxy du domaine personnalisé (joblive.app timeout, www 503) alors
+que l'app elle-même vivait (200 sur son host natif). LE REMÈDE
+MAISON : `POST …/nodejs/server/restart` (UN geste, jamais pendant
+un build — la discipline Resafix) → proxy recâblé, joblive.app 200.
+**LA LEÇON OPÉRATIONNELLE** : chaque push → attendre build
+`completed` → tester les TROIS hosts (app, www, domaine natif) →
+restart si le proxy beugle. www.joblive.app reste 503 à ce stade :
+à rattacher proprement dans hPanel (app → Domaines) ou à laisser
+dormir — le canonique est joblive.app, les liens clients ne passent
+jamais par www.
+
+
 
