@@ -77,14 +77,53 @@ mémorisable J7B-492 · le masquage du chrono (la dose).
 
 ## EN ATTENTE (le lendemain de la naissance)
 
-- **LE GESTE DIRECTION** : créer le projet Supabase `joblive`,
-  appliquer `sql/001_fondation.sql`, poser les trois variables
-  (voir README.md), créer l'app Hostinger Node 22 (git push),
-  lier joblive.app.
-- Le banc réel 3023 : création mandat → code → intervention →
-  photos avant/après → publication → lecture client par code →
-  « Tout va bien » → révocation (la mort du code vérifiée).
+- ~~**LE GESTE DIRECTION**~~ : **ACCOMPLI le soir même (18/11, 22h26)** — voir
+  « LA BASE EST NÉE » ci-dessous.
+- Le premier vrai pilote : une conciergerie, un mandat, un chien promené.
 - En réserve v2 : le relais IA (depuis le journal uniquement —
   l'IA ne dit que ce qui est écrit), le pont RésaCap (la
   Production qui coule), les notifications, l'équipe, VERITIC
   (le moteur commun — la vérité du temps équipe les deux).
+
+## LA BASE EST NÉE — et LE BANC DE NAISSANCE VERT (18/11, soir)
+
+**La décision d'architecture** (direction) : la compta ne quitte PAS
+RésaCap (base destinée aux grosses données), Geneticia et Resafix
+restent gratuites (le cœur donneur Resafix veille Geneticia), et
+**JOBLIVE PASSE EN PRO** — l'argent suit le produit : une maison qui
+vend le DIRECT n'a pas le droit de dormir. Org type **Company**,
+première base créée en Amérique par erreur → **recréée à PARIS**
+(eu-west-9 — données françaises sur sol français, RGPD béton,
+latence minimale). Option Supabase « RLS sur nouvelles tables » :
+**ACTIVE** — notre doctrine devenue paramètre natif (les tables ne
+peuvent plus naître nues — la leçon RésaCap/Aktivit du même soir).
+
+**La soirée des variables** : les vraies clés avaient été collées
+dans `.env.example` (fichier TRACKÉ) — déplacées vers `.env.local`
+(ignoré), template restauré, historique vérifié : **rien n'a jamais
+été committé ni poussé**. Leçon : `.env.example` ne reçoit JAMAIS
+de vraies valeurs. Le 001 non appliqué par le dashboard → **appliqué
+par le pooler** (6 tables RLS✓ + bucket `preuves` public).
+
+**LE BANC DE NAISSANCE (banc-naissance.cjs, 24 vérifications vertes)** :
+pro de test né (admin API) → session → mandat Mme Valmont → code
+**Q8Z-379** expirant à la fin du mandat → intervention animaux →
+photos AVANT/APRÈS **horodatées à la prise** (−5 min pour l'avant :
+l'heure du geste, pas de l'upload) → servies depuis le bucket (200)
+→ **publication** → la timeline client par code : note lisible, SCEAU
+certifiant, bouton doux, les deux preuves → **vu_le** posé (le pro
+sait que sa preuve est regardée) → « Tout va bien » (une ligne, le
+doublon refusé) → dashboard pro : journal du jour + réaction reçue ✓
+→ **LA DOSE** : catégories masquées = preuve invisible côté client
+→ **révocation** : code mort (« Ce code ne vit plus »), réaction
+refusée (403) après mort → code inconnu : page élégante → **PURGE
+complète** (base zéro ligne partout, storage vidé — le banc ne
+laisse rien, la règle maison). Pages : / /connexion /j /pro 200,
+manifest PWA servi. `tsc` + build verts sans env (clients
+paresseux), et verts AVEC la soudure.
+
+**Ce qui reste pour la mise en ligne** : l'app Hostinger Node 22
+(git push, README gestes) + domaines joblive.app/.fr + les variables
+dans hPanel + Site URL Supabase pointant joblive.app pour le
+magic link en prod (localhost:3023 déjà couvert pour le banc).
+
