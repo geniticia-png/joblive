@@ -104,7 +104,7 @@ export function Timeline({ code, données }: { code: string; données: Données 
 
                   {/* LES PREUVES — le sceau en filigrane, l'horodatage sur chaque prise */}
                   {(avant.length > 0 || après.length > 0) && (
-                    <div className={`mt-3 grid gap-1.5 px-5 pb-4 ${avant.length > 0 && après.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    <div className={`mx-auto mt-3 grid w-[85%] gap-1.5 pb-4 ${avant.length > 0 && après.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                       {[avant[avant.length - 1], après[après.length - 1]].filter(Boolean).map((p) => (
                         <figure key={p!.id} className="relative overflow-hidden rounded-champ">
                           <a href={urlPhoto(p!.chemin)} target="_blank" rel="noopener" aria-label={`Agrandir la photo ${p!.genre === 'avant' ? 'avant' : 'après'}`}>
