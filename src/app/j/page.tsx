@@ -23,8 +23,8 @@ export default function EntréeCode() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-pierre px-5">
       <div className="w-full max-w-sm">
-        <Link href="/" className="monogramme mb-8 block text-center text-4xl">
-          J<span className="o-live mx-1" aria-label="o" />B
+        <Link href="/" className="mb-8 block text-center">
+          <img src="/logo-job.png" alt="JOBLIVE" className="mx-auto h-14 w-auto" />
         </Link>
         <div className="carte-preuve p-7">
           <h1 className="text-center font-titre text-xl font-bold text-vert">Votre journal en direct</h1>

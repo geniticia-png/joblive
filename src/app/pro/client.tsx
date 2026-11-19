@@ -75,7 +75,7 @@ export function DashboardPro() {
       {/* L'EN-TÊTE */}
       <header className="bg-vert-nuit px-5 pt-5 pb-6">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <Link href="/pro" className="monogramme monogramme--pierre text-xl">J<span className="o-live mx-0.5" aria-label="o" />B</Link>
+          <Link href="/pro"><img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-7 w-auto" /></Link>
           <button
             onClick={async () => { setReprise(true); await getSupabase().auth.signOut(); router.replace('/'); }}
             className="text-xs font-semibold tracking-wide text-pierre/70 transition hover:text-pierre"

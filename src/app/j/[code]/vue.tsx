@@ -61,7 +61,7 @@ export function Timeline({ code, données }: { code: string; données: Données 
       <header className="bg-vert px-5 pt-6 pb-7">
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between">
-            <span className="monogramme monogramme--pierre text-lg">J<span className="o-live mx-0.5" aria-label="o" />B</span>
+            <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-7 w-auto" />
             <BadgeDirect />
           </div>
           <h1 className="mt-4 font-titre text-2xl font-bold leading-snug text-pierre">
@@ -159,7 +159,7 @@ export function EntréeMorte() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-pierre px-5">
       <div className="w-full max-w-sm text-center">
-        <span className="monogramme mx-auto block w-fit text-4xl opacity-40">J<span className="o-live mx-1" aria-label="o" />B</span>
+        <img src="/logo-job.png" alt="" aria-hidden="true" className="mx-auto block h-12 w-auto opacity-40" />
         <div className="carte-preuve mt-6 p-8">
           <h1 className="font-titre text-xl font-bold text-vert">Ce code ne vit plus</h1>
           <p className="mt-3 text-sm leading-relaxed text-graphite">

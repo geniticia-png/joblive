@@ -246,11 +246,29 @@ CERTIFIÉ nus. Les quatre autres livraisons (favicon, icône app,
 monogramme, mot+slogan — déjà dans la robe exacte) attendent leur
 feu vert pour remplacer les anciens assets.
 
-**Où en est la maison** : en ligne, vérifiée, lien magique compris —
-il ne manque plus que le premier vrai pilote (une conciergerie, un
-mandat, un chien promené) et le geste d'hygiène Site URL. La v2
-dort en réserve (relais IA, pont RésaCap, notifications, équipe,
-VERITIC).
+## LE VRAI LOGO PREND LE SITE (19/11, après-midi, direction : « celui du site n'est pas bon »)
+
+Le monogramme vivait en TYPOGRAPHIE CSS (J + cercle + point
+vermillon dessinés en styles) — une approximation qui ne parlait pas
+la vraie identité. **Le remplacement** : la livraison ChatGPT validée
+du monogramme JoB (robe exacte mesurée, œil vermillon), passée au
+pipeline `habiller-logo.py` — deux habits nés : `logo-job.png`
+(jour, encre verte) et `logo-job-nuit.png` (encre pierre, l'œil
+vermillon ne s'éteint jamais), rognées, 512px de large, 55-71 Ko.
+**Six emplacements remplacés** : l'en-tête de la landing (nuit +
+mot JOBLIVE), la connexion et l'entrée de code (jour, h-14),
+l'en-tête du mandat client et le dashboard pro (nuit), l'entrée
+morte (jour fantôme opacity-40). tsc + build verts, serveur local
+vérifié (les deux PNG servis 200), puis déploiement par push.
+
+*Les classes CSS .monogramme/.o-live restent en réserve dans
+globals.css — l'histoire garde ses outils.*
+
+**Où en est la maison** : en ligne, vérifiée, lien magique compris,
+le vrai logo en place — il ne manque plus que le premier vrai pilote
+(une conciergerie, un mandat, un chien promené) et le geste d'hygiène
+Site URL. La v2 dort en réserve (relais IA, pont RésaCap,
+notifications, équipe, VERITIC).
 
 
 
