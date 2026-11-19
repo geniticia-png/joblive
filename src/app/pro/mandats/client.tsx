@@ -16,8 +16,9 @@ import { Icône, P_CLE, P_JOURNAL } from '@/lib/icones';
 // La transparence est l'outil du pro, pas son procureur.
 
 type Code = { id: string; code: string; expire_le: string | null; revoque_le: string | null; vu_le: string | null };
+type Fiche = { id: string; nom: string; type: string; telephone: string | null };
 type Mandat = {
-  id: string; client_nom: string; lieu: string; client_tel: string | null; statut: string;
+  id: string; client_nom: string; lieu: string; client_tel: string | null; client_type: string | null; statut: string;
   debut: string | null; fin: string | null;
   categories_diffusees: string[] | null; chrono_visible: boolean;
   codes: Code[];
@@ -31,7 +32,10 @@ export function MandatsClient() {
   const router = useRouter();
   const [mandats, setMandats] = useState<Mandat[] | null>(null);
   const [création, setCréation] = useState(false);
-  const [form, setForm] = useState({ client_nom: '', lieu: '', client_tel: '', debut: '', fin: '' });
+  const [form, setForm] = useState({ lieu: '', debut: '', fin: '' });
+  const [fiches, setFiches] = useState<Fiche[]>([]);
+  const [ficheChoisie, setFicheChoisie] = useState<string | null>(null); // id de fiche, ou 'nouveau'
+  const [nouveau, setNouveau] = useState({ nom: '', type: 'regulier', tel: '' });
   const [enVent, setEnVent] = useState(false);
   const [partagé, setPartagé] = useState<string | null>(null);
   const [doseOuverte, setDoseOuverte] = useState<string | null>(null);
@@ -42,6 +46,8 @@ export function MandatsClient() {
     try {
       const d = await appeller<{ mandats: Mandat[] }>('/api/pro/accueil', undefined, 'GET');
       setMandats(d.mandats);
+      const f = await appeller<{ clients: Fiche[] }>('/api/clients', undefined, 'GET');
+      setFiches(f.clients);
     } catch (e) {
       if (e instanceof Error && e.message === 'session') {
         await getSupabase().auth.signOut().catch(() => {});
@@ -53,11 +59,26 @@ export function MandatsClient() {
   useEffect(() => { charger(); }, [charger]);
 
   async function créer() {
-    if (!form.client_nom.trim()) return;
     setEnVent(true);
     try {
-      await appeller('/api/mandats', { action: 'creer', ...form });
-      setForm({ client_nom: '', lieu: '', client_tel: '', debut: '', fin: '' });
+      // la fiche : choisie parmi les siennes, ou née maintenant
+      // (l'étape ① de la vision : régulier ou occasionnel)
+      let id = ficheChoisie;
+      let nom = '';
+      let tel = '';
+      if (id === 'nouveau') {
+        if (!nouveau.nom.trim()) { setEnVent(false); return; }
+        const r = await appeller<{ client: Fiche }>('/api/clients', { action: 'creer', nom: nouveau.nom.trim(), type: nouveau.type, telephone: nouveau.tel.trim() });
+        id = r.client.id; nom = r.client.nom; tel = r.client.telephone ?? '';
+      } else if (id) {
+        const fiche = fiches.find((f) => f.id === id);
+        if (!fiche) { setEnVent(false); return; }
+        nom = fiche.nom; tel = fiche.telephone ?? '';
+      } else { setEnVent(false); return; }
+      await appeller('/api/mandats', { action: 'creer', client_id: id, client_nom: nom, client_tel: tel, ...form });
+      setForm({ lieu: '', debut: '', fin: '' });
+      setFicheChoisie(null);
+      setNouveau({ nom: '', type: 'regulier', tel: '' });
       setCréation(false);
       await charger();
     } catch { setErreur('La création a échoué'); }
@@ -147,22 +168,61 @@ export function MandatsClient() {
 
         {création && (
           <div className="carte-preuve mt-3 space-y-3 p-5">
-            {([
-              ['client_nom', 'Le client', 'Mme Valmont'],
-              ['lieu', 'Le lieu', 'Villa Oscar, 12 rue des Roses'],
-              ['client_tel', 'Téléphone (optionnel)', '06 12 34 56 78'],
-            ] as const).map(([cle, label, ph]) => (
-              <div key={cle}>
-                <label className="block text-sm font-bold text-vert" htmlFor={cle}>{label}</label>
-                <input
-                  id={cle}
-                  value={(form as any)[cle]}
-                  onChange={(e) => setForm({ ...form, [cle]: e.target.value })}
-                  placeholder={ph}
-                  className="mt-1 w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert focus:ring-[3px] focus:ring-vert/10"
-                />
+            <div>
+              <p className="text-sm font-bold text-vert">Le client</p>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {fiches.map((f) => (
+                  <button key={f.id} type="button"
+                    onClick={() => setFicheChoisie(ficheChoisie === f.id ? null : f.id)}
+                    className={`rounded-full border px-3.5 py-2 text-sm font-semibold transition ${ficheChoisie === f.id ? 'border-vert bg-vert text-white' : 'border-pierre-sombre bg-white text-vert hover:bg-vert-voile'}`}>
+                    {f.nom}{f.type === 'regulier' ? ' ●' : ' ○'}
+                  </button>
+                ))}
+                <button type="button"
+                  onClick={() => setFicheChoisie(ficheChoisie === 'nouveau' ? null : 'nouveau')}
+                  className={`rounded-full border px-3.5 py-2 text-sm font-semibold transition ${ficheChoisie === 'nouveau' ? 'border-vert bg-vert text-white' : 'border-dashed border-vert bg-white text-vert hover:bg-vert-voile'}`}>
+                  + Nouveau client
+                </button>
               </div>
-            ))}
+              <p className="mt-1.5 text-[11px] text-graphite">● régulier · ○ occasionnel — la fiche vit, les mandats s'y rattachent.</p>
+              {ficheChoisie === 'nouveau' && (
+                <div className="mt-3 space-y-3 rounded-carte bg-pierre p-3.5">
+                  <input
+                    value={nouveau.nom}
+                    onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })}
+                    placeholder="M. et Mme Rossignol"
+                    aria-label="Nom du nouveau client"
+                    className="w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert"
+                  />
+                  <div className="flex gap-2">
+                    {([['regulier', '● Régulier'], ['occasionnel', '○ Occasionnel']] as const).map(([cle, label]) => (
+                      <button key={cle} type="button"
+                        onClick={() => setNouveau({ ...nouveau, type: cle })}
+                        className={`flex-1 rounded-full border px-3 py-2 text-sm font-semibold transition ${nouveau.type === cle ? 'border-vert bg-vert text-white' : 'border-pierre-sombre bg-white text-vert'}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    value={nouveau.tel}
+                    onChange={(e) => setNouveau({ ...nouveau, tel: e.target.value })}
+                    placeholder="Téléphone (optionnel)"
+                    aria-label="Téléphone du nouveau client"
+                    className="w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert"
+                  />
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-vert" htmlFor="lieu">Le lieu</label>
+              <input
+                id="lieu"
+                value={form.lieu}
+                onChange={(e) => setForm({ ...form, lieu: e.target.value })}
+                placeholder="Studio Les Pins, Sainte-Maxime"
+                className="mt-1 w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert focus:ring-[3px] focus:ring-vert/10"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-bold text-vert" htmlFor="debut">Début</label>
@@ -175,7 +235,7 @@ export function MandatsClient() {
                   className="mt-1 w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 outline-none focus:border-vert" />
               </div>
             </div>
-            <button onClick={créer} disabled={enVent || !form.client_nom.trim()}
+            <button onClick={créer} disabled={enVent || !ficheChoisie || (ficheChoisie === 'nouveau' && !nouveau.nom.trim())}
               className="w-full rounded-full bg-vert py-3.5 font-titre text-base font-semibold text-white transition hover:opacity-92 disabled:opacity-40">
               {enVent ? 'Création…' : 'Ouvrir le mandat'}
             </button>
@@ -194,7 +254,7 @@ export function MandatsClient() {
           <section key={m.id} className="carte-preuve mt-4 p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="font-titre text-lg font-bold text-vert">{m.client_nom}</h2>
+                <h2 className="font-titre text-lg font-bold text-vert">{m.client_nom} <span className={`ml-1 rounded-full px-2 py-0.5 align-middle text-[10px] font-bold ${m.client_type === 'regulier' ? 'bg-vert text-white' : 'bg-vert-voile text-vert'}`}>{m.client_type === 'regulier' ? 'RÉGULIER' : 'OCCASIONNEL'}</span></h2>
                 <p className="truncate text-sm text-graphite">{m.lieu}</p>
                 {(m.debut || m.fin) && (
                   <p className="horodatage mt-0.5 text-xs text-graphite">

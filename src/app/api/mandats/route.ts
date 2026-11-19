@@ -7,6 +7,7 @@ type Corps = {
   action: 'creer' | 'terminer' | 'regler';
   id?: string;
   client_nom?: string;
+  client_id?: string;
   client_tel?: string;
   lieu?: string;
   debut?: string;
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     const { data, error } = await sb.from('mandats').insert({
       pro_id: pro.id,
       client_nom: corps.client_nom.trim(),
+      client_id: corps.client_id || null,
       client_tel: corps.client_tel?.trim() || null,
       lieu: corps.lieu?.trim() || '',
       debut: corps.debut || null,
