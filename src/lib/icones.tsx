@@ -20,6 +20,7 @@ export const P_PISCINE = 'M2 17c2 0 2 1.5 4 1.5S8 17 10 17s2 1.5 4 1.5 2-1.5 4-1
 export const P_COURSES = 'M4 7h16l-1.5 11a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 7Zm4 0a4 4 0 0 1 8 0'; // le panier
 export const P_ACCUEIL = 'M4 21h16M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M14 12h.01';      // la porte qui s'ouvre (accueil voyageurs)
 export const P_LINGE = 'M8 4 4 7l2 3 1-1v10h10V9l1 1 2-3-4-3a4 4 0 0 1-8 0Z';          // le tee plié (linge & remise)
+export const P_LIVRE = 'M4 19V5a2 2 0 0 1 2-2h13v16H6.5A2.5 2.5 0 0 0 4 21.5V19Zm0 0a2.5 2.5 0 0 1 2.5-2.5H19'; // le catalogue (les pages)
 export const P_AUTRE = 'M12 5v14m-7-7h14';                                              // le geste libre
 export const P_CLE = 'M15 7a4 4 0 1 1-3.5 5.9L4 20l-1-1 1-2-1-1 2-1.5L3 13l8.1-8.1A4 4 0 0 1 15 7Z'; // le code d'accès
 export const P_OEIL_LIVE = 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-5.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z'; // le o● (l'œil, pas la surveillance)

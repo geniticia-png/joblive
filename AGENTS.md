@@ -435,5 +435,25 @@ Cette vision ne casse pas la v1 — elle l'ORGANISE : le journal sans
 IA reste le cœur, la dose reste l'outil du pro, et « l'équipe » de la
 réserve v2 a trouvé son visage.
 
+**Étape ① posée dans la foulée (19/11, nuit)** — LA FICHE CLIENT :
+migration 003 (clients : nom, type régulier/occasionnel, téléphone ;
+mandats.client_id), l'API /api/clients (naissance sans doublon — même
+nom, même fiche), la carte de création à puces de fiches (● régulier /
+○ occasionnel), le badge sur chaque mandat, le téléphone vit la fiche
+et le lieu vit le mandat (un régulier, deux biens). Vérifié : fiche
+née, doublon absorbé, rattachement, type à l'accueil, purge.
+
+**Étape ② posée la même nuit — LE CATALOGUE** : migration 004
+(services + taches, genre générale/particulière, RLS), l'API
+/api/catalogue (sept gestes dont LES GABARITS DU MÉTIER — location
+touristique : ménage de sortie/séjour, accueil voyageurs, linge,
+piscine, jardin, posés sans doublon), la page /pro/catalogue (l'icône
+du livre dans la barre des trois pages) où chaque SERVICE et chaque
+TÂCHE porte SON DRAPEAU — ● JOBLIVISÉ / ○ INTERNE — la dose descend
+de la catégorie à L'ÉLÉMENT, exactement la vision. Vérifié 7/7 :
+gabarits posés puis absorbés, tâche née dans son genre, drapeaux
+bascules service ET tâche, isolation entre pros, purge cascade.",
+
+
 
 

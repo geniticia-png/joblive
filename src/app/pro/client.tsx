@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { CATÉGORIES, labelCatégorie, heure, tampon } from '@/lib/format';
-import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_JOURNAL, P_CLE, P_ACCUEIL, P_LINGE } from '@/lib/icones';
+import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_JOURNAL, P_CLE, P_ACCUEIL, P_LINGE, P_LIVRE } from '@/lib/icones';
 
 const ICÔNES: Record<string, string> = {
   animaux: P_ANIMAUX, menage: P_MENAGE, jardin: P_JARDIN,
@@ -289,6 +289,10 @@ export function DashboardPro() {
           <Link href="/pro/mandats" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
             <Icône d={P_CLE} taille={20} />
             <span className="text-[10px] font-bold">Mandats & codes</span>
+          </Link>
+          <Link href="/pro/catalogue" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
+            <Icône d={P_LIVRE} taille={20} />
+            <span className="text-[10px] font-bold">Catalogue</span>
           </Link>
         </div>
       </nav>
