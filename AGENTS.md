@@ -379,6 +379,16 @@ verdict, un correctif, un déploiement, l'œil tranche :
    robe neuve (le mobile fige la tuile à l'installation).
 5. **« C'EST BON »** — le verdict final de la nuit, sur Chrome.
 
+**La tuile finit à 52 %** (58 trop grand → 46 trop petit → 52, la
+mesure d'or, « on laisse comme ça pour l'instant » — la direction
+peut revenir dessus). **LA FRICTION PLAY PROTECT** (terrain, à
+réutiliser au pilote) : sur certains Android, l'installation de la
+tuile râle — « appli conçue pour une version plus ancienne
+d'Android » ; c'est l'emballage WebAPK que Chrome coud lui-même,
+pas notre code : attendre le délai imposé (4-10 s) puis « Installer
+quand même ». Le texte du pilote est prêt dans la réponse à la
+direction. Sur iPhone, le message n'existe pas.
+
 **Où en est la maison** : en ligne, la robe du logo partout (pages,
 sceau, tuile du manifest), le métier parle location touristique
 (tournovers, accueil, linge — la clientèle Biendispo), le kit pilote
