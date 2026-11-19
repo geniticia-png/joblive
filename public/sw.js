@@ -7,7 +7,7 @@
      discrète en fond — l'app ouvre vite, toujours.
    Jamais de cache des /api (la preuve voyage en direct).
    ═══════════════════════════════════════════════════════════════════ */
-const NOM = 'joblive-v2'; // v2 (19/11) : les icônes de la vraie robe remplacent celles du 18/11
+const NOM = 'joblive-v3'; // v3 (19/11 soir) : le JoB de l'icône d'app réduit à 45% de la tuile — verdict direction sur son écran d'accueil
 const PRÉCACHE = ['/', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
