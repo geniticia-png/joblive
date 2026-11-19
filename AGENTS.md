@@ -488,7 +488,33 @@ conciergerie (vignettes cliquables dans la mission ouverte).
 Vérifié de bout en bout : lien ouvert sans session, 3 gestes cochés,
 photo horodatée servie du bucket, fermeture 403, la conciergerie
 voit 3/9 faits + 1 photo + 9 drapeaux joblivisés — PRÊTS POUR
-L'AVAL (étape ④). Purge cascade + storage.",
+L'AVAL (étape ④). Purge cascade + storage.
+
+**Étape ④ posée dans la même nuit — L'AVAL, LA VISION BOUCLÉE** :
+quand le propriétaire ouvre /j/<code>, son journal porte désormais
+LE TRAVAIL INDIRECT — les missions du mandat coulent dans la
+timeline : les missions FAITES arrivent en entrées (titre, gestes
+joblivisés FAITS joints par « · », photos à leur heure), les
+missions EN COURS arrivent marquées du badge rouge EN COURS (la
+présence, jusqu'à l'amont). LES RÈGLES DE LA DOSE, vérifiées une à
+une dans le HTML du propriétaire : le geste partagé VISIBLE · le
+geste INTERNE INVISIBLE · le nom du tier NULLE PART (la conciergerie
+est le visage — signature « par {enseigne} ») · les photos de Marie
+visibles et cliquables, à leur heure de prise (grille « travail » —
+ni AVANT ni APRÈS, l'heure seule) · le bouton « Tout va bien »
+réservé au travail direct (l'aval se regarde, il ne se commente
+pas) · une mission entièrement interne n'apparaît pas du tout.
+Verdict final 7/7, purge complète.
+
+**LA VISION DE LA DIRECTION EST POSÉE EN UNE SEULE NUIT** — ① la
+fiche client (régulier/occasionnel) ② le catalogue et la
+joblivisation par élément ③ les missions tierces et leur écran
+mains-libres ④ l'aval. La chaîne amont→centre→aval vit entière :
+la conciergerie orchestre, Marie exécute les mains libres, le
+propriétaire ne voit qu'une maison. Restent pour les jours qui
+viennent : les photos multiples par élément, l'historique des
+fiches (ses mandats passés), et le premier VRAI pilote Biendispo —
+la maison est prête pour lui.",
 
 
 

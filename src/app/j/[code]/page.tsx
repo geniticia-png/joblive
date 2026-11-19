@@ -38,6 +38,36 @@ export default async function Page({ params }: { params: { code: string } }) {
         .order('publie_le', { ascending: false })
         .limit(60);
 
+      // ═══ L'AVAL (étape ④ de la vision) — le travail INDIRECT : les
+      // missions du mandat, filtrées par les drapeaux ● (joblivise).
+      // Le propriétaire voit les gestes faits + les photos ; jamais le
+      // nom du tiers — la conciergerie reste le visage. Une mission
+      // entièrement interne n'apparaît pas : c'est la dose.
+      const { data: missionsData } = await sb.from('missions')
+        .select('id, titre, statut, fermee_le, prevue_le, mission_elements(id, libelle, fait, joblivise), mission_preuves(id, chemin, horodatage)')
+        .eq('mandat_id', mandat.id)
+        .in('statut', ['en_cours', 'faite'])
+        .order('fermee_le', { ascending: false, nullsFirst: false });
+      const entréesMissions: Entrée[] = (missionsData ?? [])
+        .filter((mm: any) => (mm.mission_elements ?? []).some((el: any) => el.joblivise) || (mm.mission_preuves ?? []).length > 0)
+        .map((mm: any) => {
+          const faits = (mm.mission_elements ?? []).filter((el: any) => el.joblivise && el.fait);
+          const enCours = mm.statut === 'en_cours';
+          return {
+            id: 'm-' + mm.id,
+            categorie: 'mission',
+            libellé: mm.titre,
+            enCours,
+            note: faits.length > 0 ? faits.map((el: any) => el.libelle).join(' · ') : '',
+            publie_le: enCours ? maintenant.toISOString() : (mm.fermee_le ?? mm.prevue_le ?? maintenant.toISOString()),
+            durée: null,
+            photos: (mm.mission_preuves ?? []).map((pp: any) => ({
+              id: pp.id, genre: 'travail', chemin: pp.chemin, horodatage: pp.horodatage,
+            })),
+            réaction: null,
+          };
+        });
+
       // Le regard du client — humble mais précieux pour le pro.
       await sb.from('codes').update({ vu_le: maintenant.toISOString() }).eq('id', accès.id);
 
@@ -59,7 +89,7 @@ export default async function Page({ params }: { params: { code: string } }) {
         lieu: mandat.lieu ?? '',
         fin: accès.expire_le,
         par: pro ? (pro.enseigne || pro.nom) : null,
-        entrées,
+        entrées: [...entrées, ...entréesMissions],
       };
     }
   } catch {

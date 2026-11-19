@@ -13,6 +13,8 @@ export type Photo = { id: string; genre: string; chemin: string; horodatage: str
 export type Entrée = {
   id: string; categorie: string; note: string; publie_le: string;
   durée: number | null; photos: Photo[]; réaction: string | null;
+  libellé?: string;   // la mission porte son titre (l'aval, étape ④)
+  enCours?: boolean;  // la mission vivante se montre EN COURS
 };
 export type Données = { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[] };
 
@@ -92,10 +94,14 @@ export function Timeline({ code, données }: { code: string; données: Données 
             {j.entrées.map((e) => {
               const avant = e.photos.filter((p) => p.genre === 'avant');
               const après = e.photos.filter((p) => p.genre === 'apres');
+              const travaux = e.photos.filter((p) => p.genre === 'travail');
               return (
                 <article key={e.id} className="carte-preuve mt-3 overflow-hidden">
                   <div className="flex items-center justify-between px-5 pt-4">
-                    <h3 className="font-titre text-base font-bold text-vert">{labelCatégorie(e.categorie)}</h3>
+                    <h3 className="font-titre text-base font-bold text-vert">
+                      {e.libellé ?? labelCatégorie(e.categorie)}
+                      {e.enCours && <span className="ml-2 rounded-full bg-vermillon px-2 py-0.5 align-middle text-[10px] font-bold tracking-wide text-white">EN COURS</span>}
+                    </h3>
                     <p className="horodatage text-xs text-graphite">
                       {HEURE.format(new Date(e.publie_le))}{e.durée ? ` · ${duréeTxt(e.durée)}` : ''}
                     </p>
@@ -103,16 +109,16 @@ export function Timeline({ code, données }: { code: string; données: Données 
                   {e.note && <p className="px-5 pt-1.5 text-sm leading-relaxed text-encre">{e.note}</p>}
 
                   {/* LES PREUVES — le sceau en filigrane, l'horodatage sur chaque prise */}
-                  {(avant.length > 0 || après.length > 0) && (
-                    <div className={`mx-auto mt-3 grid w-[85%] gap-1.5 pb-4 ${avant.length > 0 && après.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                      {[avant[avant.length - 1], après[après.length - 1]].filter(Boolean).map((p) => (
+                  {(avant.length > 0 || après.length > 0 || travaux.length > 0) && travaux.length > 0 && (
+                    <div className="mx-auto mt-3 grid w-[85%] grid-cols-2 gap-1.5 pb-4">
+                      {travaux.map((p) => (
                         <figure key={p!.id} className="relative overflow-hidden rounded-champ">
                           <a href={urlPhoto(p!.chemin)} target="_blank" rel="noopener" aria-label={`Agrandir la photo ${p!.genre === 'avant' ? 'avant' : 'après'}`}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={urlPhoto(p!.chemin)} alt={`${p!.genre} — certifié ${tampon(p!.horodatage)}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
                           </a>
                           <figcaption className="horodatage absolute bottom-1.5 left-1.5 rounded-md bg-vert-nuit/80 px-2 py-0.5 text-[10px] font-semibold text-pierre">
-                            {p!.genre === 'avant' ? 'AVANT' : 'APRÈS'} · {tampon(p!.horodatage)}
+                            {p!.genre === 'avant' ? 'AVANT · ' : p!.genre === 'travail' ? '' : 'APRÈS · '}{tampon(p!.horodatage)}
                           </figcaption>
                           <span className="absolute bottom-1.5 right-1.5 opacity-90"><Sceau taille={24} /></span>
                         </figure>
@@ -120,16 +126,20 @@ export function Timeline({ code, données }: { code: string; données: Données 
                     </div>
                   )}
 
-                  {/* LA RÉACTION — douce, à sens unique */}
-                  <div className="border-t border-pierre-sombre px-5 py-3">
-                    {réactions[e.id] ? (
-                      <p className="text-sm font-semibold text-vert">« Tout va bien » envoyé ✓</p>
-                    ) : (
-                      <button onClick={() => toutVaBien(e.id)} className="rounded-full bg-vert-voile px-4 py-2 text-sm font-bold text-vert transition hover:bg-vert hover:text-white">
-                        Tout va bien
-                      </button>
-                    )}
-                  </div>
+                  {/* LA RÉACTION — douce, à sens unique (le travail
+                      direct seulement : l'aval se regarde, il ne se
+                      commente pas) */}
+                  {!e.libellé && (
+                    <div className="border-t border-pierre-sombre px-5 py-3">
+                      {réactions[e.id] ? (
+                        <p className="text-sm font-semibold text-vert">« Tout va bien » envoyé ✓</p>
+                      ) : (
+                        <button onClick={() => toutVaBien(e.id)} className="rounded-full bg-vert-voile px-4 py-2 text-sm font-bold text-vert transition hover:bg-vert hover:text-white">
+                          Tout va bien
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </article>
               );
             })}
