@@ -389,15 +389,51 @@ pas notre code : attendre le délai imposé (4-10 s) puis « Installer
 quand même ». Le texte du pilote est prêt dans la réponse à la
 direction. Sur iPhone, le message n'existe pas.
 
-**Où en est la maison** : en ligne, la robe du logo partout (pages,
-sceau, tuile du manifest), le métier parle location touristique
-(tournovers, accueil, linge — la clientèle Biendispo), le kit pilote
-complet (partage qui parle, carte première fois, page concierge,
-démarchage écrit, identité du pro), la scène mobile vivante en prod
-pour l'œil de la direction. Restent : le premier vrai pilote (une
-conciergerie Biendispo, un vrai turnover publié), la vision complète
-de la direction après son test, et le geste d'hygiène Site URL. La v2
-dort en réserve (relais IA, pont RésaCap, notifications, VERITIC).
+## LA VISION DE LA DIRECTION — l'amont, l'aval, la joblivisation (19/11, nuit — texte fondateur)
+
+*Verbatim de la direction :* « Le prestataire doit établir deux types
+de clients — réguliers et occasionnels — et doit établir une liste
+d'informations à partager et une liste de services. Chaque service
+doit avoir une liste de tâches générales et particulières. À chaque
+élément le prestataire choisit s'il le partage via JOBLIVE : il est
+JOBLIVISÉ, c'est celui qui est partagé. On peut aussi des missions
+pour d'autres personnes — salariés, partenaires, prestataires — avec
+des éléments à jobliviser. On introduit le principe de l'AMONT et de
+l'AVAL : une femme de ménage peut avoir une mission avec des éléments
+à jobliviser ; la conciergerie est AU CENTRE, elle transmet ces
+éléments en aval au propriétaire. La conciergerie décide de partager
+les éléments directs et indirects. »
+
+**Traduite en architecture maison :**
+
+1. **LA FICHE CLIENT** — le propriétaire devient une fiche vivante,
+   typée **régulier** ou **occasionnel**. Le mandat s'y rattache (on
+   ne retape plus « Mme Perrin, Villa… » à chaque saison).
+2. **LES DEUX LISTES** — par client : les informations (à partager ou
+   non) et les services commandés.
+3. **LE CATALOGUE DE SERVICES** — chaque service porte ses TÂCHES
+   GÉNÉRALES (la qualité constante) et ses TÂCHES PARTICULIÈRES (le
+   soin propre au bien).
+4. **LA JOBLIVISATION** — chaque ÉLÉMENT (info, service, tâche) porte
+   son drapeau : partagé via JOBLIVE ou interne. LA DOSE
+   généralisée — la granularité descend de la catégorie à l'élément.
+5. **LES MISSIONS TIERCES** — la conciergerie assigne des missions à
+   salariés, partenaires, prestataires, avec leurs éléments à
+   jobliviser. Le tiers exécute et joblivise vers la conciergerie.
+6. **L'AMONT ET L'AVAL** — la conciergerie est au centre : l'amont
+   joblivise vers elle ; elle choisit ce qu'elle retransmet en aval
+   au propriétaire — éléments DIRECTS (les siens) et INDIRECTS (ceux
+   de ses tiers). Le propriétaire ne voit qu'une maison.
+
+**La route proposée** (chaque étape tient debout seule) :
+① la fiche client (régulier/occasionnel, mandats rattachés) →
+② le catalogue (services, tâches générales/particulières,
+joblivisation par élément) → ③ les missions tierces (l'équipe amont)
+→ ④ l'aval (retransmission au propriétaire : directs + indirects).
+
+Cette vision ne casse pas la v1 — elle l'ORGANISE : le journal sans
+IA reste le cœur, la dose reste l'outil du pro, et « l'équipe » de la
+réserve v2 a trouvé son visage.
 
 
 
