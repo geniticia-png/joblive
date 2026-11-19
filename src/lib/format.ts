@@ -1,6 +1,8 @@
 export const CATÉGORIES = [
   { cle: 'animaux', label: 'Animaux' },
   { cle: 'menage', label: 'Ménage' },
+  { cle: 'accueil', label: 'Accueil' },
+  { cle: 'linge', label: 'Linge' },
   { cle: 'jardin', label: 'Jardin' },
   { cle: 'piscine', label: 'Piscine' },
   { cle: 'courses', label: 'Courses' },

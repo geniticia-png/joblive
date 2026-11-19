@@ -64,16 +64,16 @@ export default function PageConciergerie() {
               <span className="rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">● EN DIRECT</span>
             </div>
             <p className="mt-4 font-titre text-xl font-bold leading-snug text-pierre">
-              Le travail de chez vous,<br />vu en direct.
+              Votre bien, vu en direct,<br />séjour après séjour.
             </p>
-            <p className="mt-1.5 text-xs text-pierre/70">Villa Les Oliviers · 2 interventions certifiées</p>
+            <p className="mt-1.5 text-xs text-pierre/70">Studio Les Pins · Sainte-Maxime · 2 interventions certifiées</p>
           </div>
           {/* l'entrée du jour */}
           <div className="px-5 py-5">
             <p className="horodatage text-[10px] font-semibold tracking-[0.2em] text-graphite">AUJOURD&apos;HUI</p>
             <div className="mt-3 rounded-carte bg-pierre p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="font-titre text-sm font-bold text-vert">Animaux</p>
+                <p className="font-titre text-sm font-bold text-vert">Ménage de sortie</p>
                 <p className="horodatage text-xs text-graphite">14:32</p>
               </div>
               {/* les deux preuves */}
@@ -81,20 +81,21 @@ export default function PageConciergerie() {
                 <figure>
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-champ">
                     <Image src="/demo-avant.jpg" alt="" fill sizes="200px" className="object-cover opacity-90" />
-                    <span className="absolute inset-0 flex items-center justify-center text-3xl opacity-40 grayscale">🐾</span>
+                    <span className="absolute inset-0 flex items-center justify-center text-3xl opacity-40 grayscale">🛏</span>
                   </div>
                   <figcaption className="horodatage mt-1 text-center text-[10px] font-semibold text-graphite">AVANT · 14:29</figcaption>
                 </figure>
                 <figure>
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-champ">
                     <Image src="/demo-apres.jpg" alt="" fill sizes="200px" className="object-cover" />
-                    <span className="absolute inset-0 flex items-center justify-center text-3xl opacity-80">🐾</span>
+                    <span className="absolute inset-0 flex items-center justify-center text-3xl opacity-80">🛏</span>
                   </div>
                   <figcaption className="horodatage mt-1 text-center text-[10px] font-semibold text-vermillon">APRÈS · 14:51</figcaption>
                 </figure>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-graphite">
-                Oscar a couru 20 minutes dans le parc, très joueur. Gamelle pleine, croquettes vérifiées.
+                Voyageurs partis à 10h, remise impeccable pour l&apos;arrivée de 17h : linge changé,
+                sols, sanitaires, terrasse. Prêts pour les prochains séjours.
               </p>
               <div className="mt-3 flex items-center justify-between border-t border-pierre-sombre pt-3">
                 <p className="horodatage text-[10px] font-semibold tracking-wide text-vert">HORODATÉ · CERTIFIÉ</p>
@@ -157,7 +158,7 @@ export default function PageConciergerie() {
             ))}
           </div>
           <p className="mt-6 text-center text-sm text-pierre/70">
-            Animaux, ménage, jardin, piscine, courses — vos catégories, telles quelles.
+            Ménage de sortie ou de séjour, accueil des voyageurs, linge, piscine, jardin — vos catégories, telles quelles.
           </p>
         </div>
       </section>
@@ -187,7 +188,7 @@ export default function PageConciergerie() {
           <Link href="/connexion" className="mt-6 block rounded-full bg-vermillon py-4 font-titre text-base font-semibold text-white shadow-haute transition hover:opacity-92">
             Commencer maintenant
           </Link>
-          <p className="horodatage mt-4 text-[10px] tracking-wide text-graphite">JOBLIVE — LE TRAVAIL VU EN DIRECT · JOBLIVE.APP</p>
+          <p className="horodatage mt-4 text-[10px] tracking-wide text-graphite">JOBLIVE — LE TRAVAIL VU EN DIRECT · JOBLIVE.APP · LA FAMILLE BIENDISPO</p>
         </div>
       </section>
 

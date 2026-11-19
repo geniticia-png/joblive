@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { CATÉGORIES, labelCatégorie, heure, tampon } from '@/lib/format';
-import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_JOURNAL, P_CLE } from '@/lib/icones';
+import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_JOURNAL, P_CLE, P_ACCUEIL, P_LINGE } from '@/lib/icones';
 
 const ICÔNES: Record<string, string> = {
   animaux: P_ANIMAUX, menage: P_MENAGE, jardin: P_JARDIN,
-  piscine: P_PISCINE, courses: P_COURSES, autre: P_AUTRE,
+  piscine: P_PISCINE, courses: P_COURSES, accueil: P_ACCUEIL, linge: P_LINGE, autre: P_AUTRE,
 };
 
 type Preuve = { id: string; genre: string; chemin: string; horodatage: string };
