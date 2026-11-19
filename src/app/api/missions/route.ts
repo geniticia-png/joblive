@@ -10,7 +10,19 @@ import { getSupabaseService } from '@/lib/supabase';
 // la dose se règle ensuite mission par mission, élément par élément.
 // ═══════════════════════════════════════════════════════════════════
 
-const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, tiers(nom, role), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre)`;
+// LE JETON DE MISSION — le même patron que les codes J7B-492 :
+// mémorable, sans signes ambigus. Marie ouvre /m/<jeton>, sans compte.
+const CONSONNES = 'BCDFGHJKLMNPQRTVWXYZ';
+const CHIFFRES = '2346789';
+function jetonNu(): string {
+  let j = '';
+  for (let i = 0; i < 8; i++) {
+    j += i % 2 === 0 ? CONSONNES[Math.floor(Math.random() * CONSONNES.length)] : CHIFFRES[Math.floor(Math.random() * CHIFFRES.length)];
+  }
+  return j;
+}
+
+const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
 
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
@@ -73,6 +85,7 @@ export async function POST(req: Request) {
           service_id: corps.service_id || null,
           titre: titre || 'Mission',
           prevue_le: corps.prevue_le || null,
+          jeton: jetonNu(),
         })
         .select(SELECT_MISSIONS)
         .single();

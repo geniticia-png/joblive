@@ -9,10 +9,11 @@ import { Icône, P_JOURNAL, P_CLE, P_LIVRE, P_EQUIPE } from '@/lib/icones';
 
 type Élément = { id: string; libelle: string; genre: string; joblivise: boolean; fait: boolean; ordre: number };
 type Mission = {
-  id: string; titre: string; prevue_le: string | null; statut: string;
-  tiers: { nom: string; role: string } | null;
+  id: string; jeton: string | null; titre: string; prevue_le: string | null; statut: string;
+  tiers: { nom: string; role: string; telephone: string | null } | null;
   mandats: { client_nom: string; lieu: string } | null;
   mission_elements: Élément[];
+  mission_preuves: { id: string; chemin: string; horodatage: string }[];
 };
 type Tier = { id: string; nom: string; role: string; telephone: string | null };
 type Fiche = { id: string; nom: string; type: string };
@@ -34,6 +35,7 @@ export function MissionsClient() {
   const [form, setForm] = useState({ tiers_id: '', mandat_id: '', service_id: '', prevue_le: '' });
   const [ouvertes, setOuvertes] = useState<string | null>(null);
   const [nouvelÉlément, setNouvelÉlément] = useState('');
+  const [partagé, setPartagé] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
   const charger = useCallback(async () => {
@@ -57,6 +59,23 @@ export function MissionsClient() {
   }, [router]);
 
   useEffect(() => { charger(); }, [charger]);
+
+  // LE LIEN DE MARIE — la mission s'envoie comme le code : un message,
+  // jamais une URL nue (la leçon du partage qui parle).
+  function messageMission(m: Mission) {
+    const lien = `${window.location.origin}/m/${m.jeton}`;
+    return `Bonjour ${m.tiers?.nom ?? ''}, voici votre mission « ${m.titre} »${m.mandats?.lieu ? ` (${m.mandats.lieu})` : ''} — ouvrez ce lien, cochez vos gestes, photographiez sur place : ${lien}`;
+  }
+  async function partagerMission(m: Mission) {
+    const texte = messageMission(m);
+    try {
+      if (navigator.share) { await navigator.share({ title: 'JOBLIVE — mission', text: texte }); return; }
+    } catch { return; }
+    navigator.clipboard?.writeText(texte).then(() => {
+      setPartagé(m.id);
+      setTimeout(() => setPartagé(null), 1800);
+    }).catch(() => {});
+  }
 
   async function geste(corps: Record<string, unknown>, chemin = '/api/missions') {
     await appeller(chemin, corps).catch(() => setErreur('Le geste a échoué'));
@@ -271,6 +290,40 @@ export function MissionsClient() {
                       + élément
                     </button>
                   </div>
+                  {m.jeton && m.statut !== 'faite' && m.statut !== 'annulee' && (
+                    <div className="mt-3 rounded-carte bg-vert-voile px-4 py-3">
+                      <p className="text-xs leading-relaxed text-vert">
+                        Le lien de {m.tiers?.nom} — elle ouvre, elle coche, elle photographie. Sans compte.
+                      </p>
+                      <div className="mt-2 flex gap-2">
+                        <button onClick={() => partagerMission(m)} className="rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92">
+                          {partagé === m.id ? 'copié ✓' : 'envoyer'}
+                        </button>
+                        {m.tiers?.telephone && (
+                          <a
+                            href={`sms:${m.tiers.telephone.replace(/[^+\d]/g, '')}?&body=${encodeURIComponent(messageMission(m))}`}
+                            className="rounded-full bg-white px-4 py-2 text-xs font-bold text-vert"
+                          >
+                            SMS
+                          </a>
+                        )}
+                        <span className="horodatage ml-auto self-center text-[10px] text-vert/70">/m/{m.jeton}</span>
+                      </div>
+                    </div>
+                  )}
+                  {m.mission_preuves.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs font-bold uppercase tracking-wide text-vert">Les photos de {m.tiers?.nom} ({m.mission_preuves.length})</p>
+                      <div className="mt-2 grid grid-cols-4 gap-1.5">
+                        {m.mission_preuves.map((p) => (
+                          <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex gap-2 pt-2">
                     <button onClick={() => geste({ action: 'statut', id: m.id, statut: m.statut === 'a_faire' ? 'en_cours' : 'faite' })}
                       className="flex-1 rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92">

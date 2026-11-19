@@ -471,7 +471,24 @@ bout en bout : écosystème complet né, 9 éléments hérités drapeaux
 compris, vie de la mission (cocher, interne, sur mesure), statuts,
 purge cascade. **Ce qui reste à l'étape ③** : l'ÉCRAN DU TIER lui-même
 (Marie ouvrant SA mission sur son téléphone — ses mains restent
-libres) — et l'étape ④ : l'aval, la retransmission au propriétaire.",
+libres) — et l'étape ④ : l'aval, la retransmission au propriétaire.
+
+**③-bis posée dans la foulée — L'ÉCRAN DE MARIE** : chaque mission
+naît avec SON JETON (le patron des codes : G3V9K4J7, mémorable, sans
+signes ambigus — migration 006). La conciergerie lui ENVOIE le lien
+(message pré-rempli ou SMS direct au téléphone du registre — le
+partage qui parle, encore). Marie ouvre `/m/<jeton>` : SA mission
+(titre, lieu, ses gestes en grosses cases), SANS COMPTE — et elle ne
+voit JAMAIS les drapeaux ●○ : la dose reste l'affaire de la
+conciergerie (la vision : le pro décide de l'amont ET de l'aval).
+Elle coche, elle PHOTOGRAPHIE (l'horodatage naît à la prise, le
+bucket des preuves), elle termine — le bouton vermillon ferme le
+lien (403 sur tout geste après). Les photos de Marie remontent à la
+conciergerie (vignettes cliquables dans la mission ouverte).
+Vérifié de bout en bout : lien ouvert sans session, 3 gestes cochés,
+photo horodatée servie du bucket, fermeture 403, la conciergerie
+voit 3/9 faits + 1 photo + 9 drapeaux joblivisés — PRÊTS POUR
+L'AVAL (étape ④). Purge cascade + storage.",
 
 
 
