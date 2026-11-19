@@ -14,7 +14,7 @@ export type Entrée = {
   id: string; categorie: string; note: string; publie_le: string;
   durée: number | null; photos: Photo[]; réaction: string | null;
 };
-export type Données = { client: string; lieu: string; fin: string | null; entrées: Entrée[] };
+export type Données = { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[] };
 
 function urlPhoto(chemin: string): string {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${chemin}`;
@@ -69,6 +69,7 @@ export function Timeline({ code, données }: { code: string; données: Données 
           </h1>
           <p className="mt-2 text-sm text-pierre/70">
             {données.lieu || données.client} · {données.entrées.length} intervention{données.entrées.length > 1 ? 's' : ''} certifiée{données.entrées.length > 1 ? 's' : ''}
+            {données.par && <span className="block">par {données.par}</span>}
           </p>
         </div>
       </header>
@@ -106,8 +107,10 @@ export function Timeline({ code, données }: { code: string; données: Données 
                     <div className={`mt-3 grid gap-1.5 px-5 pb-4 ${avant.length > 0 && après.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                       {[avant[avant.length - 1], après[après.length - 1]].filter(Boolean).map((p) => (
                         <figure key={p!.id} className="relative overflow-hidden rounded-champ">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={urlPhoto(p!.chemin)} alt={`${p!.genre} — certifié ${tampon(p!.horodatage)}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                          <a href={urlPhoto(p!.chemin)} target="_blank" rel="noopener" aria-label={`Agrandir la photo ${p!.genre === 'avant' ? 'avant' : 'après'}`}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={urlPhoto(p!.chemin)} alt={`${p!.genre} — certifié ${tampon(p!.horodatage)}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                          </a>
                           <figcaption className="horodatage absolute bottom-1.5 left-1.5 rounded-md bg-vert-nuit/80 px-2 py-0.5 text-[10px] font-semibold text-pierre">
                             {p!.genre === 'avant' ? 'AVANT' : 'APRÈS'} · {tampon(p!.horodatage)}
                           </figcaption>

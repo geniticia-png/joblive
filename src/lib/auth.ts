@@ -10,6 +10,7 @@ export interface Pro {
   nom: string;
   email: string;
   metiers: string[];
+  enseigne: string | null;
 }
 
 /** Le pro authentifié d'une requête API (bearer → getUser → pros), ou null. */
@@ -24,16 +25,19 @@ export async function proDeLaRequête(req: Request): Promise<Pro | null> {
     const service = await import('./supabase').then(m => m.getSupabaseService());
     const { data: pro } = await service
       .from('pros')
-      .select('id, nom, email, metiers')
+      .select('id, nom, email, metiers, enseigne')
       .eq('id', userData.user.id)
       .maybeSingle();
     if (pro) return pro as Pro;
     // Première venue : le pro naît à sa première connexion validée.
+    // Le nom restera son préfixe d'email jusqu'à la carte « Comment
+    // vous appelez-vous ? » (leçon du jeu de rôle 19/11 : l'identité
+    // ne souffre pas l'anonymat, des deux côtés du journal).
     const email = userData.user.email ?? '';
     const { data: né } = await service
       .from('pros')
       .insert({ id: userData.user.id, email, nom: email.split('@')[0] })
-      .select('id, nom, email, metiers')
+      .select('id, nom, email, metiers, enseigne')
       .single();
     return (né as Pro) ?? null;
   } catch {

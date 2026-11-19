@@ -26,7 +26,16 @@ type Mandat = {
   id: string; client_nom: string; lieu: string; statut: string; debut: string | null; fin: string | null;
   codes: Code[];
 };
-type Accueil = { pro: { nom: string }; mandats: Mandat[]; enCours: Intervention[]; journal: Intervention[] };
+type Accueil = { pro: { nom: string; email?: string; enseigne?: string | null }; mandats: Mandat[]; enCours: Intervention[]; journal: Intervention[] };
+
+// L'identité du pro (leçon du jeu de rôle 19/11) : tant qu'il n'a
+// pas dit son nom, la maison ne le salue pas par son email — et le
+// journal de son client reste anonyme. La carte ne demande que ça.
+function pasEncoreNommé(pro: { nom: string; email?: string }) {
+  if (!pro.nom) return true;
+  if (pro.email && pro.nom === pro.email.split('@')[0]) return true;
+  return false;
+}
 
 export function DashboardPro() {
   const router = useRouter();
@@ -38,6 +47,9 @@ export function DashboardPro() {
   const [catégorie, setCatégorie] = useState<string | null>(null);
   const [enVent, setEnVent] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
+  // La carte du nom (l'identité, leçon du jeu de rôle).
+  const [identité, setIdentité] = useState({ nom: '', enseigne: '' });
+  const [nomEnVent, setNomEnVent] = useState(false);
 
   const charger = useCallback(async () => {
     try {
@@ -52,6 +64,16 @@ export function DashboardPro() {
   }, [router]);
 
   useEffect(() => { charger(); }, [charger]);
+
+  async function nommer() {
+    if (!identité.nom.trim()) return;
+    setNomEnVent(true);
+    try {
+      await appeller('/api/pro/profil', { action: 'nommer', nom: identité.nom.trim(), enseigne: identité.enseigne.trim() });
+      await charger();
+    } catch { setErreur('La sauvegarde a échoué'); }
+    finally { setNomEnVent(false); }
+  }
 
   async function lancer() {
     if (!mandatChoisi || !catégorie) return;
@@ -85,12 +107,48 @@ export function DashboardPro() {
         </div>
         <div className="mx-auto mt-4 max-w-2xl">
           <p className="horodatage text-[10px] font-semibold tracking-[0.22em] text-pierre/60">{new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase()}</p>
-          <h1 className="mt-1 font-titre text-2xl font-bold text-pierre">Bonjour {données?.pro.nom?.split(' ')[0] ?? ''}</h1>
+          <h1 className="mt-1 font-titre text-2xl font-bold text-pierre">
+            Bonjour{données?.pro && !pasEncoreNommé(données.pro) ? ` ${données.pro.nom.split(' ')[0]}` : ''}
+          </h1>
         </div>
       </header>
 
       <div className="mx-auto max-w-2xl px-5">
         {erreur && <p className="mt-4 rounded-champ bg-vermillon-voile px-4 py-3 text-sm text-vermillon">{erreur}</p>}
+
+        {/* LA CARTE DU NOM — l'identité avant tout (leçon du jeu de
+            rôle : la maison saluait le pro par son email, et le
+            journal du client ne disait pas qui parlait). */}
+        {données && pasEncoreNommé(données.pro) && (
+          <section className="carte-preuve mt-5 p-6">
+            <p className="horodatage text-[10px] font-semibold tracking-[0.22em] text-vermillon">UN DERNIER DÉTAIL — VOTRE IDENTITÉ</p>
+            <h2 className="mt-2 font-titre text-lg font-bold text-vert">Comment vous appelez-vous&nbsp;?</h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-graphite">
+              Votre nom (et votre enseigne, si vous en avez une) signent le journal
+              que vos clients ouvrent — personne ne devrait recevoir un lien d&apos;un inconnu.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <input
+                value={identité.nom}
+                onChange={(e) => setIdentité({ ...identité, nom: e.target.value })}
+                placeholder="Claire Fontaine"
+                aria-label="Votre nom"
+                className="w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert focus:ring-[3px] focus:ring-vert/10"
+              />
+              <input
+                value={identité.enseigne}
+                onChange={(e) => setIdentité({ ...identité, enseigne: e.target.value })}
+                placeholder="Conciergerie Les Oliviers (optionnel)"
+                aria-label="Votre enseigne"
+                className="w-full rounded-champ border border-pierre-sombre bg-white px-4 py-3 text-base outline-none focus:border-vert focus:ring-[3px] focus:ring-vert/10"
+              />
+            </div>
+            <button onClick={nommer} disabled={nomEnVent || !identité.nom.trim()}
+              className="mt-4 w-full rounded-full bg-vert py-3.5 font-titre text-base font-semibold text-white transition hover:opacity-92 disabled:opacity-40 sm:w-auto sm:px-10">
+              {nomEnVent ? 'Sauvegarde…' : 'C\u2019est moi'}
+            </button>
+          </section>
+        )}
 
         {/* LA PREMIÈRE FOIS — la maison vide montre le chemin en trois
             gestes (le pilote n'a pas à deviner l'ordre du monde). */}

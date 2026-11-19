@@ -320,12 +320,46 @@ vermillon sous l'en-tête de la landing + lien en pied. Captures
 mobiles vérifiées (390px, la vue de la conciergerie), tsc + build
 verts.
 
-**Où en est la maison** : en ligne, vérifiée, lien magique compris,
-le vrai logo partout, le kit pilote en marche (partage qui parle,
-carte première fois, page concierge) — restent le premier vrai
-pilote (une conciergerie, un mandat, un chien promené — la page est
-prête à être envoyée) et le geste d'hygiène Site URL. La v2 dort en
-réserve (relais IA, pont RésaCap, notifications, équipe, VERITIC).
+## LE JEU DE RÔLE A PARLÉ — l'identité du pro naît (19/11, soir)
+
+La direction n'a pas le temps de démarcher ; sa méthode : « se mettre
+à la place de l'autre ». **LA MACHINE A JOUÉ LES DEUX RÔLES** — une
+scène vivante (Claire la concierge, Mme Perrin l'absente, Oscar le
+chien : mandat réel, code T9K-296, deux journées publiées), puis deux
+rôles marchés pour de vrai dans le navigateur, en 390px :
+
+**MME PERRIN** a ouvert le lien du SMS : le titre lui parle, sa villa
+est nommée, Oscar apparaît, la mort du code est annoncée — mais
+PERSONNE ne se présentait (qui envoie ce lien ? réflexe d'arnaque) et
+les photos ne se zoomaient pas (le geste le plus naturel du client).
+**CLAIRE** a cliqué son lien magique (flux confirmé en vrai : hash →
+session → /pro), a vu la boucle se fermer (« Tout va bien — reçu
+13:16 ✓ »)… et a été saluée par son EMAIL BRUT, sans aucun moyen de
+dire son nom.
+
+**LES TROIS FRICTIONS N'ÉTAIENT QU'UNE** : l'identité du pro
+n'existait pas dans la maison. LE REMÈDE (vérifié rôle par rôle) :
+- **migration 002** : pros.enseigne ;
+- **la carte « Comment vous appelez-vous ? »** — nom + enseigne à la
+  première venue (tant qu'elle n'est pas remplie, le salut reste
+  « Bonjour » nu) + l'API /api/pro/profil ;
+- **la signature du journal client** — « par {enseigne ou nom} » sous
+  la villa : Mme Perrin sait qui lui parle ;
+- **les photos cliquables** — chaque preuve ouverte en grand dans un
+  onglet, le zoom natif du téléphone fait le reste.
+
+Rejoué : « Bonjour Claire » ✓ · « par Conciergerie Les Oliviers » ✓ ·
+« Agrandir la photo avant/après » ✓. Scène purgée, base zéro ligne.
+La leçon gravée : **le jeu de rôle remplace le terrain tant que le
+terrain n'existe pas — et il trouve ce que le banc ne cherche pas**
+(le banc vérifie la chaîne, le rôle vit l'expérience).
+
+**Où en est la maison** : en ligne, vérifiée, le vrai logo partout,
+le kit pilote en marche (partage qui parle, carte première fois, page
+concierge, démarchage écrit, identité du pro) — restent le premier
+vrai pilote (une conciergerie, un mandat, un chien promené) et le
+geste d'hygiène Site URL. La v2 dort en réserve (relais IA, pont
+RésaCap, notifications, équipe, VERITIC).
 
 
 

@@ -12,12 +12,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { code: string } }) {
   const nu = params.code.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  let données: { client: string; lieu: string; fin: string | null; entrées: Entrée[] } | null = null;
+  let données: { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[] } | null = null;
 
   try {
     const sb = getSupabaseService();
     const { data: accès } = await sb.from('codes')
-      .select('id, mandat_id, expire_le, revoque_le, mandats(id, client_nom, lieu, statut, fin, categories_diffusees, chrono_visible, pro_id, pros(nom))')
+      .select('id, mandat_id, expire_le, revoque_le, mandats(id, client_nom, lieu, statut, fin, categories_diffusees, chrono_visible, pro_id, pros(nom, enseigne))')
       .eq('code', nu)
       .maybeSingle();
 
@@ -53,10 +53,12 @@ export default async function Page({ params }: { params: { code: string } }) {
           réaction: (i.reactions ?? [])[0]?.cree_le ?? null,
         }));
 
+      const pro = mandat.pros as { nom: string; enseigne: string | null } | null;
       données = {
         client: mandat.client_nom,
         lieu: mandat.lieu ?? '',
         fin: accès.expire_le,
+        par: pro ? (pro.enseigne || pro.nom) : null,
         entrées,
       };
     }
