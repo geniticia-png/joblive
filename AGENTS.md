@@ -452,7 +452,26 @@ du livre dans la barre des trois pages) où chaque SERVICE et chaque
 TÂCHE porte SON DRAPEAU — ● JOBLIVISÉ / ○ INTERNE — la dose descend
 de la catégorie à L'ÉLÉMENT, exactement la vision. Vérifié 7/7 :
 gabarits posés puis absorbés, tâche née dans son genre, drapeaux
-bascules service ET tâche, isolation entre pros, purge cascade.",
+bascules service ET tâche, isolation entre pros, purge cascade.
+
+**Étape ③ posée la même nuit — LES MISSIONS TIERCES (l'amont)** :
+migration 005 (tiers : salarié/partenaire/prestataire ; missions :
+tiers × mandat × service, statut à faire/en cours/faite/annulée ;
+mission_elements : libellé, genre, DRAPEAU joblivisé, case FAIT).
+La création d'une mission COPIE les tâches du service comme éléments,
+drapeaux du catalogue transportés — puis la dose se règle mission par
+mission : cocher (fait), passer un élément interne, en ajouter un sur
+mesure (« Cacher les objets fragiles du salon »). L'API vérifie
+l'appartenance de chaque élément avant d'y toucher. Page /pro/missions
+(l'icône de l'équipe) : le registre des tiers, l'assignation à puces
+(qui · quel mandat · quel service · quand), les missions vivantes avec
+compteur (faits/joblivisés) et les closes pliées. La barre compte
+QUATRE pages : Journal · Mandats · Catalogue · Missions. Vérifié de
+bout en bout : écosystème complet né, 9 éléments hérités drapeaux
+compris, vie de la mission (cocher, interne, sur mesure), statuts,
+purge cascade. **Ce qui reste à l'étape ③** : l'ÉCRAN DU TIER lui-même
+(Marie ouvrant SA mission sur son téléphone — ses mains restent
+libres) — et l'étape ④ : l'aval, la retransmission au propriétaire.",
 
 
 

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { CATÉGORIES, heure } from '@/lib/format';
-import { Icône, P_CLE, P_JOURNAL, P_LIVRE } from '@/lib/icones';
+import { Icône, P_CLE, P_JOURNAL, P_LIVRE, P_EQUIPE } from '@/lib/icones';
 
 // LES MANDATS — le lien vivant pro ↔ client. Chaque mandat porte :
 // ses codes d'accès (mortels : révocables, expirant à la fin), et LA
@@ -385,6 +385,10 @@ export function MandatsClient() {
           <Link href="/pro/catalogue" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
             <Icône d={P_LIVRE} taille={20} />
             <span className="text-[10px] font-bold">Catalogue</span>
+          </Link>
+          <Link href="/pro/missions" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
+            <Icône d={P_EQUIPE} taille={20} />
+            <span className="text-[10px] font-bold">Missions</span>
           </Link>
         </div>
       </nav>
