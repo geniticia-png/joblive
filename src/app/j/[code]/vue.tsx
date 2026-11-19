@@ -114,7 +114,7 @@ export function Timeline({ code, données }: { code: string; données: Données 
                           <figcaption className="horodatage absolute bottom-1.5 left-1.5 rounded-md bg-vert-nuit/80 px-2 py-0.5 text-[10px] font-semibold text-pierre">
                             {p!.genre === 'avant' ? 'AVANT' : 'APRÈS'} · {tampon(p!.horodatage)}
                           </figcaption>
-                          <span className="absolute bottom-1.5 right-1.5 opacity-90"><Sceau taille={30} /></span>
+                          <span className="absolute bottom-1.5 right-1.5 opacity-90"><Sceau taille={24} /></span>
                         </figure>
                       ))}
                     </div>
