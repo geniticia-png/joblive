@@ -15,7 +15,7 @@ import { Icône, P_CLE, P_JOURNAL } from '@/lib/icones';
 
 type Code = { id: string; code: string; expire_le: string | null; revoque_le: string | null; vu_le: string | null };
 type Mandat = {
-  id: string; client_nom: string; lieu: string; statut: string;
+  id: string; client_nom: string; lieu: string; client_tel: string | null; statut: string;
   debut: string | null; fin: string | null;
   categories_diffusees: string[] | null; chrono_visible: boolean;
   codes: Code[];
@@ -31,7 +31,7 @@ export function MandatsClient() {
   const [création, setCréation] = useState(false);
   const [form, setForm] = useState({ client_nom: '', lieu: '', client_tel: '', debut: '', fin: '' });
   const [enVent, setEnVent] = useState(false);
-  const [copié, setCopié] = useState<string | null>(null);
+  const [partagé, setPartagé] = useState<string | null>(null);
   const [doseOuverte, setDoseOuverte] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -83,12 +83,30 @@ export function MandatsClient() {
     await charger();
   }
 
-  function copierLien(code: string) {
-    const lien = `${window.location.origin}/j/${code}`;
-    navigator.clipboard?.writeText(lien).then(() => {
-      setCopié(code);
-      setTimeout(() => setCopié(null), 1800);
+  // LE PARTAGE QUI PARLE — le propriétaire reçoit un message, jamais
+  // une URL nue : le feuilleton arrive avec ses explications. Mobile :
+  // la feuille native de partage (SMS, WhatsApp…) ; sinon le message
+  // se copie, lien dedans.
+  function messagePour(c: Code) {
+    const lien = `${window.location.origin}/j/${c.code}`;
+    const fin = c.expire_le ? new Date(c.expire_le).toLocaleDateString('fr-FR') : null;
+    return `Bonjour, suivez le travail en direct chez vous — chaque passage arrive en photos horodatées : ${lien}${fin ? ` (jusqu'au ${fin})` : ''}`;
+  }
+
+  async function partager(c: Code) {
+    const texte = messagePour(c);
+    try {
+      if (navigator.share) { await navigator.share({ title: 'JOBLIVE', text: texte }); return; }
+    } catch { return; } // feuille fermée par le pro — rien à faire
+    navigator.clipboard?.writeText(texte).then(() => {
+      setPartagé(c.code);
+      setTimeout(() => setPartagé(null), 1800);
     }).catch(() => {});
+  }
+
+  function lienSMS(m: Mandat, c: Code) {
+    const nu = (m.client_tel ?? '').replace(/[^+\d]/g, '');
+    return `sms:${nu}?&body=${encodeURIComponent(messagePour(c))}`;
   }
 
   const actifs = mandats?.filter((m) => m.statut === 'actif') ?? [];
@@ -191,9 +209,14 @@ export function MandatsClient() {
                       <p className="horodatage text-lg font-bold tracking-[0.12em] text-vert">{codeAffiché(c.code)}</p>
                       <div className="flex gap-2">
                         {!mort && (
-                          <button onClick={() => copierLien(c.code)} className="rounded-full bg-vert-voile px-3 py-1 text-xs font-bold text-vert">
-                            {copié === c.code ? 'copié ✓' : 'copier le lien'}
+                          <button onClick={() => partager(c)} className="rounded-full bg-vert px-3 py-1 text-xs font-bold text-white transition hover:opacity-92">
+                            {partagé === c.code ? 'copié ✓' : 'envoyer'}
                           </button>
+                        )}
+                        {!mort && m.client_tel && (
+                          <a href={lienSMS(m, c)} className="rounded-full bg-vert-voile px-3 py-1 text-xs font-bold text-vert">
+                            SMS
+                          </a>
                         )}
                         {!mort && (
                           <button onClick={() => révoquer(c.id)} className="rounded-full bg-vermillon-voile px-3 py-1 text-xs font-bold text-vermillon">révoquer</button>

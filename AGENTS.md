@@ -274,11 +274,39 @@ service worker monte en `joblive-v2` : les installs existantes
 rechargent la robe au prochain passage. QA machine : robe partout
 (pierre + vert + l'œil vermillon dans chaque icône).
 
+## LE KIT PILOTE CONCIERGE — la maison accueille sa première vie (19/11, soir)
+
+La direction a sonné le front : « l'urgence c'est conciergerie ». La
+méthode : **marcher soi-même le chemin réel d'une conciergerie qui
+arrive à vide** — on répare ce qui bloque la réalité, pas ce qu'on
+imagine. La marche (pro neuf → maison vide → mandat → code → partage)
+a révélé deux manques, réparés le jour même :
+
+1. **LE PARTAGE QUI PARLE** — le code ne part plus en URL nue : le
+   pro partage un MESSAGE (« suivez le travail en direct chez vous —
+   chaque passage arrive en photos horodatées : lien (jusqu'au…) »)
+   par la feuille native du téléphone (SMS, WhatsApp), ou bouton
+   **SMS direct** pré-rempli vers le numéro du mandat (l'API accueil
+   porte désormais client_tel), ou copie du message en repli bureau.
+2. **LA CARTE PREMIÈRE FOIS** — la maison vide ne laisse pas le
+   nouveau pro devant un CTA éteint : trois gestes numérotés (ouvrir
+   un mandat · envoyer le code · photographier le premier geste) et
+   le bouton qui ouvre la porte.
+
+La marche à vide a tourné sur serveur local : accueil vide OUI,
+mandat Mme Perrin né avec téléphone, code N6F-784 expirant, client_tel
+de retour par l'accueil, purge complète (la règle tient). tsc + build
+verts. **La suite du kit** : le pitch de la landing parle au
+propriétaire — il manque la page qui parle à LA CONCIERGE (son gain à
+elle : le mandat gagné, l'armure en litige, 15 minutes de moins au
+téléphone à rassurer).
+
 **Où en est la maison** : en ligne, vérifiée, lien magique compris,
-le vrai logo en place des pages aux icônes — il ne manque plus que
-le premier vrai pilote (une conciergerie, un mandat, un chien
-promené) et le geste d'hygiène Site URL. La v2 dort en réserve
-(relais IA, pont RésaCap, notifications, équipe, VERITIC).
+le vrai logo en place des pages aux icônes, la maison prête à
+accueillir sa première conciergerie — restent le premier vrai pilote
+(une conciergerie, un mandat, un chien promené) et le geste d'hygiène
+Site URL. La v2 dort en réserve (relais IA, pont RésaCap,
+notifications, équipe, VERITIC).
 
 
 

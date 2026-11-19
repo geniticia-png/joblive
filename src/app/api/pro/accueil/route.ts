@@ -12,7 +12,7 @@ export async function GET(req: Request) {
 
   const [{ data: mandats }, { data: interventions }] = await Promise.all([
     sb.from('mandats')
-      .select('id, client_nom, lieu, statut, debut, fin, categories_diffusees, chrono_visible, codes(id, code, expire_le, revoque_le, vu_le)')
+      .select('id, client_nom, lieu, client_tel, statut, debut, fin, categories_diffusees, chrono_visible, codes(id, code, expire_le, revoque_le, vu_le)')
       .eq('pro_id', pro.id)
       .order('cree_le', { ascending: false }),
     sb.from('interventions')

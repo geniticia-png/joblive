@@ -92,6 +92,25 @@ export function DashboardPro() {
       <div className="mx-auto max-w-2xl px-5">
         {erreur && <p className="mt-4 rounded-champ bg-vermillon-voile px-4 py-3 text-sm text-vermillon">{erreur}</p>}
 
+        {/* LA PREMIÈRE FOIS — la maison vide montre le chemin en trois
+            gestes (le pilote n'a pas à deviner l'ordre du monde). */}
+        {données && données.mandats.length === 0 && (
+          <section className="carte-preuve mt-5 p-6">
+            <p className="horodatage text-[10px] font-semibold tracking-[0.22em] text-vermillon">BIENVENUE — LA PREUVE COULE EN TROIS GESTES</p>
+            <ol className="mt-3 space-y-2.5 text-sm leading-relaxed text-graphite">
+              <li><strong className="text-vert">① Ouvrez un mandat</strong> — le client, le lieu, la date de fin.</li>
+              <li><strong className="text-vert">② Envoyez le code au propriétaire</strong> — il regarde sans compte, depuis son téléphone.</li>
+              <li><strong className="text-vert">③ Photographiez votre premier geste</strong> — il arrive chez lui, horodaté, certifié.</li>
+            </ol>
+            <Link
+              href="/pro/mandats"
+              className="mt-5 flex items-center justify-center rounded-full bg-vert py-3.5 font-titre text-base font-semibold text-white shadow-haute transition hover:opacity-92"
+            >
+              Ouvrir mon premier mandat
+            </Link>
+          </section>
+        )}
+
         {/* LE CTA RÈGNE EN HAUT (leçon Stitch : le geste principal ne
             se cherche pas, il s'impose — une main, du soleil). */}
         {!lanceurOuvert ? (
