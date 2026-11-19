@@ -7,7 +7,7 @@
      discrète en fond — l'app ouvre vite, toujours.
    Jamais de cache des /api (la preuve voyage en direct).
    ═══════════════════════════════════════════════════════════════════ */
-const NOM = 'joblive-v5'; // v5 (19/11 nuit) : le JoB de la tuile encore réduit — 46% de largeur, le verdict direction // v4 (19/11 soir) : le JoB mesuré en LARGEUR cette fois — 58% L au lieu de 101% L // v3 (19/11 soir) : le JoB de l'icône d'app réduit à 45% de la tuile — verdict direction sur son écran d'accueil
+const NOM = 'joblive-v6'; // v6 (19/11 nuit) : la mesure d'or — 52% de largeur, entre les deux verdicts // v5 (19/11 nuit) : le JoB de la tuile encore réduit — 46% de largeur, le verdict direction // v4 (19/11 soir) : le JoB mesuré en LARGEUR cette fois — 58% L au lieu de 101% L // v3 (19/11 soir) : le JoB de l'icône d'app réduit à 45% de la tuile — verdict direction sur son écran d'accueil
 const PRÉCACHE = ['/', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
