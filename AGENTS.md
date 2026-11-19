@@ -354,12 +354,40 @@ La leçon gravée : **le jeu de rôle remplace le terrain tant que le
 terrain n'existe pas — et il trouve ce que le banc ne cherche pas**
 (le banc vérifie la chaîne, le rôle vit l'expérience).
 
-**Où en est la maison** : en ligne, vérifiée, le vrai logo partout,
-le kit pilote en marche (partage qui parle, carte première fois, page
-concierge, démarchage écrit, identité du pro) — restent le premier
-vrai pilote (une conciergerie, un mandat, un chien promené) et le
-geste d'hygiène Site URL. La v2 dort en réserve (relais IA, pont
-RésaCap, notifications, équipe, VERITIC).
+## LA DIRECTION TESTE SUR SON MOBILE — la boucle des cinq tours (19/11, nuit)
+
+Le premier test mobile réel, par la direction elle-même, sur Chrome :
+la scène vivante en prod (`/j/J4L-438` — Claire, le Studio Les Pins,
+ménage de sortie + accueil voyageurs). La boucle de la soirée — un
+verdict, un correctif, un déploiement, l'œil tranche :
+
+1. **« LA TUILE MOBILE −15 % »** — d'abord comprise comme les photos
+   du journal (fait : w-85 %, sceau 30→24 px — des gestes justes qui
+   restent)… puis le sens vrai est arrivé : LA TUILE = l'icône de
+   l'app sur l'écran d'accueil, le manifest.
+2. **« LE LOGO DANS LA TUILE TOUJOURS TROP GROS »** — le bug était
+   GÉOMÉTRIQUE : le JoB est un bloc large (2,25:1), réglé en hauteur
+   il couvrait 101 % de la largeur — bords touchés. Mesuré désormais
+   en LARGEUR : 58 % L × 26 % H (maskable 50 % L), les marges sont
+   vraies. Aperçu aux tailles réelles : apercu-icone-ecran.png.
+   Leçon : un logo large se mesure en largeur dans une tuile carrée.
+3. **« LA MISE EN PAGE A UN PROBLÈME »** (page d'accueil) — la vision
+   a confirmé : logo + mot « JOBLIVE » + bouton = le **B rogné** sur
+   390 px. Le remède sobre : LE LOGO EST LE NOM — le mot redondant
+   part des deux en-têtes (accueil + concierge).
+4. Caches montés en v3 puis v4 ; ôter/remettre l'icône pour voir la
+   robe neuve (le mobile fige la tuile à l'installation).
+5. **« C'EST BON »** — le verdict final de la nuit, sur Chrome.
+
+**Où en est la maison** : en ligne, la robe du logo partout (pages,
+sceau, tuile du manifest), le métier parle location touristique
+(tournovers, accueil, linge — la clientèle Biendispo), le kit pilote
+complet (partage qui parle, carte première fois, page concierge,
+démarchage écrit, identité du pro), la scène mobile vivante en prod
+pour l'œil de la direction. Restent : le premier vrai pilote (une
+conciergerie Biendispo, un vrai turnover publié), la vision complète
+de la direction après son test, et le geste d'hygiène Site URL. La v2
+dort en réserve (relais IA, pont RésaCap, notifications, VERITIC).
 
 
 
