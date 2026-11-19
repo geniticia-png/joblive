@@ -206,6 +206,46 @@ geste). **24/24 VERT sur le vrai domaine** (code L3T-882, purge
 complète, base zéro ligne). Au fil des essais, 3 orphelins auth
 purgés un à un — la règle tient : le banc ne laisse rien.
 
+## LE SCEAU RESSUSCITÉ PAR GREFFE — la journée logo de la direction (19/11, midi)
+
+La direction a fait produire les éléments par ChatGPT (une journée de
+dialogue, cinq prompts maison, la doctrine des montages pour comparer).
+**LE PEINTRE ET LE SCANNEUR** : ChatGPT PEINT, il ne scanne pas —
+chaque livraison redessine (bandes noires derrière le texte, cible aux
+anneaux inversés, cible Ø140 au lieu de Ø213). Le prompt gagnant pour
+la structure : « prends le visuel EN BAS À DROITE de la planche,
+reproduis-le TEL QUEL, la seule différence permise est le fond
+transparent ». Puis LA MACHINE FINIT : `habiller-logo.py` — le
+pipeline des livraisons, où L'ENCRE DÉFINIT L'ALPHA (les pixels verts
+ou vermillon sont le dessin ; gris, blancs et fonds deviennent
+transparents, quel que soit leur place — le disque clair derrière le
+sceau n'est pas de l'encre). Robe remise droite : vert #123F3D,
+vermillon #D9381E, déclinaisons jour + nuit.
+
+**LA GREFFE DE LA CIBLE** (le geste du jour) : la cible livrée n'était
+pas la vraie. La direction a tranché sur montage : la vraie = celle du
+HAUT de la planche (le « o » cible) — cœur vermillon PLEIN, couche
+pierre, anneau vert. La machine l'a greffée dans le sceau : l'ancienne
+effacée (disque), la vraie collée à la PROPORTION DE LA PLANCHE —
+mesurée : cible Ø64 / cercle Ø309 = **20,7 %**, appliquée : Ø232 pour
+cercle Ø1121. **LA RÉVÉLATION DES PIXELS** : l'anneau de la vraie
+cible est À SECTEURS ALTERNÉS (couverture 55-73 % à tous les rayons —
+l'indicateur « enregistrement en direct », invisible de loin, vivant
+de près) ; la petite cible du sceau d'origine porte un anneau
+vermillon autour d'un point vert — deux sœurs, deux dessins, la
+direction a choisi la grande. Une coquille de greffe (disque décalé,
+double cible) a été détectée par vérification numérique et refaite
+propre : chaque étape mesurée (cœur, anneau, couverture, marges) —
+les pixels ne mentent jamais, ils vérifient.
+
+**Le sceau vit en deux habits** : `joblive-sceau-transparent.png`
+(jour, encre verte) et `joblive-sceau-nuit.png` (encre pierre) — le
+cœur vermillon ne s'éteint jamais. L'œil de la direction a validé :
+cercle pointillé, quatre équerres, la cible à 20,7 %, HORODATÉ /
+CERTIFIÉ nus. Les quatre autres livraisons (favicon, icône app,
+monogramme, mot+slogan — déjà dans la robe exacte) attendent leur
+feu vert pour remplacer les anciens assets.
+
 **Où en est la maison** : en ligne, vérifiée, lien magique compris —
 il ne manque plus que le premier vrai pilote (une conciergerie, un
 mandat, un chien promené) et le geste d'hygiène Site URL. La v2
