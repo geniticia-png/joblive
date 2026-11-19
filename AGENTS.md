@@ -264,11 +264,21 @@ vérifié (les deux PNG servis 200), puis déploiement par push.
 *Les classes CSS .monogramme/.o-live restent en réserve dans
 globals.css — l'histoire garde ses outils.*
 
+**Les icônes suivent (le même jour)** : l'onglet du navigateur reçoit
+la cible o-œil (favicon 32/48, transparents, robe exacte) ; les apps
+reçoivent le squircle **aplati sur pierre** (iOS déteste la
+transparence — les coins arrondis deviennent pierre : même visage,
+fond plein) en 180/192/512 ; le maskable se reconstruit propre
+(pierre plein, JoB à 50 % — la zone sûre respectée). Le cache du
+service worker monte en `joblive-v2` : les installs existantes
+rechargent la robe au prochain passage. QA machine : robe partout
+(pierre + vert + l'œil vermillon dans chaque icône).
+
 **Où en est la maison** : en ligne, vérifiée, lien magique compris,
-le vrai logo en place — il ne manque plus que le premier vrai pilote
-(une conciergerie, un mandat, un chien promené) et le geste d'hygiène
-Site URL. La v2 dort en réserve (relais IA, pont RésaCap,
-notifications, équipe, VERITIC).
+le vrai logo en place des pages aux icônes — il ne manque plus que
+le premier vrai pilote (une conciergerie, un mandat, un chien
+promené) et le geste d'hygiène Site URL. La v2 dort en réserve
+(relais IA, pont RésaCap, notifications, équipe, VERITIC).
 
 
 
