@@ -165,5 +165,52 @@ restart si le proxy beugle. www.joblive.app reste 503 à ce stade :
 dormir — le canonique est joblive.app, les liens clients ne passent
 jamais par www.
 
+## LE LENDEMAIN VÉRIFIÉ — l'inconnue du magic link LEVÉE (19/11, reprise de main)
+
+**La santé du lendemain, à la machine** : joblive.app **200** (la
+robe en place), www.joblive.app **200** (503 hier soir — le proxy
+s'est recâblé seul dans la nuit, l'incident n'était pas structurel),
+joblive.fr **301** vers l'apex. MAIS la box locale (canalbox) ne
+résout plus joblive.app : curl nu et Node voient le domaine mort
+alors que les DNS publics répondent (Google, OneOneOne → IPs
+Hostinger). **LE VIVANT SE VÉRIFIE PAR PLUSIEURS BOUCHES** : box
+muette ≠ site mort — `curl --resolve` et un DNS public tranchent.
+
+**L'INCONNUE DU MAGIC LINK — LEVÉE PAR PREUVE** (la dernière de la
+mise en ligne : « le banc a testé par mot de passe, pas encore par
+lien magique »). La sonde `admin/generate_link` : ① une URL
+volontairement interdite → repli `http://localhost:3000` → la liste
+blanche des Redirect URLs VALIDE bel et bien ; ②
+`https://joblive.app/connexion` → honoré tel quel → **joblive.app
+EST déjà dans les Redirect URLs** (la direction l'avait donc posé) ;
+③ le lien généré, cliqué à la machine : **303 →
+https://joblive.app/connexion#access_token=…&type=magiclink** — LE
+LIEN MAGIQUE ATERRIT EN PROD, session captée par la page, redirection
+/pro. Reste en hygiène (NON bloquant — l'app passe toujours
+`emailRedirectTo: origin/connexion`) : le **Site URL** Supabase dort
+encore sur `http://localhost:3000` par défaut — il ne sert que de
+repli ; à repointer `https://joblive.app` un jour de passage
+dashboard (geste direction, 30 secondes). La sonde purgée après
+l'essai (la règle ne souffre pas d'exception).
+
+**LE BANC RESSUSCITÉ ET RENDU AUTONOME** : les photos témoins
+avaient disparu du dossier voisin (le banc moutrait en cours de
+route) — recréées (AVANT pierre, APRÈS vert — la robe dans le
+geste) et **ENTRÉES AU DÉPÔT** : le banc lit désormais
+`banc-avant.jpg`/`banc-apres.jpg` depuis le repo, il ne dépend plus
+d'un dossier externe. **LE RITUEL DNS GRAVÉ DANS LE BANC LUI-MÊME** :
+`BANC_BASE=https://joblive.app BANC_DNS_IP=145.223.124.164 node
+banc-naissance.cjs` — la variable route joblive.app vers une IP
+Hostinger le temps du banc (la box aveugle ne peut plus tuer le
+geste). **24/24 VERT sur le vrai domaine** (code L3T-882, purge
+complète, base zéro ligne). Au fil des essais, 3 orphelins auth
+purgés un à un — la règle tient : le banc ne laisse rien.
+
+**Où en est la maison** : en ligne, vérifiée, lien magique compris —
+il ne manque plus que le premier vrai pilote (une conciergerie, un
+mandat, un chien promené) et le geste d'hygiène Site URL. La v2
+dort en réserve (relais IA, pont RésaCap, notifications, équipe,
+VERITIC).
+
 
 

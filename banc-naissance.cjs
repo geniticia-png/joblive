@@ -20,6 +20,21 @@ const DB = env(ENV, 'DATABASE_URL');
 const BASE = process.env.BANC_BASE ?? 'http://localhost:3023';
 const EMAIL = `banc+${Date.now()}@joblive.test`;
 
+// LE DNS DE LA BOX (canalbox) ne résout pas joblive.app (les DNS publics,
+// eux, répondent). BANC_DNS_IP route le domaine vers une IP Hostinger
+// le temps du banc — ex. BANC_DNS_IP=145.223.124.164 (19/11, journal).
+if (process.env.BANC_DNS_IP) {
+  const orig = require('dns').lookup.bind(require('dns'));
+  require('dns').lookup = function (hôte, options, callback) {
+    if (typeof options === 'function') { callback = options; options = {}; }
+    if (hôte === 'joblive.app') {
+      if (options && options.all) return callback(null, [{ address: process.env.BANC_DNS_IP, family: 4 }]);
+      return callback(null, process.env.BANC_DNS_IP, 4);
+    }
+    return orig(hôte, options, callback);
+  };
+}
+
 let étape = '';
 const ok = (msg) => console.log(`  ✓ ${étape} — ${msg}`);
 const ko = (msg) => { console.error(`  ✗ ${étape} — ${msg}`); process.exit(1); };
@@ -84,7 +99,7 @@ async function api(chemin, { jeton, corps, form } = {}) {
   const formA = new FormData();
   formA.set('intervention_id', itvId); formA.set('genre', 'avant');
   formA.set('horodatage', new Date(Date.now() - 300_000).toISOString());
-  formA.set('fichier', new Blob([fs.readFileSync('../banc-avant.jpg')], { type: 'image/jpeg' }), 'avant.jpg');
+  formA.set('fichier', new Blob([fs.readFileSync('banc-avant.jpg')], { type: 'image/jpeg' }), 'avant.jpg');
   r = await api('/api/preuves', { jeton, form: formA });
   if (r.status !== 200) ko(JSON.stringify(r.j).slice(0, 120));
   ok('scellée (-5 min, l\'heure de la prise)');
@@ -93,7 +108,7 @@ async function api(chemin, { jeton, corps, form } = {}) {
   const formB = new FormData();
   formB.set('intervention_id', itvId); formB.set('genre', 'apres');
   formB.set('horodatage', new Date().toISOString());
-  formB.set('fichier', new Blob([fs.readFileSync('../banc-apres.jpg')], { type: 'image/jpeg' }), 'apres.jpg');
+  formB.set('fichier', new Blob([fs.readFileSync('banc-apres.jpg')], { type: 'image/jpeg' }), 'apres.jpg');
   r = await api('/api/preuves', { jeton, form: formB });
   if (r.status !== 200) ko(JSON.stringify(r.j).slice(0, 120));
   ok('scellée (maintenant)');
