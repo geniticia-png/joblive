@@ -22,6 +22,13 @@ export default function Accueil() {
         </div>
       </header>
 
+      {/* LE FIL CONCIERGE — la page qui parle au métier */}
+      <div className="bg-vermillon px-5 py-2 text-center">
+        <Link href="/conciergerie" className="text-xs font-bold tracking-wide text-white">
+          Conciergerie ? Voyez ce que vos propriétaires ouvriraient →
+        </Link>
+      </div>
+
       {/* LA SCÈNE FONDATRICE — la promesse en clair */}
       <section className="mx-auto max-w-3xl px-5 pt-16 pb-10 text-center">
         <p className="horodatage mb-5 text-xs font-semibold tracking-[0.25em] text-vermillon">LE TRAVAIL VU EN DIRECT</p>
@@ -77,6 +84,7 @@ export default function Accueil() {
       <footer className="px-5 py-8 text-center text-xs text-graphite">
         <p>JOBLIVE — Le travail vu en direct · joblive.app</p>
         <p className="mt-1 opacity-70">La preuve horodatée, sans caméra de surveillance : le soin, pas le contrôle.</p>
+        <p className="mt-2"><Link href="/conciergerie" className="font-semibold text-vert underline underline-offset-2">Vous êtes conciergerie ? Votre page est ici.</Link></p>
       </footer>
     </main>
   );

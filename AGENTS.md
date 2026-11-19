@@ -301,12 +301,31 @@ propriétaire — il manque la page qui parle à LA CONCIERGE (son gain à
 elle : le mandat gagné, l'armure en litige, 15 minutes de moins au
 téléphone à rassurer).
 
+## LA PAGE QUI PARLE À LA CONCIERGE — /conciergerie (19/11, soir, la suite du kit)
+
+Le concret demandé par la direction : une page à ENVOYER. La landing
+parle au propriétaire (« Vous partez… ») ; **/conciergerie** parle à
+celle qui fait le travail — « Le propriétaire compare. Celui qui
+montre l'emporte. » La pièce concrète au centre : **LE JOURNAL
+D'EXEMPLE**, une vraie carte client rendue en CSS (en-tête vert,
+badge ● EN DIRECT, AVANT 14:29 / APRÈS 14:51 avec patte 🐾 — la leçon
+de la vision : des aplats de couleur ne se lisent pas comme des
+photos, la patte les fait lire —, la note d'Oscar, le sceau, le « vu
+à 14:58 », la pastille « Tout va bien — reçu 15:07 ✓ »). Ses trois
+gains (le mandat gagné · l'armure en litige · le téléphone qui se
+tait), la mécanique des trois gestes chronométrés (2 MIN · 10 SEC ·
+SUR PLACE), LA DOSE, et le CTA vermillon « Votre première preuve en
+15 minutes — gratuit pendant le pilote ». Le fil d'entrée : bandeau
+vermillon sous l'en-tête de la landing + lien en pied. Captures
+mobiles vérifiées (390px, la vue de la conciergerie), tsc + build
+verts.
+
 **Où en est la maison** : en ligne, vérifiée, lien magique compris,
-le vrai logo en place des pages aux icônes, la maison prête à
-accueillir sa première conciergerie — restent le premier vrai pilote
-(une conciergerie, un mandat, un chien promené) et le geste d'hygiène
-Site URL. La v2 dort en réserve (relais IA, pont RésaCap,
-notifications, équipe, VERITIC).
+le vrai logo partout, le kit pilote en marche (partage qui parle,
+carte première fois, page concierge) — restent le premier vrai
+pilote (une conciergerie, un mandat, un chien promené — la page est
+prête à être envoyée) et le geste d'hygiène Site URL. La v2 dort en
+réserve (relais IA, pont RésaCap, notifications, équipe, VERITIC).
 
 
 
