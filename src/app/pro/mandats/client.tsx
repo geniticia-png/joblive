@@ -1,5 +1,7 @@
 'use client';
 
+import QRCode from 'qrcode';
+
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -33,6 +35,7 @@ export function MandatsClient() {
   const [enVent, setEnVent] = useState(false);
   const [partagé, setPartagé] = useState<string | null>(null);
   const [doseOuverte, setDoseOuverte] = useState<string | null>(null);
+  const [qrOuvert, setQrOuvert] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
   const charger = useCallback(async () => {
@@ -64,6 +67,16 @@ export function MandatsClient() {
   async function générerCode(mandatId: string) {
     await appeller('/api/codes', { action: 'generer', mandat_id: mandatId }).catch(() => setErreur('La génération a échoué'));
     await charger();
+  }
+
+  // LE QR DE LA REMISE DES CLÉS — le pro montre, le propriétaire scanne,
+  // son journal s'ouvre. (Dessiné dans un canvas au moment de l'ouverture.)
+  function dessinerQR(code: string) {
+    const canvas = document.getElementById('qr-' + code) as HTMLCanvasElement | null;
+    if (!canvas) return;
+    QRCode.toCanvas(canvas, `${window.location.origin}/j/${code}`, {
+      width: 240, margin: 1, color: { dark: '#123F3D', light: '#F4F5F3' },
+    }).catch(() => {});
   }
 
   async function révoquer(codeId: string) {
@@ -219,6 +232,11 @@ export function MandatsClient() {
                           </a>
                         )}
                         {!mort && (
+                          <button onClick={() => { setQrOuvert(qrOuvert === c.code ? null : c.code); setTimeout(() => dessinerQR(c.code), 30); }} className="rounded-full bg-vert-voile px-3 py-1 text-xs font-bold text-vert">
+                            QR
+                          </button>
+                        )}
+                        {!mort && (
                           <button onClick={() => révoquer(c.id)} className="rounded-full bg-vermillon-voile px-3 py-1 text-xs font-bold text-vermillon">révoquer</button>
                         )}
                       </div>
@@ -227,6 +245,15 @@ export function MandatsClient() {
                       {mort ? 'mort —' : ''} {c.revoque_le ? `révoqué le ${new Date(c.revoque_le).toLocaleDateString('fr-FR')}` : c.expire_le ? `expire le ${new Date(c.expire_le).toLocaleDateString('fr-FR')} à minuit` : 'sans expiration'}
                       {c.vu_le && !mort ? ` · vu par le client à ${heure(c.vu_le)}` : ''}
                     </p>
+                    {qrOuvert === c.code && !mort && (
+                      <div className="mt-3 rounded-carte bg-pierre p-4 text-center">
+                        <canvas id={'qr-' + c.code} className="mx-auto rounded-champ" />
+                        <p className="mt-2 text-xs leading-relaxed text-graphite">
+                          La remise des clés&nbsp;: le propriétaire scanne, son journal s&apos;ouvre.<br />
+                          <span className="horodatage text-[10px] text-vert">{`${typeof window !== 'undefined' ? window.location.origin : ''}/j/${c.code}`}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })}
