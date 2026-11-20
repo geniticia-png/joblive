@@ -556,6 +556,43 @@ fait revenir au dashboard voir le signal). La leçon du jour, gravée :
 le client avait son journal, le centre n'avait rien. Committé,
 poussé.
 
+## Le 20/11 (2ᵉ) — LES DEUX RATTRAPAGES DU BANC POST-DÉPLOIEMENT : la preuve du direct ressuscitée, le journal scopé au pro
+
+Le banc rejoué sur la prod après le push a attrapé DEUX fautes que
+la nuit de l'④ avait laissées (LEÇON GRAVÉE : **le banc se rejoue
+après chaque déploiement** — il vérifie la chaîne, pas seulement la
+nouveauté) :
+
+1. **LA PREUVE DU DIRECT RESSUSCITÉE** — en généralisant la grille
+   travail pour l'aval, la nuit de l'④ avait ÉCRASÉ le diptyque
+   AVANT/APRÈS : la condition ne rendait plus que les photos genre
+   `travail` — le client ne voyait plus les preuves du travail
+   direct (le banc : « preuves absentes »). Les DEUX grilles vivent
+   désormais : le diptyque AVANT/APRÈS du direct (restauré à
+   l'identique d'avant l'④) + la grille travail de l'aval (l'heure
+   seule).
+2. **LE JOURNAL SCOPÉ AU PRO** — `enCours` et le journal du jour de
+   `/api/pro/accueil` n'avaient AUCUN filtre pro : chaque pro voyait
+   les publications des autres. La doctrine « RLS zéro policy +
+   filtre côté serveur » exigeait le geste : `.eq('mandats.pro_id')`
+   sur les deux requêtes. Audit des autres routes : codes, preuves,
+   missions, interventions déjà scopés — le jeton mission reste
+   public par design (comme les codes client).
+
+**ET LE BANC GRANDIT AVEC LA BASE** — l'assert de purge exigeait une
+base VIERGE ; la base vit désormais (la scène Claire, les tests de
+la direction) : le banc ne juge plus que SES propres lignes (pro,
+mandat, intervention, preuves, codes, réactions — plus l'ensemble).
+
+**BANC DE NAISSANCE VERT SUR LA PROD** — 24/24, base vivante, deploy
+Hostinger vérifié (~3 min de build). Au passage : trois runs du banc
+échoués purgés à la main (auth.users → cascade + storage — le banc
+ne purge que quand il va au bout). **LE SIGNAL ATTEND LA DIRECTION**
+— sa mission de test du matin (« Ménage de sortie », FAITE 20:03,
+jamais vue) portera la pilule « À REGARDER » sur son dashboard dès
+sa prochaine connexion, badge vermillon sur Missions compris.
+Committé, poussé.
+
 
 
 

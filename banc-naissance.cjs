@@ -182,13 +182,19 @@ async function api(chemin, { jeton, corps, form } = {}) {
 
   // ── LA PURGE (règle maison : le banc ne laisse rien) ──
   étape = 'purge';
-  const { rows: fichiers } = await c.query('select chemin from preuves');
+  // 20/11 : la base est VIVANTE (la scène de démonstration, les
+  // tests de la direction) — le banc ne juge que SES propres lignes,
+  // plus l'ensemble de la base.
+  const { rows: fichiers } = await c.query('select chemin from preuves where intervention_id = $1', [itvId]);
   await fetch(`${URL}/storage/v1/object/preuves/${mandatId}`, { method: 'DELETE', headers: { apikey: SERVICE, authorization: `Bearer ${SERVICE}` } }).catch(() => {});
   await fetch(`${URL}/auth/v1/admin/users/${user.id}`, { method: 'DELETE', headers: { apikey: SERVICE, authorization: `Bearer ${SERVICE}` } });
-  const { rows: [après] } = await c.query('select (select count(*) from pros)::int pros, (select count(*) from mandats)::int mandats, (select count(*) from interventions)::int itv, (select count(*) from preuves)::int preuves, (select count(*) from codes)::int codes, (select count(*) from reactions)::int réactions');
+  const { rows: [après] } = await c.query(
+    'select (select count(*) from pros where id = $1)::int pros, (select count(*) from mandats where pro_id = $1)::int mandats, (select count(*) from interventions where mandat_id = $2)::int itv, (select count(*) from preuves where intervention_id = $3)::int preuves, (select count(*) from codes where mandat_id = $2)::int codes, (select count(*) from reactions where intervention_id = $3)::int réactions',
+    [user.id, mandatId, itvId],
+  );
   await c.end();
   [après.pros, après.mandats, après.itv, après.preuves, après.codes, après.réactions].every(n => n === 0)
-    ? ok('base vide : pros 0 · mandats 0 · interventions 0 · preuves 0 · codes 0 · réactions 0 · ' + fichiers.length + ' fichiers storage purgés (cascade)')
+    ? ok('ses lignes purgées : pro 0 · mandat 0 · interventions 0 · preuves 0 · codes 0 · réactions 0 · ' + fichiers.length + ' fichiers storage purgés (cascade)')
     : ko(`reste : ${JSON.stringify(après)}`);
 
   console.log('\n══ LE BANC DE NAISSANCE EST VERT — la maison fonctionne de bout en bout ══');
