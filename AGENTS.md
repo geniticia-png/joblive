@@ -659,6 +659,16 @@ naissance vert après coup. La leçon du banc en passant : l'apostrophe
 de « L'ORDRE » s'échappe en HTML — les assertions cherchent la
 chaîne SANS apostrophe. Committé, poussé.
 
+## Le 20/11 (5ᵉ) — LE MOT JOBLIVE REVIENT DANS L'EN-TÊTE (verdict direction : « il n'y a pas en blanc JOBLIVE, comme au début »)
+
+La nuit des cinq tours l'avait retiré des deux en-têtes (accueil +
+conciergerie) pour sauver le B rogné à 390 px — « le logo est le
+nom ». Le nom revient par verdict direction : le bloc d'origine
+(logo + « JOBLIVE » texte sm, tracking 0.18em, pierre/80) tient
+dans l'air du 390 px (≈317 px dans 350) — le rognage venait des
+tailles d'avant, pas du mot lui-même. Vérifié en prod sur les deux
+en-têtes. Committé, poussé.
+
 
 
 
