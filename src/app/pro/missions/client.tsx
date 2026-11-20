@@ -82,13 +82,162 @@ export function MissionsClient() {
   async function geste(corps: Record<string, unknown>, chemin = '/api/missions') {
     await appeller(chemin, corps).catch(() => setErreur('Le geste a échoué'));
     await charger();
+    window.dispatchEvent(new Event('joblive:missions')); // le badge de la nav suit
   }
+
+  // LE LIEN DEPUIS LE DASHBOARD — /pro/missions?m=<id> ouvre la
+  // mission toute grande : les photos d'abord, le regard compte.
+  useEffect(() => {
+    const voulu = new URLSearchParams(window.location.search).get('m');
+    if (voulu) setOuvertes(voulu);
+  }, []);
+  // Ouvrir une faite non vue la marque vue — mais APRÈS avoir vu les
+  // photos : le détail est rendu, puis le regard s'inscrit (20/11 2ᵉ :
+  // la pilule s'était éteinte sans jamais montrer les photos).
+  useEffect(() => {
+    if (!missions || !ouvertes) return;
+    const m = missions.find((x) => x.id === ouvertes);
+    if (m && m.statut === 'faite' && !m.vue_le) geste({ action: 'voir', id: m.id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missions, ouvertes]);
 
   const vivantes = missions?.filter((m) => m.statut !== 'annulee' && m.statut !== 'faite') ?? [];
   // LE REGARD DU CENTRE (20/11) — une mission FAITE par le tiers que
   // le pro n'a pas encore ouverte sort des closes : elle attend.
   const àRegarder = missions?.filter((m) => m.statut === 'faite' && !m.vue_le) ?? [];
   const closes = missions?.filter((m) => m.statut === 'faite' || m.statut === 'annulee') ?? [];
+
+  function ouvrir(m: Mission) {
+    const ouverture = ouvertes !== m.id;
+    setOuvertes(ouverture ? m.id : null);
+    if (ouverture && m.statut === 'faite' && !m.vue_le) geste({ action: 'voir', id: m.id });
+  }
+
+  // LA CARTE MISSION — chaque mission s'ouvre, CLOSE COMPRISE : les
+  // gestes, les drapeaux et les photos se regardent TOUJOURS (le
+  // journal du travail ne disparaît pas une fois vu).
+  function CarteMission({ m, alerte = false, close = false }: { m: Mission; alerte?: boolean; close?: boolean }) {
+    const faits = m.mission_elements.filter((e) => e.fait).length;
+    const ouverte = ouvertes === m.id;
+    const vivante = m.statut === 'a_faire' || m.statut === 'en_cours';
+    return (
+      <section className={`carte-preuve mt-4 p-5 ${alerte ? 'border-vermillon/50' : ''} ${close && !ouverte ? 'opacity-80' : ''}`}>
+        <button onClick={() => ouvrir(m)} className="w-full text-left">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="min-w-0 truncate font-titre text-base font-bold text-vert">{m.titre}</h3>
+            {m.statut === 'faite' && !m.vue_le ? (
+              <span className="shrink-0 rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">À REGARDER</span>
+            ) : (
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${m.statut === 'en_cours' ? 'bg-vermillon text-white' : 'bg-vert-voile text-vert'}`}>
+                {STATUTS[m.statut]}
+              </span>
+            )}
+          </div>
+          <p className="mt-0.5 truncate text-sm text-graphite">
+            {m.tiers?.nom} · {m.mandats?.client_nom}{m.mandats?.lieu ? ` — ${m.mandats.lieu}` : ''}
+            {m.prevue_le ? ` · prévue le ${new Date(m.prevue_le).toLocaleDateString('fr-FR')}` : ''}
+          </p>
+          <p className="horodatage mt-1 text-xs text-graphite">
+            {faits}/{m.mission_elements.length} élément{m.mission_elements.length > 1 ? 's' : ''} fait{faits > 1 ? 's' : ''}
+            {m.mission_preuves.length > 0 ? ` · ${m.mission_preuves.length} photo${m.mission_preuves.length > 1 ? 's' : ''}` : ''}
+            {m.statut === 'faite' && m.fermee_le ? ` · terminée à ${heure(m.fermee_le)}` : ''}
+            {m.statut === 'faite' && m.vue_le ? ` · vue à ${heure(m.vue_le)}` : ''}
+            {ouverte ? ' ▲' : ' ▼'}
+          </p>
+        </button>
+
+        {ouverte && (
+          <div className="mt-4 space-y-1.5">
+            {m.mission_elements.map((e) => (
+              <div key={e.id} className="flex items-center gap-2 rounded-carte bg-pierre px-3 py-2">
+                <input
+                  type="checkbox"
+                  checked={e.fait}
+                  onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
+                  aria-label={`Fait : ${e.libelle}`}
+                  className="h-5 w-5 shrink-0 cursor-pointer accent-[#123F3D]"
+                />
+                <p className={`min-w-0 flex-1 text-sm ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</p>
+                <button
+                  onClick={() => geste({ action: 'element-jobliviser', id: e.id, joblivise: !e.joblivise })}
+                  aria-label={`Partager ${e.libelle} via JOBLIVE`}
+                  className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide transition ${e.joblivise ? 'bg-vert text-white' : 'bg-pierre-sombre text-graphite'}`}
+                >
+                  {e.joblivise ? '●' : '○'}
+                </button>
+              </div>
+            ))}
+            <div className="flex gap-2 pt-1">
+              <input
+                value={nouvelÉlément}
+                onChange={(e) => setNouvelÉlément(e.target.value)}
+                placeholder="Un élément propre à cette mission…"
+                aria-label="Nouvel élément de mission"
+                className="min-w-0 flex-1 rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
+              />
+              <button
+                onClick={async () => {
+                  if (!nouvelÉlément.trim()) return;
+                  await geste({ action: 'element-ajouter', mission_id: m.id, libelle: nouvelÉlément.trim(), genre: 'particuliere' });
+                  setNouvelÉlément('');
+                }}
+                disabled={!nouvelÉlément.trim()}
+                className="shrink-0 rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92 disabled:opacity-40"
+              >
+                + élément
+              </button>
+            </div>
+            {m.jeton && vivante && (
+              <div className="mt-3 rounded-carte bg-vert-voile px-4 py-3">
+                <p className="text-xs leading-relaxed text-vert">
+                  Le lien de {m.tiers?.nom} — elle ouvre, elle coche, elle photographie. Sans compte.
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <button onClick={() => partagerMission(m)} className="rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92">
+                    {partagé === m.id ? 'copié ✓' : 'envoyer'}
+                  </button>
+                  {m.tiers?.telephone && (
+                    <a
+                      href={`sms:${m.tiers.telephone.replace(/[^+\d]/g, '')}?&body=${encodeURIComponent(messageMission(m))}`}
+                      className="rounded-full bg-white px-4 py-2 text-xs font-bold text-vert"
+                    >
+                      SMS
+                    </a>
+                  )}
+                  <span className="horodatage ml-auto self-center text-[10px] text-vert/70">/m/{m.jeton}</span>
+                </div>
+              </div>
+            )}
+            {m.mission_preuves.length > 0 && (
+              <div className="mt-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-vert">Les photos de {m.tiers?.nom} ({m.mission_preuves.length})</p>
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
+                  {m.mission_preuves.map((p) => (
+                    <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+            {vivante && (
+              <div className="flex gap-2 pt-2">
+                <button onClick={() => geste({ action: 'statut', id: m.id, statut: m.statut === 'a_faire' ? 'en_cours' : 'faite' })}
+                  className="flex-1 rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92">
+                  {m.statut === 'a_faire' ? 'Démarrer' : 'Marquer faite'}
+                </button>
+                <button onClick={() => geste({ action: 'statut', id: m.id, statut: 'annulee' })}
+                  className="rounded-full bg-vermillon-voile px-4 py-2.5 text-xs font-bold text-vermillon">
+                  annuler
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+    );
+  }
 
   return (
     <main className="min-h-screen pb-24">
@@ -226,191 +375,26 @@ export function MissionsClient() {
         )}
 
         {!missions && <p className="mt-8 text-center text-sm text-graphite">Chargement…</p>}
-        {missions && vivantes.length === 0 && !création && (
+        {missions && missions.length === 0 && !création && (
           <p className="mt-6 rounded-carte bg-white px-4 py-5 text-center text-sm text-graphite">
-            Aucune mission vivante — l&apos;équipe attend ses consignes.
+            Aucune mission — l&apos;équipe attend ses consignes.
           </p>
         )}
 
-        {/* LES MISSIONS VIVANTES */}
-        {vivantes.map((m) => {
-          const faits = m.mission_elements.filter((e) => e.fait).length;
-          return (
-            <section key={m.id} className="carte-preuve mt-4 p-5">
-              <button onClick={() => setOuvertes(ouvertes === m.id ? null : m.id)} className="w-full text-left">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="min-w-0 truncate font-titre text-base font-bold text-vert">{m.titre}</h3>
-                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${m.statut === 'en_cours' ? 'bg-vermillon text-white' : 'bg-vert-voile text-vert'}`}>
-                    {STATUTS[m.statut]}
-                  </span>
-                </div>
-                <p className="mt-0.5 truncate text-sm text-graphite">
-                  {m.tiers?.nom} · {m.mandats?.client_nom}{m.mandats?.lieu ? ` — ${m.mandats.lieu}` : ''}
-                  {m.prevue_le ? ` · prévue le ${new Date(m.prevue_le).toLocaleDateString('fr-FR')}` : ''}
-                </p>
-                <p className="horodatage mt-1 text-xs text-graphite">
-                  {faits}/{m.mission_elements.length} élément{m.mission_elements.length > 1 ? 's' : ''} fait{faits > 1 ? 's' : ''} ·{' '}
-                  {m.mission_elements.filter((e) => e.joblivise).length} joblivisé{ouvertes === m.id ? ' ▲' : ' ▼'}
-                </p>
-              </button>
-
-              {ouvertes === m.id && (
-                <div className="mt-4 space-y-1.5">
-                  {m.mission_elements.map((e) => (
-                    <div key={e.id} className="flex items-center gap-2 rounded-carte bg-pierre px-3 py-2">
-                      <input
-                        type="checkbox"
-                        checked={e.fait}
-                        onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
-                        aria-label={`Fait : ${e.libelle}`}
-                        className="h-5 w-5 shrink-0 cursor-pointer accent-[#123F3D]"
-                      />
-                      <p className={`min-w-0 flex-1 text-sm ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</p>
-                      <button
-                        onClick={() => geste({ action: 'element-jobliviser', id: e.id, joblivise: !e.joblivise })}
-                        aria-label={`Partager ${e.libelle} via JOBLIVE`}
-                        className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide transition ${e.joblivise ? 'bg-vert text-white' : 'bg-pierre-sombre text-graphite'}`}
-                      >
-                        {e.joblivise ? '●' : '○'}
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2 pt-1">
-                    <input
-                      value={nouvelÉlément}
-                      onChange={(e) => setNouvelÉlément(e.target.value)}
-                      placeholder="Un élément propre à cette mission…"
-                      aria-label="Nouvel élément de mission"
-                      className="min-w-0 flex-1 rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
-                    />
-                    <button
-                      onClick={async () => {
-                        if (!nouvelÉlément.trim()) return;
-                        await geste({ action: 'element-ajouter', mission_id: m.id, libelle: nouvelÉlément.trim(), genre: 'particuliere' });
-                        setNouvelÉlément('');
-                      }}
-                      disabled={!nouvelÉlément.trim()}
-                      className="shrink-0 rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92 disabled:opacity-40"
-                    >
-                      + élément
-                    </button>
-                  </div>
-                  {m.jeton && m.statut !== 'faite' && m.statut !== 'annulee' && (
-                    <div className="mt-3 rounded-carte bg-vert-voile px-4 py-3">
-                      <p className="text-xs leading-relaxed text-vert">
-                        Le lien de {m.tiers?.nom} — elle ouvre, elle coche, elle photographie. Sans compte.
-                      </p>
-                      <div className="mt-2 flex gap-2">
-                        <button onClick={() => partagerMission(m)} className="rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92">
-                          {partagé === m.id ? 'copié ✓' : 'envoyer'}
-                        </button>
-                        {m.tiers?.telephone && (
-                          <a
-                            href={`sms:${m.tiers.telephone.replace(/[^+\d]/g, '')}?&body=${encodeURIComponent(messageMission(m))}`}
-                            className="rounded-full bg-white px-4 py-2 text-xs font-bold text-vert"
-                          >
-                            SMS
-                          </a>
-                        )}
-                        <span className="horodatage ml-auto self-center text-[10px] text-vert/70">/m/{m.jeton}</span>
-                      </div>
-                    </div>
-                  )}
-                  {m.mission_preuves.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-xs font-bold uppercase tracking-wide text-vert">Les photos de {m.tiers?.nom} ({m.mission_preuves.length})</p>
-                      <div className="mt-2 grid grid-cols-4 gap-1.5">
-                        {m.mission_preuves.map((p) => (
-                          <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex gap-2 pt-2">
-                    <button onClick={() => geste({ action: 'statut', id: m.id, statut: m.statut === 'a_faire' ? 'en_cours' : 'faite' })}
-                      className="flex-1 rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92">
-                      {m.statut === 'a_faire' ? 'Démarrer' : 'Marquer faite'}
-                    </button>
-                    <button onClick={() => geste({ action: 'statut', id: m.id, statut: 'annulee' })}
-                      className="rounded-full bg-vermillon-voile px-4 py-2.5 text-xs font-bold text-vermillon">
-                      annuler
-                    </button>
-                  </div>
-                </div>
-              )}
-            </section>
-          );
-        })}
-
-        {/* À REGARDER — le travail indirect terminé, pas encore ouvert
-            par le centre (le verdict 20/11 : il ne savait pas où
-            aller — maintenant ça l'attend ici, liseré vermillon). */}
+        {/* LES MISSIONS — les faites non vues en tête (À REGARDER),
+            les vivantes, puis les closes — toutes s'ouvrent. */}
         {àRegarder.length > 0 && (
-          <section className="mt-6">
-            <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vermillon">À regarder</h2>
-            {àRegarder.map((m) => {
-              const faits = m.mission_elements.filter((e) => e.fait).length;
-              const partagés = m.mission_elements.filter((e) => e.fait && e.joblivise);
-              return (
-                <div key={m.id} className="carte-preuve mt-2 border-vermillon/50 p-5">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="min-w-0 truncate font-titre text-base font-bold text-vert">{m.titre}</h3>
-                    <span className="shrink-0 rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">À REGARDER</span>
-                  </div>
-                  <p className="mt-0.5 truncate text-sm text-graphite">
-                    {m.tiers?.nom} · {m.mandats?.client_nom}{m.mandats?.lieu ? ` — ${m.mandats.lieu}` : ''}
-                  </p>
-                  <p className="horodatage mt-1 text-xs text-graphite">
-                    terminée {m.fermee_le ? `à ${heure(m.fermee_le)}` : ''} · {faits}/{m.mission_elements.length} gestes · {m.mission_preuves.length} photo{m.mission_preuves.length > 1 ? 's' : ''}
-                  </p>
-                  {partagés.length > 0 && (
-                    <p className="mt-2 line-clamp-2 text-sm text-graphite">{partagés.map((e) => e.libelle).join(' · ')}</p>
-                  )}
-                  {m.mission_preuves.length > 0 && (
-                    <div className="mt-3 grid grid-cols-4 gap-1.5">
-                      {m.mission_preuves.map((p) => (
-                        <a
-                          key={p.id}
-                          href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`}
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                  <button
-                    onClick={() => geste({ action: 'voir', id: m.id })}
-                    className="mt-3 w-full rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92"
-                  >
-                    J&apos;ai regardé
-                  </button>
-                </div>
-              );
-            })}
-          </section>
+          <h2 className="mt-6 font-titre text-sm font-bold uppercase tracking-wide text-vermillon">À regarder</h2>
+        )}
+        {àRegarder.map((m) => <CarteMission key={m.id} m={m} alerte />)}
+        {vivantes.map((m) => <CarteMission key={m.id} m={m} />)}
+        {closes.length > 0 && (
+          <>
+            <h2 className="mt-6 font-titre text-sm font-bold uppercase tracking-wide text-graphite">Missions closes — cliquez pour revoir les photos</h2>
+            {closes.map((m) => <CarteMission key={m.id} m={m} close />)}
+          </>
         )}
 
-        {/* LES CLOSES — pliées, honorées */}
-        {closes.length > 0 && (
-          <section className="mt-6">
-            <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-graphite">Missions closes</h2>
-            {closes.map((m) => (
-              <div key={m.id} className="mt-2 rounded-carte border border-pierre-sombre bg-white/60 px-4 py-3 opacity-70">
-                <p className="font-titre text-sm font-bold text-vert">{m.titre}</p>
-                <p className="horodatage text-xs text-graphite">
-                  {m.tiers?.nom} · {STATUTS[m.statut]} · {m.mission_elements.filter((e) => e.fait).length}/{m.mission_elements.length} faits
-                  {m.statut === 'faite' && m.vue_le ? ` · vue à ${heure(m.vue_le)}` : ''}
-                </p>
-              </div>
-            ))}
-          </section>
-        )}
       </div>
 
       <NavPro />

@@ -243,10 +243,7 @@ export function DashboardPro() {
               return (
                 <button
                   key={m.id}
-                  onClick={async () => {
-                    if (!m.vue_le) await appeller('/api/missions', { action: 'voir', id: m.id }).catch(() => {});
-                    router.push('/pro/missions');
-                  }}
+                  onClick={() => router.push(`/pro/missions?m=${m.id}`)}
                   className={`carte-preuve mt-2 flex w-full items-center gap-4 p-4 text-left transition hover:shadow-haute ${!m.vue_le ? 'border-vermillon/50' : ''}`}
                 >
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-vermillon-voile text-vermillon">

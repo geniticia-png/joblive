@@ -5,7 +5,7 @@
 // indirect terminé que le pro n'a pas encore ouvert : le centre voit
 // sans chercher (verdict direction du 20/11 — le client voyait, pas
 // la conciergerie).
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { appeller } from '@/lib/appels';
@@ -15,15 +15,19 @@ export function NavPro() {
   const chemin = usePathname();
   const [àRegarder, setÀRegarder] = useState(0);
 
-  useEffect(() => {
-    let vivant = true;
+  const chargerBadge = useCallback(() => {
     appeller<{ missions: { statut: string; vue_le: string | null }[] }>('/api/missions', undefined, 'GET')
-      .then((d) => {
-        if (vivant) setÀRegarder((d.missions ?? []).filter((m) => m.statut === 'faite' && !m.vue_le).length);
-      })
+      .then((d) => setÀRegarder((d.missions ?? []).filter((m) => m.statut === 'faite' && !m.vue_le).length))
       .catch(() => {});
-    return () => { vivant = false; };
-  }, [chemin]);
+  }, []);
+
+  useEffect(() => { chargerBadge(); }, [chargerBadge, chemin]);
+  // la page missions crie « joblive:missions » après chaque geste :
+  // le badge s'éteint sans attendre la navigation.
+  useEffect(() => {
+    window.addEventListener('joblive:missions', chargerBadge);
+    return () => window.removeEventListener('joblive:missions', chargerBadge);
+  }, [chargerBadge]);
 
   const onglet = (href: string) =>
     `flex flex-1 flex-col items-center gap-0.5 py-2.5 transition ${chemin === href ? 'text-vert' : 'text-graphite hover:text-vert'}`;
