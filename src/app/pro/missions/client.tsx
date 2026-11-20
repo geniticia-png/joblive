@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
-import { Icône, P_JOURNAL, P_CLE, P_LIVRE, P_EQUIPE } from '@/lib/icones';
+import { heure } from '@/lib/format';
+import { NavPro } from '@/lib/nav-pro';
 
 type Élément = { id: string; libelle: string; genre: string; joblivise: boolean; fait: boolean; ordre: number };
 type Mission = {
   id: string; jeton: string | null; titre: string; prevue_le: string | null; statut: string;
+  vue_le: string | null; fermee_le: string | null;
   tiers: { nom: string; role: string; telephone: string | null } | null;
   mandats: { client_nom: string; lieu: string } | null;
   mission_elements: Élément[];
@@ -83,6 +85,9 @@ export function MissionsClient() {
   }
 
   const vivantes = missions?.filter((m) => m.statut !== 'annulee' && m.statut !== 'faite') ?? [];
+  // LE REGARD DU CENTRE (20/11) — une mission FAITE par le tiers que
+  // le pro n'a pas encore ouverte sort des closes : elle attend.
+  const àRegarder = missions?.filter((m) => m.statut === 'faite' && !m.vue_le) ?? [];
   const closes = missions?.filter((m) => m.statut === 'faite' || m.statut === 'annulee') ?? [];
 
   return (
@@ -340,6 +345,57 @@ export function MissionsClient() {
           );
         })}
 
+        {/* À REGARDER — le travail indirect terminé, pas encore ouvert
+            par le centre (le verdict 20/11 : il ne savait pas où
+            aller — maintenant ça l'attend ici, liseré vermillon). */}
+        {àRegarder.length > 0 && (
+          <section className="mt-6">
+            <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vermillon">À regarder</h2>
+            {àRegarder.map((m) => {
+              const faits = m.mission_elements.filter((e) => e.fait).length;
+              const partagés = m.mission_elements.filter((e) => e.fait && e.joblivise);
+              return (
+                <div key={m.id} className="carte-preuve mt-2 border-vermillon/50 p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="min-w-0 truncate font-titre text-base font-bold text-vert">{m.titre}</h3>
+                    <span className="shrink-0 rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">À REGARDER</span>
+                  </div>
+                  <p className="mt-0.5 truncate text-sm text-graphite">
+                    {m.tiers?.nom} · {m.mandats?.client_nom}{m.mandats?.lieu ? ` — ${m.mandats.lieu}` : ''}
+                  </p>
+                  <p className="horodatage mt-1 text-xs text-graphite">
+                    terminée {m.fermee_le ? `à ${heure(m.fermee_le)}` : ''} · {faits}/{m.mission_elements.length} gestes · {m.mission_preuves.length} photo{m.mission_preuves.length > 1 ? 's' : ''}
+                  </p>
+                  {partagés.length > 0 && (
+                    <p className="mt-2 line-clamp-2 text-sm text-graphite">{partagés.map((e) => e.libelle).join(' · ')}</p>
+                  )}
+                  {m.mission_preuves.length > 0 && (
+                    <div className="mt-3 grid grid-cols-4 gap-1.5">
+                      {m.mission_preuves.map((p) => (
+                        <a
+                          key={p.id}
+                          href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => geste({ action: 'voir', id: m.id })}
+                    className="mt-3 w-full rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92"
+                  >
+                    J&apos;ai regardé
+                  </button>
+                </div>
+              );
+            })}
+          </section>
+        )}
+
         {/* LES CLOSES — pliées, honorées */}
         {closes.length > 0 && (
           <section className="mt-6">
@@ -347,33 +403,17 @@ export function MissionsClient() {
             {closes.map((m) => (
               <div key={m.id} className="mt-2 rounded-carte border border-pierre-sombre bg-white/60 px-4 py-3 opacity-70">
                 <p className="font-titre text-sm font-bold text-vert">{m.titre}</p>
-                <p className="text-xs text-graphite">{m.tiers?.nom} · {STATUTS[m.statut]} · {m.mission_elements.filter((e) => e.fait).length}/{m.mission_elements.length} faits</p>
+                <p className="horodatage text-xs text-graphite">
+                  {m.tiers?.nom} · {STATUTS[m.statut]} · {m.mission_elements.filter((e) => e.fait).length}/{m.mission_elements.length} faits
+                  {m.statut === 'faite' && m.vue_le ? ` · vue à ${heure(m.vue_le)}` : ''}
+                </p>
               </div>
             ))}
           </section>
         )}
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 border-t border-pierre-sombre bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl">
-          <Link href="/pro" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_JOURNAL} taille={20} />
-            <span className="text-[10px] font-bold">Journal</span>
-          </Link>
-          <Link href="/pro/mandats" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_CLE} taille={20} />
-            <span className="text-[10px] font-bold">Mandats</span>
-          </Link>
-          <Link href="/pro/catalogue" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_LIVRE} taille={20} />
-            <span className="text-[10px] font-bold">Catalogue</span>
-          </Link>
-          <Link href="/pro/missions" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-vert">
-            <Icône d={P_EQUIPE} taille={20} />
-            <span className="text-[10px] font-bold">Missions</span>
-          </Link>
-        </div>
-      </nav>
+      <NavPro />
     </main>
   );
 }

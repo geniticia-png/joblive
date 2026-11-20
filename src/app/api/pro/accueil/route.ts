@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   if (!pro) return NextResponse.json({ erreur: 'session' }, { status: 401 });
   const sb = getSupabaseService();
 
-  const [{ data: mandats }, { data: interventions }] = await Promise.all([
+  const [{ data: mandats }, { data: interventions }, { data: missionsFaites }] = await Promise.all([
     sb.from('mandats')
       .select('id, client_nom, client_id, lieu, client_tel, statut, debut, fin, categories_diffusees, chrono_visible, clients(type), codes(id, code, expire_le, revoque_le, vu_le)')
       .eq('pro_id', pro.id)
@@ -19,6 +19,15 @@ export async function GET(req: Request) {
       .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats(client_nom, lieu), preuves(id, genre, chemin, horodatage)')
       .eq('statut', 'en_cours')
       .order('debut_le', { ascending: false }),
+    // LE TRAVAIL INDIRECT TERMINÉ (20/11) — les dernières missions
+    // faites par les tiers : le centre doit voir sans chercher (le
+    // client voyait, pas la conciergerie). vue_le suit codes.vu_le.
+    sb.from('missions')
+      .select('id, titre, statut, fermee_le, vue_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, fait), mission_preuves(id, chemin, horodatage)')
+      .eq('pro_id', pro.id)
+      .eq('statut', 'faite')
+      .order('fermee_le', { ascending: false, nullsFirst: false })
+      .limit(5),
   ]);
 
   // Le journal du jour : les publiées d'aujourd'hui, tous mandats.
@@ -35,5 +44,9 @@ export async function GET(req: Request) {
     client_type: m.clients?.type ?? null,
     clients: undefined,
   }));
-  return NextResponse.json({ pro, mandats: mandatsPlats, enCours: interventions ?? [], journal: (publiées ?? []).slice(0, 5) });
+  return NextResponse.json({
+    pro, mandats: mandatsPlats, enCours: interventions ?? [],
+    journal: (publiées ?? []).slice(0, 5),
+    missionsFaites: missionsFaites ?? [],
+  });
 }

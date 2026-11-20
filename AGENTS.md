@@ -514,7 +514,47 @@ la conciergerie orchestre, Marie exécute les mains libres, le
 propriétaire ne voit qu'une maison. Restent pour les jours qui
 viennent : les photos multiples par élément, l'historique des
 fiches (ses mandats passés), et le premier VRAI pilote Biendispo —
-la maison est prête pour lui.",
+la maison est prête pour lui.
+
+## LE REGARD DU CENTRE — la conciergerie voit le travail indirect (20/11, verdict direction : « je suis la conciergerie et je n'ai pas vu »)
+
+Le test réel de la direction (kit ①→⑥, en mobile) : le tier a fait
+sa mission, **LE CLIENT A VU** (l'aval marche) — mais la conciergerie
+n'a rien vu et **ne savait pas où aller**. Le centre était aveugle
+alors que la vision le veut AU CENTRE : le verdict du jour. Deux
+leçons en sus : **LE PC** (« je ne suis pas à l'aise sur mobile,
+j'aurais préféré tout préparer sur PC » — le kit disait « depuis ton
+mobile » alors que les pages sont des colonnes qui marchent pareil au
+PC : même adresse, même lien magique ouvert depuis le mail du PC ;
+le kit est corrigé) et **le QR non testé** (en attente, rien à
+faire).
+
+**LE REMÈDE — le patron codes.vu_le appliqué aux missions**
+(migration 007 : `missions.vue_le`, appliquée au pooler ✓) :
+
+- `/api/pro/accueil` porte `missionsFaites` — les 5 dernières closes
+  (tier, client, gestes faits, photos, fermee_le, vue_le) ;
+- LE DASHBOARD gagne la section « **Le travail indirect** » entre le
+  CTA et « En cours » : pastille vermillon-voile, « terminée à HH:MM ·
+  X/Y gestes · N photos », pilule **« À REGARDER »** vermillon (ou
+  « vue à HH:MM » en graphite une fois ouverte) — le clic pose vue_le
+  et mène aux missions ;
+- `/pro/missions` : les FAITES non vues sortent des closes pliées —
+  section « **À regarder** » en tête (liseré vermillon, gestes
+  partagés joints par « · », photos en grille, bouton « J'ai
+  regardé ») ; les closes portent « vue à HH:MM » ;
+- LA NAV : les quatre copies duplicuées de la barre basse meurent —
+  UN composant `NavPro` (src/lib/nav-pro.tsx) avec **badge vermillon
+  sur Missions** (le compte des faites non vues, rafraîchi à chaque
+  navigation) ;
+- `/api/missions` : action `voir` (pose vue_le, appartenance
+  vérifiée comme chaque geste).
+
+tsc + build verts. LE KIT DE TESTS suit (le PC partout + la ⑥ qui
+fait revenir au dashboard voir le signal). La leçon du jour, gravée :
+**chaque maillon qui voit doit avoir un endroit qui le lui dit** —
+le client avait son journal, le centre n'avait rien. Committé,
+poussé.
 
 
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
-import { Icône, P_JOURNAL, P_CLE, P_LIVRE, P_EQUIPE } from '@/lib/icones';
+import { NavPro } from '@/lib/nav-pro';
 
 type Tâche = { id: string; libelle: string; genre: string; joblivise: boolean };
 type Service = { id: string; nom: string; ordre: number; joblivise: boolean; taches: Tâche[] };
@@ -177,26 +177,7 @@ export function CatalogueClient() {
         })}
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 border-t border-pierre-sombre bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl">
-          <Link href="/pro" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_JOURNAL} taille={20} />
-            <span className="text-[10px] font-bold">Journal</span>
-          </Link>
-          <Link href="/pro/mandats" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_CLE} taille={20} />
-            <span className="text-[10px] font-bold">Mandats</span>
-          </Link>
-          <Link href="/pro/catalogue" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-vert">
-            <Icône d={P_LIVRE} taille={20} />
-            <span className="text-[10px] font-bold">Catalogue</span>
-          </Link>
-          <Link href="/pro/missions" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_EQUIPE} taille={20} />
-            <span className="text-[10px] font-bold">Missions</span>
-          </Link>
-        </div>
-      </nav>
+      <NavPro />
     </main>
   );
 }

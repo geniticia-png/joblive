@@ -22,7 +22,7 @@ function jetonNu(): string {
   return j;
 }
 
-const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
+const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
 
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
@@ -147,6 +147,15 @@ export async function POST(req: Request) {
         return NextResponse.json({ erreur: 'champs requis' }, { status: 400 });
       }
       await sb.from('missions').update({ statut: corps.statut }).eq('id', corps.id).eq('pro_id', pro.id);
+      return NextResponse.json({ ok: true });
+    }
+    case 'voir': {
+      // LE REGARD DU CENTRE (20/11) — le pro ouvre le travail de son
+      // tiers : vue_le suit le patron de codes.vu_le.
+      if (!corps.id || !(await missionAuPro(corps.id))) {
+        return NextResponse.json({ erreur: 'champs requis' }, { status: 400 });
+      }
+      await sb.from('missions').update({ vue_le: new Date().toISOString() }).eq('id', corps.id).eq('pro_id', pro.id);
       return NextResponse.json({ ok: true });
     }
     default:

@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { CATÉGORIES, labelCatégorie, heure, tampon } from '@/lib/format';
-import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_JOURNAL, P_CLE, P_ACCUEIL, P_LINGE, P_LIVRE, P_EQUIPE } from '@/lib/icones';
+import { Icône, P_LANCER, P_ANIMAUX, P_MENAGE, P_JARDIN, P_PISCINE, P_COURSES, P_AUTRE, P_ACCUEIL, P_LINGE, P_EQUIPE } from '@/lib/icones';
+import { NavPro } from '@/lib/nav-pro';
 
 const ICÔNES: Record<string, string> = {
   animaux: P_ANIMAUX, menage: P_MENAGE, jardin: P_JARDIN,
@@ -26,7 +27,14 @@ type Mandat = {
   id: string; client_nom: string; lieu: string; statut: string; debut: string | null; fin: string | null;
   codes: Code[];
 };
-type Accueil = { pro: { nom: string; email?: string; enseigne?: string | null }; mandats: Mandat[]; enCours: Intervention[]; journal: Intervention[] };
+type MissionFaite = {
+  id: string; titre: string; fermee_le: string | null; vue_le: string | null;
+  tiers: { nom: string } | null;
+  mandats: { client_nom: string; lieu: string | null } | null;
+  mission_elements: { id: string; fait: boolean }[];
+  mission_preuves: { id: string; chemin: string; horodatage: string }[];
+};
+type Accueil = { pro: { nom: string; email?: string; enseigne?: string | null }; mandats: Mandat[]; enCours: Intervention[]; journal: Intervention[]; missionsFaites: MissionFaite[] };
 
 // L'identité du pro (leçon du jeu de rôle 19/11) : tant qu'il n'a
 // pas dit son nom, la maison ne le salue pas par son email — et le
@@ -223,6 +231,46 @@ export function DashboardPro() {
           </div>
         )}
 
+        {/* LE TRAVAIL INDIRECT — le centre voit (verdict direction du
+            20/11 : le tiers avait fait, le client avait vu, la
+            conciergerie ne savait pas où aller). Le signal règne entre
+            le CTA et le direct ; vue_le suit le patron codes.vu_le. */}
+        {données && données.missionsFaites.length > 0 && (
+          <section className="mt-7">
+            <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vermillon">Le travail indirect</h2>
+            {données.missionsFaites.map((m) => {
+              const faits = m.mission_elements.filter((e) => e.fait).length;
+              return (
+                <button
+                  key={m.id}
+                  onClick={async () => {
+                    if (!m.vue_le) await appeller('/api/missions', { action: 'voir', id: m.id }).catch(() => {});
+                    router.push('/pro/missions');
+                  }}
+                  className={`carte-preuve mt-2 flex w-full items-center gap-4 p-4 text-left transition hover:shadow-haute ${!m.vue_le ? 'border-vermillon/50' : ''}`}
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-vermillon-voile text-vermillon">
+                    <Icône d={P_EQUIPE} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-titre text-sm font-bold text-vert">
+                      {m.titre} · {m.tiers?.nom}
+                    </span>
+                    <span className="horodatage block text-xs text-graphite">
+                      terminée {m.fermee_le ? `à ${heure(m.fermee_le)}` : ''} · {faits}/{m.mission_elements.length} gestes · {m.mission_preuves.length} photo{m.mission_preuves.length > 1 ? 's' : ''}
+                    </span>
+                  </span>
+                  {!m.vue_le ? (
+                    <span className="shrink-0 rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">À REGARDER</span>
+                  ) : (
+                    <span className="horodatage shrink-0 text-[10px] text-graphite">vue à {heure(m.vue_le)}</span>
+                  )}
+                </button>
+              );
+            })}
+          </section>
+        )}
+
         {/* EN COURS — jamais laissée derrière soi */}
         {données && données.enCours.length > 0 && (
           <section className="mt-7">
@@ -279,27 +327,8 @@ export function DashboardPro() {
           </section>
         </div>
 
-      {/* LA NAV BASSE — le pouce décide */}
-      <nav className="fixed inset-x-0 bottom-0 border-t border-pierre-sombre bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl">
-          <Link href="/pro" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-vert">
-            <Icône d={P_JOURNAL} taille={20} />
-            <span className="text-[10px] font-bold">Journal</span>
-          </Link>
-          <Link href="/pro/mandats" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_CLE} taille={20} />
-            <span className="text-[10px] font-bold">Mandats & codes</span>
-          </Link>
-          <Link href="/pro/catalogue" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_LIVRE} taille={20} />
-            <span className="text-[10px] font-bold">Catalogue</span>
-          </Link>
-          <Link href="/pro/missions" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-graphite transition hover:text-vert">
-            <Icône d={P_EQUIPE} taille={20} />
-            <span className="text-[10px] font-bold">Missions</span>
-          </Link>
-        </div>
-      </nav>
+      {/* LA NAV BASSE — le pouce décide (le badge compte l'indirect) */}
+      <NavPro />
     </main>
   );
 }
