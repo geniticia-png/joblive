@@ -12,6 +12,7 @@ type Élément = { id: string; libelle: string; genre: string; joblivise: boolea
 type Mission = {
   id: string; jeton: string | null; titre: string; prevue_le: string | null; statut: string;
   vue_le: string | null; fermee_le: string | null;
+  prix: string | null; conditions: string | null; accepte_le: string | null;
   tiers: { nom: string; role: string; telephone: string | null } | null;
   mandats: { client_nom: string; lieu: string } | null;
   mission_elements: Élément[];
@@ -66,7 +67,7 @@ export function MissionsClient() {
   // jamais une URL nue (la leçon du partage qui parle).
   function messageMission(m: Mission) {
     const lien = `${window.location.origin}/m/${m.jeton}`;
-    return `Bonjour ${m.tiers?.nom ?? ''}, voici votre mission « ${m.titre} »${m.mandats?.lieu ? ` (${m.mandats.lieu})` : ''} — ouvrez ce lien, cochez vos gestes, photographiez sur place : ${lien}`;
+    return `Bonjour ${m.tiers?.nom ?? ''}, voici votre mission « ${m.titre} »${m.prix ? ` — rémunération : ${m.prix}` : ''}${m.mandats?.lieu ? ` (${m.mandats.lieu})` : ''} — ouvrez ce lien pour lire l'ordre de mission et l'accepter : ${lien}`;
   }
   async function partagerMission(m: Mission) {
     const texte = messageMission(m);
@@ -120,6 +121,11 @@ export function MissionsClient() {
     const faits = m.mission_elements.filter((e) => e.fait).length;
     const ouverte = ouvertes === m.id;
     const vivante = m.statut === 'a_faire' || m.statut === 'en_cours';
+    // L'ordre de mission s'amende ici — les champs vivent en local et
+    // se resynchronisent quand on change de mission.
+    const [prixTexte, setPrixTexte] = useState(m.prix ?? '');
+    const [conditionsTexte, setConditionsTexte] = useState(m.conditions ?? '');
+    useEffect(() => { setPrixTexte(m.prix ?? ''); setConditionsTexte(m.conditions ?? ''); }, [m.id]);
     return (
       <section className={`carte-preuve mt-4 p-5 ${alerte ? 'border-vermillon/50' : ''} ${close && !ouverte ? 'opacity-80' : ''}`}>
         <button onClick={() => ouvrir(m)} className="w-full text-left">
@@ -140,6 +146,8 @@ export function MissionsClient() {
           <p className="horodatage mt-1 text-xs text-graphite">
             {faits}/{m.mission_elements.length} élément{m.mission_elements.length > 1 ? 's' : ''} fait{faits > 1 ? 's' : ''}
             {m.mission_preuves.length > 0 ? ` · ${m.mission_preuves.length} photo${m.mission_preuves.length > 1 ? 's' : ''}` : ''}
+            {m.prix ? ` · ${m.prix}` : ''}
+            {m.accepte_le ? ` · acceptée à ${heure(m.accepte_le)}` : vivante ? ' · pas encore acceptée' : ''}
             {m.statut === 'faite' && m.fermee_le ? ` · terminée à ${heure(m.fermee_le)}` : ''}
             {m.statut === 'faite' && m.vue_le ? ` · vue à ${heure(m.vue_le)}` : ''}
             {ouverte ? ' ▲' : ' ▼'}
@@ -148,6 +156,40 @@ export function MissionsClient() {
 
         {ouverte && (
           <div className="mt-4 space-y-1.5">
+            {/* L'ORDRE DE MISSION (20/11 4ᵉ) — le prix et les
+                conditions, AMENDABLES à tout moment : le lien du tier
+                montre toujours la dernière version. */}
+            <div className="rounded-carte bg-pierre p-3.5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-vert">L&apos;ordre de mission</p>
+                {m.accepte_le ? (
+                  <span className="horodatage text-[10px] text-vert">acceptée à {heure(m.accepte_le)}</span>
+                ) : vivante ? (
+                  <span className="shrink-0 rounded-full bg-vermillon-voile px-2 py-0.5 text-[10px] font-bold text-vermillon">PAS ENCORE ACCEPTÉE</span>
+                ) : null}
+              </div>
+              <input
+                value={prixTexte}
+                onChange={(e) => setPrixTexte(e.target.value)}
+                placeholder="Rémunération — ex. 45 €, 20 €/h (visible par le tiers)"
+                aria-label="Rémunération proposée"
+                className="mt-2 w-full rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
+              />
+              <textarea
+                value={conditionsTexte}
+                onChange={(e) => setConditionsTexte(e.target.value)}
+                placeholder="Conditions de la mission — le contrat ou l'ordre de mission, à amender au fil du temps…"
+                aria-label="Conditions de la mission"
+                rows={3}
+                className="mt-2 w-full rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
+              />
+              <button
+                onClick={() => geste({ action: 'conditions', id: m.id, prix: prixTexte, conditions: conditionsTexte })}
+                className="mt-2 rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92"
+              >
+                Enregistrer l&apos;ordre de mission
+              </button>
+            </div>
             {m.mission_elements.map((e) => (
               <div key={e.id} className="flex items-center gap-2 rounded-carte bg-pierre px-3 py-2">
                 <input

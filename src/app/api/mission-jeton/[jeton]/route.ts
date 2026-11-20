@@ -13,7 +13,7 @@ import { getSupabaseService } from '@/lib/supabase';
 async function missionDuJeton(jeton: string) {
   const sb = getSupabaseService();
   const { data } = await sb.from('missions')
-    .select('id, titre, statut, prevue_le, fermee_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage)')
+    .select('id, titre, statut, prevue_le, fermee_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage)')
     .eq('jeton', jeton.toUpperCase().replace(/[^A-Z0-9]/g, ''))
     .maybeSingle();
   return data ?? null;
@@ -32,6 +32,12 @@ export async function POST(req: Request, { params }: { params: { jeton: string }
   if (!mission) return NextResponse.json({ erreur: 'inconnu' }, { status: 404 });
   if (mission.statut !== 'a_faire' && mission.statut !== 'en_cours') {
     return NextResponse.json({ erreur: 'mission close' }, { status: 403 });
+  }
+
+  // LA PORTE DE L'ACCEPTATION, VOLET PHOTO — la photo est un geste :
+  // elle attend la signature comme les autres (la garde est serveur).
+  if (req.headers.get('content-type')?.includes('multipart/form-data') && !mission.accepte_le) {
+    return NextResponse.json({ erreur: 'à accepter' }, { status: 403 });
   }
 
   // la photo : multipart (horodatage à la prise, le bucket des preuves)
@@ -59,7 +65,22 @@ export async function POST(req: Request, { params }: { params: { jeton: string }
 
   const corps = await req.json().catch(() => ({}));
 
+  // LA PORTE DE L'ACCEPTATION (20/11 4ᵉ) — l'ordre de mission se lit,
+  // puis se signe : aucun geste avant accepte_le. La garde est
+  // SERVEUR — l'écran du tier n'est que la politesse.
+  if (corps.action !== 'accepter' && !mission.accepte_le) {
+    return NextResponse.json({ erreur: 'à accepter' }, { status: 403 });
+  }
+
   switch (corps.action) {
+    case 'accepter': {
+      // la signature se pose UNE fois — la trace ne se réécrit pas
+      if (mission.accepte_le) return NextResponse.json({ ok: true });
+      await sb.from('missions')
+        .update({ accepte_le: new Date().toISOString(), statut: mission.statut === 'a_faire' ? 'en_cours' : mission.statut })
+        .eq('id', mission.id);
+      return NextResponse.json({ ok: true });
+    }
     case 'element-fait': {
       // l'élément appartient-il à cette mission ?
       const élément = (mission.mission_elements ?? []).find((e: any) => e.id === corps.id);

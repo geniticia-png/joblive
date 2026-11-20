@@ -22,7 +22,7 @@ function jetonNu(): string {
   return j;
 }
 
-const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
+const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, prix, conditions, accepte_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
 
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
@@ -156,6 +156,18 @@ export async function POST(req: Request) {
         return NextResponse.json({ erreur: 'champs requis' }, { status: 400 });
       }
       await sb.from('missions').update({ vue_le: new Date().toISOString() }).eq('id', corps.id).eq('pro_id', pro.id);
+      return NextResponse.json({ ok: true });
+    }
+    case 'conditions': {
+      // L'ORDRE DE MISSION (20/11 4ᵉ) — le prix proposé et les
+      // conditions, AMENDABLES à tout moment : le lien du tier montre
+      // toujours la dernière version.
+      if (!corps.id || !(await missionAuPro(corps.id))) {
+        return NextResponse.json({ erreur: 'champs requis' }, { status: 400 });
+      }
+      const prix = typeof corps.prix === 'string' ? corps.prix.trim().slice(0, 60) : '';
+      const conditions = typeof corps.conditions === 'string' ? corps.conditions.trim().slice(0, 4000) : '';
+      await sb.from('missions').update({ prix, conditions }).eq('id', corps.id).eq('pro_id', pro.id);
       return NextResponse.json({ ok: true });
     }
     default:

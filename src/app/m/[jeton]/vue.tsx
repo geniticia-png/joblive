@@ -13,6 +13,7 @@ type Élément = { id: string; libelle: string; genre: string; fait: boolean; or
 type Preuve = { id: string; chemin: string; horodatage: string };
 export type MissionLégère = {
   id: string; titre: string; statut: string; prevue_le: string | null;
+  prix: string | null; conditions: string | null; accepte_le: string | null;
   tiers: { nom: string } | null;
   mandats: { client_nom: string; lieu: string } | null;
   mission_elements: Élément[];
@@ -81,6 +82,14 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
     router.refresh();
   }
 
+  // L'ORDRE DE MISSION (20/11 4ᵉ) — le prix et les conditions se
+  // lisent, puis la mission se SIGNE : rien ne s'ouvre avant, et le
+  // serveur garde la même porte que l'écran.
+  const pasEncoreAcceptée = !mission.accepte_le;
+  async function accepter() {
+    await geste({ action: 'accepter' });
+  }
+
   const générales = mission.mission_elements.filter((e) => e.genre === 'generale');
   const particulières = mission.mission_elements.filter((e) => e.genre === 'particuliere');
   const faits = mission.mission_elements.filter((e) => e.fait).length;
@@ -110,7 +119,35 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
           <p className="mt-4 rounded-champ bg-vert-voile px-4 py-3 text-center text-sm font-semibold text-vert">{message}</p>
         )}
 
-        {/* LES ÉLÉMENTS — de grosses cases, une main, du soleil */}
+        {/* L'ORDRE DE MISSION (20/11 4ᵉ) — à lire, puis à signer :
+            le travail s'ouvre après l'acceptation (le serveur garde
+            la même porte que l'écran). */}
+        {pasEncoreAcceptée ? (
+          <section className="carte-preuve mt-6 p-6">
+            <p className="horodatage text-[10px] font-semibold tracking-[0.22em] text-vermillon">L&apos;ORDRE DE MISSION</p>
+            <h2 className="mt-2 font-titre text-lg font-bold text-vert">{mission.titre}</h2>
+            {mission.prix ? (
+              <p className="mt-3 font-titre text-2xl font-bold text-vert">{mission.prix}</p>
+            ) : (
+              <p className="mt-3 text-sm text-graphite">Rémunération à convenir avec la conciergerie.</p>
+            )}
+            {mission.conditions && (
+              <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-graphite">{mission.conditions}</p>
+            )}
+            <button onClick={accepter} disabled={envoi}
+              className="mt-5 w-full rounded-full bg-vermillon py-4 font-titre text-base font-bold text-white shadow-haute transition hover:opacity-92 disabled:opacity-50">
+              {envoi ? 'Enregistrement…' : 'J\u2019accepte la mission'}
+            </button>
+            <p className="mt-3 text-center text-xs text-graphite">Les gestes et les photos s&apos;ouvrent après votre acceptation.</p>
+          </section>
+        ) : (
+          <>
+            <p className="horodatage mt-4 text-center text-[10px] font-semibold tracking-wide text-vert">
+              MISSION ACCEPTÉE ✓{' '}
+              {new Date(mission.accepte_le!).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+
+            {/* LES ÉLÉMENTS — de grosses cases, une main, du soleil */}
         {([['Mes gestes', générales], ['Les consignes du lieu', particulières]] as const).map(([titre, liste]) =>
           liste.length > 0 ? (
             <section key={titre} className="mt-6">
@@ -166,14 +203,16 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
         </section>
 
         {/* LE GESTE FINAL */}
-        {!message && (
-          <button
-            onClick={terminer}
-            disabled={envoi}
-            className="mt-8 w-full rounded-full bg-vermillon py-4 font-titre text-lg font-bold text-white shadow-haute transition hover:opacity-92 disabled:opacity-50"
-          >
-            J&apos;ai terminé ma mission
-          </button>
+            {!message && (
+              <button
+                onClick={terminer}
+                disabled={envoi}
+                className="mt-8 w-full rounded-full bg-vermillon py-4 font-titre text-lg font-bold text-white shadow-haute transition hover:opacity-92 disabled:opacity-50"
+              >
+                J&apos;ai terminé ma mission
+              </button>
+            )}
+          </>
         )}
         <p className="mt-4 text-center text-xs text-graphite">
           La conciergerie voit votre progression et vos photos en direct —<br />vous n&apos;avez rien à reporter.

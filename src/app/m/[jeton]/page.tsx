@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: { jeton: string } }) {
   const nu = params.jeton.toUpperCase().replace(/[^A-Z0-9]/g, '');
   const sb = getSupabaseService();
   const { data: mission } = await sb.from('missions')
-    .select('id, titre, statut, prevue_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage)')
+    .select('id, titre, statut, prevue_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage)')
     .eq('jeton', nu)
     .maybeSingle();
 
