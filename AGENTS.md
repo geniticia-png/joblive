@@ -627,6 +627,38 @@ vivre, le client voit l'entrée EN COURS grossir) ; ce qui manque
 est le PUSH — et c'est gravé : **LES NOTIFICATIONS PASSENT EN TÊTE
 DE LA V2** (voir EN ATTENTE).
 
+## Le 20/11 (4ᵉ) — L'ORDRE DE MISSION ET L'ACCEPTATION : le tiers signe avant de travailler (direction : « le prix proposé, le contrat ou ordre de mission — et je n'ai pas vu que le prestataire ait accepté la mission »)
+
+La mission partait au tiers nue — sans prix, sans conditions — et
+il n'acceptait jamais : il ouvrait et faisait. LA PIERRE POSÉE
+(migration 008 : `missions.prix` texte libre [« 45 € », « 20 €/h » —
+la compta vit chez RésaCap] · `missions.conditions` [le contrat,
+AMENDABLE à tout moment : le lien du tier montre toujours la
+dernière version] · `missions.accepte_le` [la signature, posée UNE
+fois, jamais réécrite]) :
+
+- **L'ÉCRAN DU TIER** montre désormais L'ORDRE DE MISSION d'abord :
+  le prix proposé en grand, les conditions, le bouton vermillon
+  « J'accepte la mission » — les gestes, les photos et « terminé »
+  restent CACHÉS avant la signature, qui ouvre le travail (et passe
+  la mission en cours).
+- **LA GARDE EST SERVEUR** — tout geste (la photo multipart
+  comprise) est refusé 403 « à accepter » tant que la signature
+  manque : l'écran du tier n'est que la politesse.
+- **LA CONCIERGERIE** édite l'ordre dans la carte ouverte (prix +
+  conditions + Enregistrer, même après envoi) et lit la trace en
+  en-tête : « PAS ENCORE ACCEPTÉE » / « acceptée à HH:MM ». Le
+  message du lien porte la rémunération — le tiers sait ce qu'il
+  accepte avant d'ouvrir.
+
+**BANC DE L'ORDRE VERT sur la prod, 13/13** : l'ordre s'affiche
+avec le prix · les gestes cachés avant acceptation · « terminer »
+refusé 403 · la signature posée (idempotente) · le travail ouvert ·
+la trace côté conciergerie (statut passé en cours). Banc de
+naissance vert après coup. La leçon du banc en passant : l'apostrophe
+de « L'ORDRE » s'échappe en HTML — les assertions cherchent la
+chaîne SANS apostrophe. Committé, poussé.
+
 
 
 
