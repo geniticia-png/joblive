@@ -80,10 +80,16 @@ mémorisable J7B-492 · le masquage du chrono (la dose).
 - ~~**LE GESTE DIRECTION**~~ : **ACCOMPLI le soir même (18/11, 22h26)** — voir
   « LA BASE EST NÉE » ci-dessous.
 - Le premier vrai pilote : une conciergerie, un mandat, un chien promené.
-- En réserve v2 : le relais IA (depuis le journal uniquement —
-  l'IA ne dit que ce qui est écrit), le pont RésaCap (la
-  Production qui coule), les notifications, l'équipe, VERITIC
-  (le moteur commun — la vérité du temps équipe les deux).
+- En réserve v2 — **LES NOTIFICATIONS EN TÊTE** (décision direction
+  du 20/11 : le téléphone du propriétaire vibre quand la photo
+  arrive, la conciergerie est prévenue au geste — la promesse
+  « le travail vu en direct » poussée jusqu'au poignet ; aujourd'hui
+  le direct vit à chaque rechargement, personne n'est poussé) :
+  ① les notifications · ② le relais IA (depuis le journal
+  uniquement — l'IA ne dit que ce qui est écrit) · ③ le pont
+  RésaCap (la Production qui coule) · VERITIC (le moteur commun —
+  la vérité du temps équipe les deux). *(L'équipe, elle, est sortie
+  de la réserve : les missions tierces lui ont donné son visage.)*
 
 ## LA BASE EST NÉE — et LE BANC DE NAISSANCE VERT (18/11, soir)
 
@@ -611,6 +617,15 @@ après chaque geste, la nav écoute. Les quatre listes (à regarder /
 vivantes / closes) partagent UNE CarteMission — les mortes non
 cliquables n'existent plus. Banc vert après coup (24/24), déployé,
 vue_le remis à zéro pour la démo direction. Committé, poussé.
+
+**VERDICT DIRECTION (suite, même jour) : « ok c'est bon »** — le
+cycle du regard est validé sur PC. Au passage, la question du
+direct (« le prestataire pouvait-il envoyer tâche par tâche, photo
+par photo ? ») : C'EST DÉJÀ LE CAS — chaque coche et chaque photo
+partent à l'instant du geste (la conciergerie voit la mission
+vivre, le client voit l'entrée EN COURS grossir) ; ce qui manque
+est le PUSH — et c'est gravé : **LES NOTIFICATIONS PASSENT EN TÊTE
+DE LA V2** (voir EN ATTENTE).
 
 
 
