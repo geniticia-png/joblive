@@ -669,6 +669,36 @@ dans l'air du 390 px (≈317 px dans 350) — le rognage venait des
 tailles d'avant, pas du mot lui-même. Vérifié en prod sur les deux
 en-têtes. Committé, poussé.
 
+## Le 20/11 (soir) — LE POINT DU RELAIS (fin de session, tout est mémorisé)
+
+LA JOURNÉE EN CINQ ENTRÉES CI-DESSUS : ① le regard du centre
+(la conciergerie voit le travail indirect, badge + pilule À
+REGARDER) · ② les deux rattrapages du banc (le diptyque AVANT/APRÈS
+ressuscité, le journal scopé au pro) · ③ le détail avant le regard
+(la carte ouvre la mission en grand, les closes se rouvrent
+toujours) · ④ l'ordre de mission et l'acceptation (prix + conditions
+amendables, la signature avant le travail, garde serveur) · ⑤ le
+mot JOBLIVE revenu dans les en-têtes. BANCS VERTS : naissance 24/24
++ ordre 13/13, base vivante.
+
+LA FAMILLE AUSSI A VÉCU : la vague « Nouvelle Ère 2 » publiée le
+matin (pigeon, manivelle, marathon, jongleur — FB 4/4 ; **INSTA EN
+ATTENTE chez RésaCap et Resafix, bloqué** — à republier au
+déblocage, entrée du jour ; légendes dans `vague-nouvelle-ere-2.md`
+à la racine RésaCap). Au passage : `corriger-visuels.cjs` (Biendispo)
+accepte le .webp.
+
+TOUT EST POUSSÉ : RésaCap, Biendispo, Aktivit, Resafix, Joblive —
+origin/main partout.
+
+LA ROUTE (pour la prochaine session) : **le premier VRAI pilote
+conciergerie** (le texte de démarchage attend : `démarchage-conciergerie.md`
+à la racine Joblive) · les photos multiples par élément ·
+l'historique des fiches (mandats passés) · le test QR (jamais testé) ·
+v2 : **les notifications en tête**, puis relais IA, pont RésaCap,
+VERITIC. La scène Claire vit toujours en prod : /j/J4L438
+(purge : `node scene-mobile.cjs purger`).
+
 
 
 
