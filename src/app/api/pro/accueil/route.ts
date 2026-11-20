@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     sb.from('interventions')
       .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats(client_nom, lieu), preuves(id, genre, chemin, horodatage)')
       .eq('statut', 'en_cours')
+      .eq('mandats.pro_id', pro.id)
       .order('debut_le', { ascending: false }),
     // LE TRAVAIL INDIRECT TERMINÉ (20/11) — les dernières missions
     // faites par les tiers : le centre doit voir sans chercher (le
@@ -30,12 +31,15 @@ export async function GET(req: Request) {
       .limit(5),
   ]);
 
-  // Le journal du jour : les publiées d'aujourd'hui, tous mandats.
+  // Le journal du jour : les publiées d'aujourd'hui, tous SES mandats —
+  // (20/11 : le filtre pro manquait, chaque pro voyait les publications
+  // des autres ; la doctrine exige le filtre côté serveur).
   const début = new Date(); début.setHours(0, 0, 0, 0);
   const { data: publiées } = await sb
     .from('interventions')
     .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats(client_nom, lieu), preuves(id, genre, chemin, horodatage), reactions(id, genre, cree_le)')
     .eq('statut', 'publie')
+    .eq('mandats.pro_id', pro.id)
     .gte('publie_le', début.toISOString())
     .order('publie_le', { ascending: false });
 
