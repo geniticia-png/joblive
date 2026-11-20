@@ -9,10 +9,15 @@ import Link from 'next/link';
 export default function Accueil() {
   return (
     <main className="min-h-screen">
-      {/* L'EN-TÊTE — vert nuit, le monogramme pierre */}
+      {/* L'EN-TÊTE — vert nuit, le monogramme et son nom (le mot
+          revient par verdict direction 20/11 : texte sm, tracking
+          large — il tient dans l'air du 390 px sans rogner le B) */}
       <header className="bg-vert-nuit px-5 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-8 w-auto" />
+          <span className="inline-flex items-center gap-2.5">
+            <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-8 w-auto" />
+            <span className="align-middle font-titre text-sm font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
+          </span>
           <Link href="/connexion" className="rounded-full border border-pierre/40 px-4 py-1.5 text-sm font-semibold text-pierre transition hover:bg-pierre/10">
             Espace prestataire
           </Link>
