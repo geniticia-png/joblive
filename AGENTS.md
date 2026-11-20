@@ -593,6 +593,25 @@ jamais vue) portera la pilule « À REGARDER » sur son dashboard dès
 sa prochaine connexion, badge vermillon sur Missions compris.
 Committé, poussé.
 
+## Le 20/11 (3ᵉ) — LE DÉTAIL AVANT LE REGARD (verdict direction : « j'ai vu À REGARDER mais il a disparu, je n'ai pas vu les tâches faites ni les photos »)
+
+La boucle en direct avec la direction sur PC : la pilule s'était
+éteinte à son clic SANS jamais montrer les photos — le signal
+tuait le contenu qu'il annonçait. LE REMÈDE (le bon ordre du
+monde) : **la carte du dashboard OUVRE la mission en grand**
+(`/pro/missions?m=<id>`) — les gestes cochés, les drapeaux et la
+grille de photos s'affichent, PUIS le regard s'inscrit (ouvrir une
+faite non vue la marque vue ; le bouton « J'ai regardé » meurt,
+l'ouverture EST le regard). **LES CLOSES S'OUVRENT TOUJOURS** —
+« Missions closes — cliquez pour revoir les photos » : le journal
+du travail ne disparaît pas une fois vu (la carte porte « terminée
+à HH:MM · vue à HH:MM · N photos », et se déplie pareil). LE BADGE
+s'éteint en direct : la page missions crie `joblive:missions`
+après chaque geste, la nav écoute. Les quatre listes (à regarder /
+vivantes / closes) partagent UNE CarteMission — les mortes non
+cliquables n'existent plus. Banc vert après coup (24/24), déployé,
+vue_le remis à zéro pour la démo direction. Committé, poussé.
+
 
 
 
