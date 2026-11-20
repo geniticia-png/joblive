@@ -108,8 +108,30 @@ export function Timeline({ code, données }: { code: string; données: Données 
                   </div>
                   {e.note && <p className="px-5 pt-1.5 text-sm leading-relaxed text-encre">{e.note}</p>}
 
-                  {/* LES PREUVES — le sceau en filigrane, l'horodatage sur chaque prise */}
-                  {(avant.length > 0 || après.length > 0 || travaux.length > 0) && travaux.length > 0 && (
+                  {/* LES PREUVES DU DIRECT — le diptyque AVANT/APRÈS, sceau
+                      en filigrane (la preuve de la v1, ressuscitée : la
+                      nuit de l'④ l'avait écrasée en généralisant la grille
+                      travail — le banc l'a rattrapée le 20/11). */}
+                  {(avant.length > 0 || après.length > 0) && (
+                    <div className={`mx-auto mt-3 grid w-[85%] gap-1.5 pb-4 ${avant.length > 0 && après.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                      {[avant[avant.length - 1], après[après.length - 1]].filter(Boolean).map((p) => (
+                        <figure key={p!.id} className="relative overflow-hidden rounded-champ">
+                          <a href={urlPhoto(p!.chemin)} target="_blank" rel="noopener" aria-label={`Agrandir la photo ${p!.genre === 'avant' ? 'avant' : 'après'}`}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={urlPhoto(p!.chemin)} alt={`${p!.genre} — certifié ${tampon(p!.horodatage)}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                          </a>
+                          <figcaption className="horodatage absolute bottom-1.5 left-1.5 rounded-md bg-vert-nuit/80 px-2 py-0.5 text-[10px] font-semibold text-pierre">
+                            {p!.genre === 'avant' ? 'AVANT' : 'APRÈS'} · {tampon(p!.horodatage)}
+                          </figcaption>
+                          <span className="absolute bottom-1.5 right-1.5 opacity-90"><Sceau taille={24} /></span>
+                        </figure>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* LES PREUVES DU TRAVAIL INDIRECT — la grille travail
+                      de l'④ : les photos de l'amont, l'heure seule. */}
+                  {travaux.length > 0 && (
                     <div className="mx-auto mt-3 grid w-[85%] grid-cols-2 gap-1.5 pb-4">
                       {travaux.map((p) => (
                         <figure key={p!.id} className="relative overflow-hidden rounded-champ">
