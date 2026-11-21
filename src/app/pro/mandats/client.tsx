@@ -65,6 +65,7 @@ export function MandatsClient() {
   const [unitesErreur, setUnitesErreur] = useState<string | null>(null);
   const [unitesEnVent, setUnitesEnVent] = useState(false);
   const [recherche, setRecherche] = useState('');
+  const [changerEmail, setChangerEmail] = useState(false);
 
   const charger = useCallback(async () => {
     try {
@@ -109,6 +110,7 @@ export function MandatsClient() {
     if (!emailSaisi.trim()) return;
     await appeller('/api/pro/resacap', { action: 'email', email: emailSaisi.trim() }).catch(() => {});
     setEmailResacap(emailSaisi.trim());
+    setChangerEmail(false);
     await chargerUnites();
   }
 
@@ -517,7 +519,7 @@ export function MandatsClient() {
                 </>
               ) : bienOuvert === m.id ? (
                 <div className="mt-2">
-                  {!emailResacap ? (
+                  {!emailResacap || changerEmail ? (
                     <>
                       <p className="text-xs leading-relaxed text-graphite">L&apos;email de votre compte RésaCap — vos hébergements apparaîtront ici (il ne quitte jamais votre serveur).</p>
                       <div className="mt-2 flex gap-2">
@@ -536,7 +538,10 @@ export function MandatsClient() {
                     </>
                   ) : (
                     <>
-                      <p className="text-xs text-graphite">Vos hébergements RésaCap : {emailResacap}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="min-w-0 truncate text-xs text-graphite">Vos hébergements RésaCap : <span className="font-semibold">{emailResacap}</span></p>
+                        <button onClick={() => { setChangerEmail(true); setEmailSaisi(emailResacap); }} className="shrink-0 text-xs font-bold text-vert">changer</button>
+                      </div>
                       {unitesEnVent && <p className="mt-2 text-xs text-graphite">Chargement…</p>}
                       {unitesErreur && <p className="mt-2 text-xs text-vermillon">{unitesErreur}</p>}
                       {unites && unites.length > 8 && (
