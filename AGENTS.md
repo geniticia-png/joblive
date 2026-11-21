@@ -756,6 +756,45 @@ en vert sur pierre), journal propriétaire et mission du tier
 pas le logo le gagnent en haut à droite. Vérifié en prod, page par
 page. Committé, poussé.
 
+## Le 21/11 (6ᵉ) — LE MOTEUR DE REVENUS : la brique ③ de la saison (direction : « Revenu net · Taux d'occupation · Décomposition — si la conciergerie paramètre »)
+
+La page du propriétaire porte désormais LES REVENUS DE VOTRE BIEN :
+**le revenu net estimé** (mois affiché + cumul de l'année), **le taux
+d'occupation en %** (troisième chiffre de la saison, à côté des
+nuitées et de l'à-venir), et **la fenêtre de décomposition** qui se
+déplie : CA estimé · dépenses du bien (AUTO, catégories natives de
+la compta RésaCap) · frais conciergerie (commission X % + chaque
+frais fixe NOMMÉ) · TVA et taxe de séjour (informatives) · = net.
+LA FORMULE (verdict direction) : **net = CA HT − dépenses − frais
+conciergerie** ; période = mois affiché + cumul année.
+
+**LE MODÈLE NÉGOCIÉ VIT SUR LE MANDAT** (migration 010 :
+`commission_pct` + `frais_fixes` composites [{libellé, montant,
+par séjour|par mois}] — additifs, la règle « additionner des frais
+fixes et des commissions » + `revenus_visible` LA DOSE opt-in).
+L'UI conciergerie : « Les revenus du propriétaire — votre
+négociation » dans la carte mandat. **La marge de la conciergerie
+ne transite jamais par RésaCap** : le pont livre les chiffres bruts
+(nuits, CA au prorata maison, TVA/taxe des factures, dépenses du
+bien), le calcul est celui de la conciergerie — le propriétaire
+voit le RÉSULTAT, jamais les règles.
+
+**BANC VERT SUR LA PROD** (compte simu, Bungalow 30 séjours) :
+modèle 20 % + 50 €/mois + 30 €/séjour → la page affiche saison,
+taux, revenus et décomposition ✓, purge ✓. Côté RésaCap l'action
+`periode` du pont est testée : 29 nuits, CA 4 335 €, 12 séjours,
+TVA 188,41 € pour l'année simu.
+
+**LA LEÇON DU JOUR (infrastructure)** : le banc codait en dur
+l'IP 145.223.124.164 (le contournement DNS du 19/11) — Hostinger a
+déplacé le site sur .67 : tous les tests tombaient sur un NŒUD
+PÉRIMÉ qui sert l'ancien build, pendant que le panneau disait vert
+et que la vraie adresse servait la brique. LEÇON : l'IP de
+contournement est périssable — résoudre à frais nouveaux, ou
+laisser le DNS vivre.
+
+Committé, poussé.
+
 
 
 
