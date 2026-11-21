@@ -26,13 +26,6 @@ export async function POST(req: Request) {
   const action: string = corps.action ?? '';
 
   switch (action) {
-    case 'empreinte': {
-      // TEMPORAIRE (diagnostic 21/11) — 6 premiers caractères +
-      // longueur du secret chargé, JAMAIS le secret : pour vérifier
-      // quelle valeur le process porte vraiment. À retirer.
-      const s = process.env.SECRET_PARTENAIRES ?? '';
-      return NextResponse.json({ prefixe: s.slice(0, 6), longueur: s.length });
-    }
     case 'email': {
       // l'annuaire se pose une fois sur le pro
       const email = typeof corps.email === 'string' ? corps.email.trim().slice(0, 160) : '';

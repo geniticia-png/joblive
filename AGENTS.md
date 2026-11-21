@@ -699,6 +699,54 @@ v2 : **les notifications en tête**, puis relais IA, pont RésaCap,
 VERITIC. La scène Claire vit toujours en prod : /j/J4L438
 (purge : `node scene-mobile.cjs purger`).
 
+## Le 21/11 — LA SAISON DU BIEN : le pont RésaCap→Joblive, face propriétaire (vision direction : « le propriétaire voudra savoir où en est son bien — la conciergerie n'est plus dérangée »)
+
+La page du propriétaire devient **le portail de son bien** — la
+doctrine de la scène fondatrice étendue du travail à la
+commercialisation : *la réponse doit déjà être là*. Le moteur est
+RésaCap, le visage est Joblive (la face propriétaire du pont sœurs).
+Briques : **le calendrier des réservations** (grille du mois, nuits
+réservées en vert, D l'arrivée, F le départ, aujourd'hui cerclé) ·
+**les nuitées vendues** (mois affiché + à venir 12 mois, sémantique
+[début, fin)) · **les supports de vente actifs** (badges canaux).
+Les MONTANTS attendent la brique suivante : le moteur de revenus —
+commission + frais fixes composites négociés, VIVANT SUR LE MANDAT
+(déjà tranché par la direction : « attention aux modes de calcul
+individuels négociés »).
+
+**LA CHAÎNE POSÉE EN UNE JOURNÉE** :
+- **RésaCap** : `/api/pont-bien` scellé HMAC (`sceauBien` sur
+  action+email+unit+plage, le patron pont-vente) — actions `unites`
+  (l'annuaire par email) et `saison` (les séjours CONFIRMÉS, canal
+  de vente NOMMÉ via la connexion, jamais les noms des voyageurs,
+  jamais les blocs pinceau) + les canaux actifs.
+- **Joblive** : migration 009 (`pros.email_resacap` l'annuaire ·
+  `mandats.unit_resacap` le lien · `mandats.saison_visible` LA DOSE
+  opt-in fermée par défaut) ; lib `pont-resacap` (serveur seul) ;
+  API `/api/pro/resacap` ; la carte mandat gagne « Le bien RésaCap »
+  (email → chips → lier/délier + l'interrupteur de saison) ; la page
+  `/j/<code>` gagne la saison AU-DESSUS du journal — le pont ne
+  casse JAMAIS le journal (muet par conception).
+- **LA SOUDURE (geste direction)** : la phrase de passe du pont a
+  été **UNIFIÉE** — la valeur `delestage-dev-…` des `.env` locaux
+  est désormais AUSSI celle de Vercel RésaCap (l'ancienne prod y
+  était marquée sensible, illisible). Une empreinte temporaire
+  (6 caractères + longueur, jamais le secret) a prouvé ce que le
+  process portait, puis a été retirée. LEÇON : une valeur
+  illisible dans un tableau de bord finit par diviser la maison —
+  la phrase de passe vit maintenant IDENTIQUE partout (Vercel
+  RésaCap · Hostinger Joblive · les .env locaux). ⚠ RESTE À VÉRIFIER :
+  les env HOSTINGER de Biendispo et Aktivit doivent porter la même
+  (ils parlent au pont activation/vente).
+- **VÉRIFIÉ EN PROD, LA CHAÎNE ENTIÈRE** : pont direct 200 (22
+  séjours du Bungalow SIMU) · annuaire par le compte simu@resacap.dev ·
+  lien + dose + code → la page propriétaire AFFICHE la saison, le
+  bien, les nuitées · purge. FAUSSE ALERTE fermée au passage : les
+  tables RésaCap sont toutes sous RLS (audit live : 0 nue — le
+  REST anon répond 42501 partout).
+
+Committé, poussé.
+
 
 
 
