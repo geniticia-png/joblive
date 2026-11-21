@@ -73,6 +73,36 @@ export async function POST(req: Request) {
         .eq('id', corps.mandat_id).eq('pro_id', pro.id);
       return NextResponse.json({ ok: true });
     }
+    case 'revenus': {
+      // LE MODÈLE NÉGOCIÉ (21/11, brique revenus) — commission +
+      // frais fixes composites, VIVANT SUR LE MANDAT : chaque
+      // propriétaire a sa négociation, la marge ne transite jamais
+      // par RésaCap — elle naît du calcul de la conciergerie.
+      if (!corps.mandat_id) return NextResponse.json({ erreur: 'mandat requis' }, { status: 400 });
+      const { data: mandat } = await sb.from('mandats')
+        .select('id, unit_resacap').eq('id', corps.mandat_id).eq('pro_id', pro.id).maybeSingle();
+      if (!mandat) return NextResponse.json({ erreur: 'inconnu' }, { status: 404 });
+      if (corps.visible && !mandat.unit_resacap) {
+        return NextResponse.json({ erreur: 'liez d\u2019abord un bien' }, { status: 400 });
+      }
+      const commission = corps.commission_pct === null || corps.commission_pct === ''
+        ? null
+        : Math.min(Math.max(Number(corps.commission_pct) || 0, 0), 100);
+      const frais = Array.isArray(corps.frais_fixes)
+        ? corps.frais_fixes
+            .filter((f: any) => f && typeof f.libelle === 'string' && f.libelle.trim() && Number(f.montant) > 0)
+            .slice(0, 12)
+            .map((f: any) => ({
+              libelle: f.libelle.trim().slice(0, 80),
+              montant: Math.round(Number(f.montant) * 100) / 100,
+              base: f.base === 'sejour' ? 'sejour' : 'mois',
+            }))
+        : [];
+      await sb.from('mandats')
+        .update({ commission_pct: commission, frais_fixes: frais, revenus_visible: !!corps.visible })
+        .eq('id', corps.mandat_id).eq('pro_id', pro.id);
+      return NextResponse.json({ ok: true });
+    }
     default:
       return NextResponse.json({ erreur: 'action inconnue' }, { status: 400 });
   }

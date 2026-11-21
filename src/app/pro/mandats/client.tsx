@@ -19,11 +19,13 @@ import { NavPro } from '@/lib/nav-pro';
 type Code = { id: string; code: string; expire_le: string | null; revoque_le: string | null; vu_le: string | null };
 type Fiche = { id: string; nom: string; type: string; telephone: string | null };
 type UnitéResacap = { id: string; slug: string; nom: string };
+type FraisFixe = { libelle: string; montant: number; base: 'sejour' | 'mois' };
 type Mandat = {
   id: string; client_nom: string; lieu: string; client_tel: string | null; client_type: string | null; statut: string;
   debut: string | null; fin: string | null;
   categories_diffusees: string[] | null; chrono_visible: boolean;
   unit_resacap: UnitéResacap | null; saison_visible: boolean;
+  commission_pct: number | null; frais_fixes: FraisFixe[] | null; revenus_visible: boolean;
   codes: Code[];
 };
 
@@ -109,6 +111,108 @@ export function MandatsClient() {
   async function basculerSaison(m: Mandat, visible: boolean) {
     await appeller('/api/pro/resacap', { action: 'saison-visible', mandat_id: m.id, visible }).catch(() => {});
     await charger();
+  }
+
+  // LE MODÈLE DE REVENUS (21/11, brique ③ de la saison) — la
+  // négociation du propriétaire vit ici : commission + frais fixes
+  // composites, ADDITIFS. Le propriétaire voit le résultat, jamais
+  // les règles — la marge de la conciergerie ne se montre pas.
+  function BlocRevenus({ m }: { m: Mandat }) {
+    const [commission, setCommission] = useState(m.commission_pct != null ? String(m.commission_pct) : '');
+    const [frais, setFrais] = useState<FraisFixe[]>(m.frais_fixes ?? []);
+    const [enVent, setEnVent] = useState(false);
+    useEffect(() => {
+      setCommission(m.commission_pct != null ? String(m.commission_pct) : '');
+      setFrais(m.frais_fixes ?? []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [m.id]);
+
+    async function enregistrer(visible?: boolean) {
+      setEnVent(true);
+      try {
+        await appeller('/api/pro/resacap', {
+          action: 'revenus', mandat_id: m.id,
+          commission_pct: commission.trim() === '' ? null : Number(commission.replace(',', '.')),
+          frais_fixes: frais,
+          visible: visible ?? m.revenus_visible,
+        });
+        await charger();
+      } catch { setErreur('L\u2019enregistrement a échoué'); }
+      finally { setEnVent(false); }
+    }
+
+    return (
+      <div className="mt-3 rounded-carte border border-pierre-sombre bg-white p-3.5">
+        <p className="text-xs font-bold uppercase tracking-wide text-vert">Les revenus du propriétaire — votre négociation</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <input
+            value={commission}
+            onChange={(e) => setCommission(e.target.value)}
+            inputMode="decimal"
+            placeholder="20"
+            aria-label="Commission en pourcentage"
+            className="w-20 rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
+          />
+          <span className="text-sm text-graphite">% du chiffre d&apos;affaires (commission)</span>
+        </div>
+        {frais.map((f, i) => (
+          <div key={i} className="mt-2 flex items-center gap-1.5">
+            <input
+              value={f.libelle}
+              onChange={(e) => setFrais(frais.map((x, j) => j === i ? { ...x, libelle: e.target.value } : x))}
+              placeholder="Forfait gestion"
+              aria-label="Libellé du frais fixe"
+              className="min-w-0 flex-1 rounded-champ border border-pierre-sombre bg-white px-2.5 py-2 text-sm outline-none focus:border-vert"
+            />
+            <input
+              value={String(f.montant)}
+              onChange={(e) => setFrais(frais.map((x, j) => j === i ? { ...x, montant: Number(e.target.value.replace(',', '.')) || 0 } : x))}
+              inputMode="decimal"
+              placeholder="50"
+              aria-label="Montant du frais fixe"
+              className="w-20 rounded-champ border border-pierre-sombre bg-white px-2.5 py-2 text-sm outline-none focus:border-vert"
+            />
+            <button
+              onClick={() => setFrais(frais.map((x, j) => j === i ? { ...x, base: x.base === 'mois' ? 'sejour' : 'mois' } : x))}
+              className="shrink-0 rounded-full bg-pierre px-2.5 py-2 text-[11px] font-bold text-vert"
+            >
+              {f.base === 'mois' ? 'par mois' : 'par séjour'}
+            </button>
+            <button
+              onClick={() => setFrais(frais.filter((_, j) => j !== i))}
+              aria-label="Retirer ce frais fixe"
+              className="shrink-0 px-1 text-sm font-bold text-vermillon"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={() => setFrais([...frais, { libelle: '', montant: 0, base: 'mois' }])}
+          className="mt-2 text-xs font-bold text-vert"
+        >
+          + ajouter un frais fixe
+        </button>
+        <button
+          onClick={() => enregistrer()}
+          disabled={enVent}
+          className="mt-3 w-full rounded-full bg-vert py-2.5 text-xs font-bold text-white transition hover:opacity-92 disabled:opacity-40"
+        >
+          {enVent ? 'Enregistrement…' : 'Enregistrer le modèle'}
+        </button>
+        <label className="mt-3 flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-encre">
+            Partager les revenus au propriétaire
+            <span className="block text-[11px] font-normal text-graphite">
+              Revenu net = chiffre d&apos;affaires − dépenses du bien − vos frais — il voit le résultat, jamais vos règles
+            </span>
+          </span>
+          <input type="checkbox" checked={m.revenus_visible}
+            onChange={(e) => enregistrer(e.target.checked)}
+            className="h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-pierre-sombre transition checked:bg-vert relative after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition checked:after:translate-x-5" />
+        </label>
+      </div>
+    );
   }
 
   async function créer() {
@@ -398,6 +502,7 @@ export function MandatsClient() {
                       onChange={(e) => basculerSaison(m, e.target.checked)}
                       className="h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-pierre-sombre transition checked:bg-vert relative after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition checked:after:translate-x-5" />
                   </label>
+                  <BlocRevenus m={m} />
                 </>
               ) : bienOuvert === m.id ? (
                 <div className="mt-2">

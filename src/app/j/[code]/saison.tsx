@@ -99,13 +99,17 @@ export function SaisonBien({ saison }: { saison: Saison }) {
       </p>
 
       {/* LES CHIFFRES DU BIEN */}
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="rounded-carte bg-pierre px-3 py-2.5 text-center">
-          <p className="horodatage text-[10px] font-semibold uppercase tracking-wide text-graphite">Nuitées {MOIS[curseur.m]}</p>
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="rounded-carte bg-pierre px-2 py-2.5 text-center">
+          <p className="horodatage text-[10px] font-semibold uppercase tracking-wide text-graphite">Nuitées</p>
           <p className="font-titre text-xl font-bold text-vert">{moisNuitées}</p>
         </div>
-        <div className="rounded-carte bg-pierre px-3 py-2.5 text-center">
-          <p className="horodatage text-[10px] font-semibold uppercase tracking-wide text-graphite">À venir (12 mois)</p>
+        <div className="rounded-carte bg-pierre px-2 py-2.5 text-center">
+          <p className="horodatage text-[10px] font-semibold uppercase tracking-wide text-graphite">Occupation</p>
+          <p className="font-titre text-xl font-bold text-vert">{Math.round(100 * moisNuitées / nbJours)}&nbsp;%</p>
+        </div>
+        <div className="rounded-carte bg-pierre px-2 py-2.5 text-center">
+          <p className="horodatage text-[10px] font-semibold uppercase tracking-wide text-graphite">À venir</p>
           <p className="font-titre text-xl font-bold text-vert">{àVenir}</p>
         </div>
       </div>
@@ -118,6 +122,92 @@ export function SaisonBien({ saison }: { saison: Saison }) {
             {saison.canaux.map((c) => (
               <span key={c} className="rounded-full border border-vert/30 bg-vert-voile px-2.5 py-1 text-[11px] font-semibold text-vert">{c}</span>
             ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LES REVENUS DU BIEN (21/11, brique ③) — le revenu net estimé du
+// propriétaire, sa fenêtre de décomposition (CA · dépenses du bien ·
+// frais conciergerie · TVA · taxe de séjour). La conciergerie
+// paramètre SON modèle (commission + frais fixes négociés) : le
+// propriétaire voit le RÉSULTAT, jamais les règles.
+// ═══════════════════════════════════════════════════════════════════
+
+export type Revenus = {
+  moisLabel: string;
+  netMois: number;
+  netAnnée: number;
+  ca: number;
+  depenses: { categorie: string; montant: number }[];
+  commission: number | null;
+  commissionMontant: number;
+  fraisDétail: { libelle: string; montant: number }[];
+  tva: number;
+  taxe: number;
+};
+
+const euros = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + '\u00A0€';
+
+export function RevenusBien({ revenus }: { revenus: Revenus }) {
+  const [ouvert, setOuvert] = useState(false);
+  return (
+    <section className="carte-preuve mt-4 p-5">
+      <p className="horodatage text-[10px] font-semibold tracking-[0.22em] text-vermillon">LES REVENUS DE VOTRE BIEN</p>
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <div>
+          <p className="text-xs text-graphite">Revenu net estimé — {revenus.moisLabel}</p>
+          <p className="font-titre text-3xl font-bold text-vert">{euros(revenus.netMois)}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-graphite">Cumul de l&apos;année</p>
+          <p className="font-titre text-xl font-bold text-vert">{euros(revenus.netAnnée)}</p>
+        </div>
+      </div>
+
+      <button onClick={() => setOuvert(!ouvert)} className="mt-3 w-full py-1.5 text-xs font-bold text-vert transition hover:text-vermillon">
+        {ouvert ? 'fermer la décomposition ▲' : 'voir la décomposition ▼'}
+      </button>
+      {ouvert && (
+        <div className="mt-2 space-y-1.5 rounded-carte bg-pierre p-3.5">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-encre">Chiffre d&apos;affaires (estimé)</span>
+            <span className="font-semibold text-vert">{euros(revenus.ca)}</span>
+          </div>
+          {revenus.depenses.map((d) => (
+            <div key={d.categorie} className="flex items-center justify-between text-sm">
+              <span className="pl-3 text-graphite">− {d.categorie}</span>
+              <span className="font-semibold text-graphite">{euros(d.montant)}</span>
+            </div>
+          ))}
+          {revenus.commission != null && revenus.commission > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="pl-3 text-graphite">− Frais conciergerie (commission {Math.round(revenus.commission)}&nbsp;%)</span>
+              <span className="font-semibold text-graphite">{euros(revenus.commissionMontant)}</span>
+            </div>
+          )}
+          {revenus.fraisDétail.map((f) => (
+            <div key={f.libelle} className="flex items-center justify-between text-sm">
+              <span className="pl-3 text-graphite">− {f.libelle}</span>
+              <span className="font-semibold text-graphite">{euros(f.montant)}</span>
+            </div>
+          ))}
+          <div className="mt-2 border-t border-pierre-sombre pt-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-graphite">Montant TVA <span className="text-[11px]">(informatif)</span></span>
+              <span className="font-semibold text-graphite">{euros(revenus.tva)}</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between text-sm">
+              <span className="text-graphite">Taxe de séjour <span className="text-[11px]">(collectée pour la commune)</span></span>
+              <span className="font-semibold text-graphite">{euros(revenus.taxe)}</span>
+            </div>
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-pierre-sombre pt-2.5">
+            <span className="font-titre text-sm font-bold text-vert">Revenu net estimé</span>
+            <span className="font-titre text-base font-bold text-vert">{euros(revenus.netMois)}</span>
           </div>
         </div>
       )}

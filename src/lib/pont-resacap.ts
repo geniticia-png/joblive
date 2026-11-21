@@ -21,6 +21,11 @@ function sceauBien(action: string, email: string, unitId: string, debut: string,
 
 export type Séjour = { debut: string; fin: string; montant: number | null; canal: string | null };
 export type Saison = { bien: string; sejours: Séjour[]; canaux: string[] };
+export type Période = {
+  nuits: number; ca: number; nb_sejours: number;
+  tva: number; taxe: number;
+  depenses: { categorie: string; montant: number }[];
+};
 
 async function appeler<T>(corps: Record<string, unknown>): Promise<T> {
   const base = process.env.RESACAP_URL ?? 'https://www.resacap.fr';
@@ -50,5 +55,17 @@ export function saisonResacap(email: string, unitId: string, debut: string, fin:
   return appeler<Saison & { ok: boolean }>({
     action: 'saison', email: e, unit_id: unitId, debut, fin,
     sceau: sceauBien('saison', e, unitId, debut, fin),
+  });
+}
+
+/** LA PÉRIODE (brique revenus) — ce que le moteur sait du bien pour
+ *  la fenêtre : nuitées, CA estimé (prorata par nuit), TVA et taxe
+ *  au prorata des factures, dépenses par catégorie native. Le modèle
+ *  négocié (commission + frais fixes) vit ici, sur le mandat. */
+export function periodeResacap(email: string, unitId: string, debut: string, fin: string) {
+  const e = email.trim().toLowerCase();
+  return appeler<Période & { ok: boolean }>({
+    action: 'periode', email: e, unit_id: unitId, debut, fin,
+    sceau: sceauBien('periode', e, unitId, debut, fin),
   });
 }

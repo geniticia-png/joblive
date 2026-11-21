@@ -1,7 +1,7 @@
 import { getSupabaseService } from '@/lib/supabase';
-import { saisonResacap } from '@/lib/pont-resacap';
+import { saisonResacap, periodeResacap } from '@/lib/pont-resacap';
 import { Timeline, EntréeMorte } from './vue';
-import type { Entrée, Saison } from './vue';
+import type { Entrée, Saison, Revenus } from './vue';
 
 // ═══════════════════════════════════════════════════════════════════
 // LA TIMELINE CLIENT (le cœur — lecture pure). Le code ouvre, le
@@ -13,12 +13,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { code: string } }) {
   const nu = params.code.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  let données: { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[]; saison: Saison | null } | null = null;
+  let données: { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[]; saison: Saison | null; revenus: Revenus | null } | null = null;
 
   try {
     const sb = getSupabaseService();
     const { data: accès } = await sb.from('codes')
-      .select('id, mandat_id, expire_le, revoque_le, mandats(id, client_nom, lieu, statut, fin, categories_diffusees, chrono_visible, unit_resacap, saison_visible, pro_id, pros(nom, enseigne, email_resacap))')
+      .select('id, mandat_id, expire_le, revoque_le, mandats(id, client_nom, lieu, statut, fin, categories_diffusees, chrono_visible, unit_resacap, saison_visible, commission_pct, frais_fixes, revenus_visible, pro_id, pros(nom, enseigne, email_resacap))')
       .eq('code', nu)
       .maybeSingle();
 
@@ -90,13 +90,16 @@ export default async function Page({ params }: { params: { code: string } }) {
       // RésaCap ET ouvert la dose : la page porte le calendrier, les
       // nuitées, les canaux. Jamais un échec du pont ne casse le
       // journal — la saison est un cadeau, pas une dalle.
+      const jMA = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       let saison: Saison | null = null;
-      if (mandat.unit_resacap && mandat.saison_visible && (mandat.pros as any)?.email_resacap) {
-        const jMA = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      let revenus: Revenus | null = null;
+      const emailResacap = (mandat.pros as any)?.email_resacap;
+      const bienLié = mandat.unit_resacap && emailResacap;
+      if (bienLié && mandat.saison_visible) {
         const début = new Date(maintenant); début.setDate(début.getDate() - 62);
         const fin = new Date(maintenant); fin.setFullYear(fin.getFullYear() + 1);
         try {
-          const r = await saisonResacap((mandat.pros as any).email_resacap, mandat.unit_resacap.id, jMA(début), jMA(fin));
+          const r = await saisonResacap(emailResacap, mandat.unit_resacap.id, jMA(début), jMA(fin));
           if (r?.ok) {
             saison = {
               bien: r.bien,
@@ -108,6 +111,48 @@ export default async function Page({ params }: { params: { code: string } }) {
         } catch { /* muet par conception */ }
       }
 
+      // LES REVENUS (21/11, brique ③) — le moteur nourrit, le modèle
+      // négocié (commission + frais fixes, SUR LE MANDAT) soustrait :
+      // revenu net = CA − dépenses du bien − frais conciergerie. Le
+      // propriétaire voit le résultat, jamais les règles.
+      if (bienLié && mandat.revenus_visible) {
+        const débutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
+        const finMois = new Date(maintenant.getFullYear(), maintenant.getMonth() + 1, 1);
+        const débutAn = new Date(maintenant.getFullYear(), 0, 1);
+        const finAn = new Date(maintenant.getFullYear() + 1, 0, 1);
+        try {
+          const [pM, pA] = await Promise.all([
+            periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutMois), jMA(finMois)),
+            periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn)),
+          ]);
+          const calcule = (p: { ca?: number; nb_sejours?: number; depenses?: { montant: number }[] }) => {
+            const ca = Number(p.ca) || 0;
+            const dépenses = (p.depenses ?? []).reduce((s: number, d: { montant: number }) => s + Number(d.montant || 0), 0);
+            const commission = mandat.commission_pct != null ? (Number(mandat.commission_pct) / 100) * ca : 0;
+            const fraisDétail = (mandat.frais_fixes ?? []).map((f: any) => {
+              const nb = Number(p.nb_sejours) || 0;
+              return { libelle: f.base === 'sejour' ? `${f.libelle} (× ${nb})` : f.libelle, montant: f.base === 'sejour' ? f.montant * nb : f.montant };
+            });
+            const frais = fraisDétail.reduce((s: number, f: { montant: number }) => s + f.montant, 0);
+            return { net: ca - dépenses - commission - frais, commission, fraisDétail };
+          };
+          const m = calcule(pM);
+          const a = calcule(pA);
+          revenus = {
+            moisLabel: débutMois.toLocaleDateString('fr-FR', { month: 'long' }),
+            netMois: Math.round(m.net),
+            netAnnée: Math.round(a.net),
+            ca: Math.round(Number(pM.ca) || 0),
+            depenses: (pM.depenses ?? []).map((d: { categorie: string; montant: number }) => ({ categorie: d.categorie, montant: Math.round(Number(d.montant) || 0) })),
+            commission: mandat.commission_pct != null ? Number(mandat.commission_pct) : null,
+            commissionMontant: Math.round(m.commission),
+            fraisDétail: m.fraisDétail.map((f: { libelle: string; montant: number }) => ({ libelle: f.libelle, montant: Math.round(f.montant) })),
+            tva: Math.round(Number(pM.tva) || 0),
+            taxe: Math.round(Number(pM.taxe) || 0),
+          };
+        } catch { /* muet par conception */ }
+      }
+
       données = {
         client: mandat.client_nom,
         lieu: mandat.lieu ?? '',
@@ -115,6 +160,7 @@ export default async function Page({ params }: { params: { code: string } }) {
         par: pro ? (pro.enseigne || pro.nom) : null,
         entrées: [...entrées, ...entréesMissions],
         saison,
+        revenus,
       };
     }
   } catch {
