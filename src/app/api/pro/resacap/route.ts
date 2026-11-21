@@ -39,8 +39,11 @@ export async function POST(req: Request) {
       try {
         const r = await unitesResacap(email);
         return NextResponse.json({ unites: r.unites ?? [] });
-      } catch {
-        return NextResponse.json({ erreur: 'RésaCap ne répond pas — vérifiez l\u2019email du compte' }, { status: 502 });
+      } catch (e) {
+        // le code HTTP du pont voyage (400 = sceau ≠, 404 = compte
+        // inconnu, réseau = autre) — jamais le secret lui-même.
+        const détail = e instanceof Error ? ' (' + e.message + ')' : '';
+        return NextResponse.json({ erreur: 'RésaCap ne répond pas — vérifiez l\u2019email du compte' + détail }, { status: 502 });
       }
     }
     case 'lier': {
