@@ -18,10 +18,12 @@ import { NavPro } from '@/lib/nav-pro';
 
 type Code = { id: string; code: string; expire_le: string | null; revoque_le: string | null; vu_le: string | null };
 type Fiche = { id: string; nom: string; type: string; telephone: string | null };
+type UnitéResacap = { id: string; slug: string; nom: string };
 type Mandat = {
   id: string; client_nom: string; lieu: string; client_tel: string | null; client_type: string | null; statut: string;
   debut: string | null; fin: string | null;
   categories_diffusees: string[] | null; chrono_visible: boolean;
+  unit_resacap: UnitéResacap | null; saison_visible: boolean;
   codes: Code[];
 };
 
@@ -42,6 +44,14 @@ export function MandatsClient() {
   const [doseOuverte, setDoseOuverte] = useState<string | null>(null);
   const [qrOuvert, setQrOuvert] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  // LE BIEN RÉSACAP (21/11) — l'annuaire (email du compte), le lierre
+  // par mandat, la dose de saison.
+  const [emailResacap, setEmailResacap] = useState<string | null>(null);
+  const [emailSaisi, setEmailSaisi] = useState('');
+  const [bienOuvert, setBienOuvert] = useState<string | null>(null);
+  const [unites, setUnites] = useState<UnitéResacap[] | null>(null);
+  const [unitesErreur, setUnitesErreur] = useState<string | null>(null);
+  const [unitesEnVent, setUnitesEnVent] = useState(false);
 
   const charger = useCallback(async () => {
     try {
@@ -58,6 +68,48 @@ export function MandatsClient() {
   }, [router]);
 
   useEffect(() => { charger(); }, [charger]);
+
+  // l'annuaire RésaCap du pro (posé une fois)
+  useEffect(() => {
+    appeller<{ email_resacap: string | null }>('/api/pro/resacap', undefined, 'GET')
+      .then((d) => setEmailResacap(d.email_resacap)).catch(() => {});
+  }, []);
+
+  async function chargerUnites() {
+    setUnitesEnVent(true); setUnitesErreur(null);
+    try {
+      const r = await appeller<{ unites: UnitéResacap[] }>('/api/pro/resacap', { action: 'unites' });
+      setUnites(r.unites ?? []);
+      if ((r.unites ?? []).length === 0) setUnitesErreur('Aucun hébergement sur ce compte RésaCap.');
+    } catch (e) {
+      setUnitesErreur(e instanceof Error ? e.message : 'RésaCap ne répond pas');
+    } finally { setUnitesEnVent(false); }
+  }
+
+  async function ouvrirBien(m: Mandat) {
+    if (bienOuvert === m.id) { setBienOuvert(null); return; }
+    setBienOuvert(m.id); setUnites(null); setUnitesErreur(null);
+    if (emailResacap) await chargerUnites();
+  }
+
+  async function poserEmail() {
+    if (!emailSaisi.trim()) return;
+    await appeller('/api/pro/resacap', { action: 'email', email: emailSaisi.trim() }).catch(() => {});
+    setEmailResacap(emailSaisi.trim());
+    await chargerUnites();
+  }
+
+  async function lierBien(m: Mandat, u: UnitéResacap | null) {
+    await appeller('/api/pro/resacap', { action: 'lier', mandat_id: m.id, unit: u })
+      .catch(() => setErreur('Le lien a échoué'));
+    setBienOuvert(null);
+    await charger();
+  }
+
+  async function basculerSaison(m: Mandat, visible: boolean) {
+    await appeller('/api/pro/resacap', { action: 'saison-visible', mandat_id: m.id, visible }).catch(() => {});
+    await charger();
+  }
 
   async function créer() {
     setEnVent(true);
@@ -318,6 +370,69 @@ export function MandatsClient() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* LE BIEN RÉSACAP — la saison du propriétaire (21/11) :
+                le calendrier, les nuitées, les canaux — la réponse est
+                déjà là, la conciergerie n'est plus dérangée. */}
+            <div className="mt-3 rounded-carte bg-pierre p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-vert">Le bien RésaCap — la saison du propriétaire</p>
+              {m.unit_resacap ? (
+                <>
+                  <div className="mt-2 flex items-center justify-between gap-2 rounded-champ bg-white px-3 py-2.5">
+                    <p className="min-w-0 truncate text-sm font-semibold text-encre">{m.unit_resacap.nom}</p>
+                    <button onClick={() => lierBien(m, null)} className="shrink-0 text-xs font-bold text-vermillon">délier</button>
+                  </div>
+                  <label className="mt-3 flex items-center justify-between gap-3">
+                    <span className="text-sm font-semibold text-encre">
+                      La saison sur la page du propriétaire
+                      <span className="block text-[11px] font-normal text-graphite">calendrier des réservations · nuitées vendues · supports de vente</span>
+                    </span>
+                    <input type="checkbox" checked={m.saison_visible}
+                      onChange={(e) => basculerSaison(m, e.target.checked)}
+                      className="h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-pierre-sombre transition checked:bg-vert relative after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition checked:after:translate-x-5" />
+                  </label>
+                </>
+              ) : bienOuvert === m.id ? (
+                <div className="mt-2">
+                  {!emailResacap ? (
+                    <>
+                      <p className="text-xs leading-relaxed text-graphite">L&apos;email de votre compte RésaCap — vos hébergements apparaîtront ici (il ne quitte jamais votre serveur).</p>
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          value={emailSaisi}
+                          onChange={(e) => setEmailSaisi(e.target.value)}
+                          placeholder="conciergerie@exemple.fr"
+                          aria-label="Email du compte RésaCap"
+                          className="min-w-0 flex-1 rounded-champ border border-pierre-sombre bg-white px-3 py-2 text-sm outline-none focus:border-vert"
+                        />
+                        <button onClick={poserEmail} disabled={!emailSaisi.trim()}
+                          className="shrink-0 rounded-full bg-vert px-4 py-2 text-xs font-bold text-white transition hover:opacity-92 disabled:opacity-40">
+                          Chercher
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xs text-graphite">Vos hébergements RésaCap : {emailResacap}</p>
+                      {unitesEnVent && <p className="mt-2 text-xs text-graphite">Chargement…</p>}
+                      {unitesErreur && <p className="mt-2 text-xs text-vermillon">{unitesErreur}</p>}
+                      {unites && unites.map((u) => (
+                        <button key={u.id} onClick={() => lierBien(m, u)}
+                          className="mt-2 block w-full truncate rounded-champ border border-pierre-sombre bg-white px-3 py-2.5 text-left text-sm font-semibold text-vert transition hover:bg-vert-voile">
+                          {u.nom}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                  <button onClick={() => setBienOuvert(null)} className="mt-2 w-full py-1 text-xs font-bold text-graphite">annuler</button>
+                </div>
+              ) : (
+                <button onClick={() => ouvrirBien(m)}
+                  className="mt-2 w-full rounded-full border border-vert py-2 text-xs font-bold text-vert transition hover:bg-vert-voile">
+                  + Suivre un bien RésaCap
+                </button>
+              )}
             </div>
 
             {/* LA DOSE */}

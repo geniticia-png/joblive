@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Sceau, BadgeDirect } from '@/lib/sceau';
 import { labelCatégorie } from '@/lib/format';
+import { SaisonBien } from './saison';
+import type { Saison } from './saison';
+
+export type { Saison };
 
 // LA VUE CLIENT — chaleureuse, presque un album. Lecture pure : le
 // client regarde, le sceau certifie, un seul bouton répond (« Tout
@@ -16,7 +20,7 @@ export type Entrée = {
   libellé?: string;   // la mission porte son titre (l'aval, étape ④)
   enCours?: boolean;  // la mission vivante se montre EN COURS
 };
-export type Données = { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[] };
+export type Données = { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[]; saison?: Saison | null };
 
 function urlPhoto(chemin: string): string {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${chemin}`;
@@ -77,6 +81,9 @@ export function Timeline({ code, données }: { code: string; données: Données 
       </header>
 
       <div className="mx-auto max-w-2xl px-5">
+        {/* LA SAISON DU BIEN (21/11) — avant le journal : le
+            propriétaire veut d'abord savoir où en est son bien. */}
+        {données.saison && <SaisonBien saison={données.saison} />}
         {jours.length === 0 && (
           <div className="carte-preuve mt-6 p-8 text-center">
             <Sceau taille={72} />
