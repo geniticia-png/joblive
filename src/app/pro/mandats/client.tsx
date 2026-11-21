@@ -33,6 +33,16 @@ function codeAffiché(nu: string) {
   return nu.length === 6 ? `${nu.slice(0, 3)}-${nu.slice(3)}` : nu;
 }
 
+// La recherche d'hébergement — insensible à la casse ET aux accents
+// (« frangipanier » trouve « Villa Frangipanier ») : 70 biens se
+// cherchent par le nom, jamais en scrollant.
+function filtrerUnites(unites: UnitéResacap[], q: string): UnitéResacap[] {
+  const plat = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const aiguille = plat(q.trim());
+  if (!aiguille) return unites;
+  return unites.filter((u) => plat(u.nom).includes(aiguille));
+}
+
 export function MandatsClient() {
   const router = useRouter();
   const [mandats, setMandats] = useState<Mandat[] | null>(null);
@@ -54,6 +64,7 @@ export function MandatsClient() {
   const [unites, setUnites] = useState<UnitéResacap[] | null>(null);
   const [unitesErreur, setUnitesErreur] = useState<string | null>(null);
   const [unitesEnVent, setUnitesEnVent] = useState(false);
+  const [recherche, setRecherche] = useState('');
 
   const charger = useCallback(async () => {
     try {
@@ -90,7 +101,7 @@ export function MandatsClient() {
 
   async function ouvrirBien(m: Mandat) {
     if (bienOuvert === m.id) { setBienOuvert(null); return; }
-    setBienOuvert(m.id); setUnites(null); setUnitesErreur(null);
+    setBienOuvert(m.id); setUnites(null); setUnitesErreur(null); setRecherche('');
     if (emailResacap) await chargerUnites();
   }
 
@@ -528,12 +539,29 @@ export function MandatsClient() {
                       <p className="text-xs text-graphite">Vos hébergements RésaCap : {emailResacap}</p>
                       {unitesEnVent && <p className="mt-2 text-xs text-graphite">Chargement…</p>}
                       {unitesErreur && <p className="mt-2 text-xs text-vermillon">{unitesErreur}</p>}
-                      {unites && unites.map((u) => (
+                      {unites && unites.length > 8 && (
+                        <>
+                          <input
+                            value={recherche}
+                            onChange={(e) => setRecherche(e.target.value)}
+                            placeholder="Rechercher un hébergement…"
+                            aria-label="Rechercher un hébergement"
+                            className="mt-2 w-full rounded-champ border border-pierre-sombre bg-white px-3 py-2.5 text-sm outline-none focus:border-vert"
+                          />
+                          <p className="mt-1 text-[11px] text-graphite">
+                            {filtrerUnites(unites, recherche).length} sur {unites.length} hébergements
+                          </p>
+                        </>
+                      )}
+                      {unites && filtrerUnites(unites, recherche).slice(0, 8).map((u) => (
                         <button key={u.id} onClick={() => lierBien(m, u)}
                           className="mt-2 block w-full truncate rounded-champ border border-pierre-sombre bg-white px-3 py-2.5 text-left text-sm font-semibold text-vert transition hover:bg-vert-voile">
                           {u.nom}
                         </button>
                       ))}
+                      {unites && filtrerUnites(unites, recherche).length > 8 && (
+                        <p className="mt-1 text-[11px] text-graphite">Affinez la recherche — les 8 premiers s&apos;affichent.</p>
+                      )}
                     </>
                   )}
                   <button onClick={() => setBienOuvert(null)} className="mt-2 w-full py-1 text-xs font-bold text-graphite">annuler</button>
