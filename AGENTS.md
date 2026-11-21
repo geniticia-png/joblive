@@ -747,6 +747,15 @@ individuels négociés »).
 
 Committé, poussé.
 
+**LE NOM PARTOUT (verdict direction : « plusieurs pages n'ont pas
+JOBLIVE en blanc à côté du logo »)** — le mot vit désormais sur
+CHAQUE en-tête : connexion et entrée de code (logo centré + JOBLIVE
+en vert sur pierre), journal propriétaire et mission du tier
+(pierre sur vert, à côté du logo), dashboard, et les sous-pages pro
+(mandats · catalogue · missions · intervention) qui n'avaient même
+pas le logo le gagnent en haut à droite. Vérifié en prod, page par
+page. Committé, poussé.
+
 
 
 
