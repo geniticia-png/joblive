@@ -125,19 +125,21 @@ export default async function Page({ params }: { params: { code: string } }) {
             periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutMois), jMA(finMois)),
             periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn)),
           ]);
-          const calcule = (p: { ca?: number; nb_sejours?: number; depenses?: { montant: number }[] }) => {
+          const calcule = (p: { ca?: number; nb_sejours?: number; depenses?: { montant: number }[] }, nbMois: number) => {
             const ca = Number(p.ca) || 0;
             const dépenses = (p.depenses ?? []).reduce((s: number, d: { montant: number }) => s + Number(d.montant || 0), 0);
             const commission = mandat.commission_pct != null ? (Number(mandat.commission_pct) / 100) * ca : 0;
             const fraisDétail = (mandat.frais_fixes ?? []).map((f: any) => {
               const nb = Number(p.nb_sejours) || 0;
-              return { libelle: f.base === 'sejour' ? `${f.libelle} (× ${nb})` : f.libelle, montant: f.base === 'sejour' ? f.montant * nb : f.montant };
+              if (f.base === 'sejour') return { libelle: `${f.libelle} (× ${nb})`, montant: f.montant * nb };
+              // les frais « par mois » se multiplient sur la fenêtre
+              return { libelle: nbMois > 1 ? `${f.libelle} (× ${nbMois} mois)` : f.libelle, montant: f.montant * nbMois };
             });
             const frais = fraisDétail.reduce((s: number, f: { montant: number }) => s + f.montant, 0);
             return { net: ca - dépenses - commission - frais, commission, fraisDétail };
           };
-          const m = calcule(pM);
-          const a = calcule(pA);
+          const m = calcule(pM, 1);
+          const a = calcule(pA, 12);
           revenus = {
             moisLabel: débutMois.toLocaleDateString('fr-FR', { month: 'long' }),
             netMois: Math.round(m.net),
