@@ -100,7 +100,10 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
       <header className="bg-vert px-5 pt-6 pb-7">
         <div className="mx-auto max-w-md">
           <div className="flex items-center justify-between">
-            <Image src="/logo-job-nuit.png" alt="JOBLIVE" width={63} height={28} className="h-7 w-auto" />
+            <span className="inline-flex items-center gap-2.5">
+              <Image src="/logo-job-nuit.png" alt="JOBLIVE" width={63} height={28} className="h-7 w-auto" />
+              <span className="align-middle font-titre text-sm font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
+            </span>
             <span className="rounded-full bg-vermillon px-2.5 py-1 text-[10px] font-bold tracking-wide text-white">MA MISSION</span>
           </div>
           <h1 className="mt-4 font-titre text-2xl font-bold leading-snug text-pierre">{mission.titre}</h1>

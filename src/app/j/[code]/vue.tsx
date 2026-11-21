@@ -67,7 +67,10 @@ export function Timeline({ code, données }: { code: string; données: Données 
       <header className="bg-vert px-5 pt-6 pb-7">
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between">
-            <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-7 w-auto" />
+            <span className="inline-flex items-center gap-2.5">
+              <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-7 w-auto" />
+              <span className="align-middle font-titre text-sm font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
+            </span>
             <BadgeDirect />
           </div>
           <h1 className="mt-4 font-titre text-2xl font-bold leading-snug text-pierre">

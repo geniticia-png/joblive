@@ -113,6 +113,10 @@ export function InterventionClient({ id }: { id: string }) {
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between">
             <Link href="/pro" className="text-xs font-semibold text-pierre/60">← Journal</Link>
+            <span className="inline-flex items-center gap-2">
+              <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-5 w-auto" />
+              <span className="font-titre text-xs font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
+            </span>
             <BadgeDirect texte="EN COURS" />
           </div>
           <h1 className="mt-3 font-titre text-xl font-bold text-pierre">

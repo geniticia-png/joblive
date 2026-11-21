@@ -56,7 +56,10 @@ export default function Connexion() {
     <main className="flex min-h-screen items-center justify-center bg-pierre px-5">
       <div className="w-full max-w-sm">
         <Link href="/" className="mb-8 block text-center">
-          <img src="/logo-job.png" alt="JOBLIVE" className="mx-auto h-14 w-auto" />
+          <span className="mx-auto flex items-center justify-center gap-3">
+            <img src="/logo-job.png" alt="JOBLIVE" className="h-14 w-auto" />
+            <span className="align-middle font-titre text-2xl font-bold tracking-[0.14em] text-vert">JOBLIVE</span>
+          </span>
         </Link>
 
         <div className="carte-preuve p-7">

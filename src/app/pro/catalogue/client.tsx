@@ -58,12 +58,18 @@ export function CatalogueClient() {
   return (
     <main className="min-h-screen pb-24">
       <header className="bg-vert-nuit px-5 pt-5 pb-6">
-        <div className="mx-auto max-w-2xl">
-          <Link href="/pro" className="text-xs font-semibold text-pierre/60">← Journal</Link>
-          <h1 className="mt-2 font-titre text-2xl font-bold text-pierre">Le catalogue</h1>
-          <p className="text-sm text-pierre/60">
-            Vos services, leurs tâches — et la dose : chaque élément partagé <span className="font-bold">●</span> ou interne <span className="font-bold">○</span>.
-          </p>
+        <div className="mx-auto flex max-w-2xl items-start justify-between gap-4">
+          <div>
+            <Link href="/pro" className="text-xs font-semibold text-pierre/60">← Journal</Link>
+            <h1 className="mt-2 font-titre text-2xl font-bold text-pierre">Le catalogue</h1>
+            <p className="text-sm text-pierre/60">
+              Vos services, leurs tâches — et la dose : chaque élément partagé <span className="font-bold">●</span> ou interne <span className="font-bold">○</span>.
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-2 pt-1">
+            <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-6 w-auto" />
+            <span className="font-titre text-xs font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
+          </span>
         </div>
       </header>
 
