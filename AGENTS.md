@@ -795,6 +795,32 @@ laisser le DNS vivre.
 
 Committé, poussé.
 
+## Le 21/11 (soir) — LE POINT DU RELAIS (fin de session)
+
+LA JOURNÉE : la saison du bien (pont RésaCap scellé HMAC, testée
+verte) · le moteur de revenus (banc vert : net 88 €/754 € sur la
+démo admin, décomposition complète) · le nom JOBLIVE sur chaque
+en-tête · la recherche d'hébergement (l'échelle 70+) + changer
+d'email (verdict direction) · la phrase de passe du pont UNIFIÉE
+(geste direction : Vercel = Hostinger = .env).
+
+⚠ DEUX FILETS À SUIVRE : ① le pipeline HOSTINGER ne redéploie pas
+toujours seul (deux redeploys manuels ce jour — panneau →
+déploiements → Redeploy sur le dernier commit) ; ② les env HOSTINGER
+de Biendispo et Aktivit doivent porter la même phrase de passe (pont
+sœurs activation/vente — à vérifier).
+
+LA ROUTE : **le premier VRAI pilote conciergerie** (l'argument a
+triplement grandi : la saison + les revenus + le compagnon voyageur
+qui vient de naître chez la mère — /s/<jeton>) · photos multiples
+par élément · historique des fiches · test QR · v2 : les
+notifications EN TÊTE, puis relais IA, puis le pont des incidents
+(la preuve voyageur → le journal propriétaire). Les mondes de démo :
+le mandat TEST (fontainetelga@yahoo.fr) porte Chambre d'hôte +
+modèle 20 %/50 €/30 € ; simu@resacap.dev porte 21 hébergements.
+
+Tout est poussé, origin/main. A+.
+
 
 
 
