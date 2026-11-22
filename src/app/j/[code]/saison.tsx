@@ -146,6 +146,9 @@ export type Revenus = {
   commission: number | null;
   commissionMontant: number;
   fraisDétail: { libelle: string; montant: number }[];
+  // (22/11, pont des incidents) Les frais de remplacement des
+  // incidents CLOS — la ligne Provisions de la décomposition.
+  provisions: { libelle: string; montant: number }[];
   tva: number;
   taxe: number;
 };
@@ -192,6 +195,12 @@ export function RevenusBien({ revenus }: { revenus: Revenus }) {
           {revenus.fraisDétail.map((f) => (
             <div key={f.libelle} className="flex items-center justify-between text-sm">
               <span className="pl-3 text-graphite">− {f.libelle}</span>
+              <span className="font-semibold text-graphite">{euros(f.montant)}</span>
+            </div>
+          ))}
+          {(revenus.provisions ?? []).map((f) => (
+            <div key={'p-' + f.libelle} className="flex items-center justify-between text-sm">
+              <span className="pl-3 text-graphite">− Provisions — {f.libelle} <span className="text-[11px]">(incident clos)</span></span>
               <span className="font-semibold text-graphite">{euros(f.montant)}</span>
             </div>
           ))}

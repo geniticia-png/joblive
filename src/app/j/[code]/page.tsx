@@ -1,5 +1,6 @@
 import { getSupabaseService } from '@/lib/supabase';
-import { saisonResacap, periodeResacap } from '@/lib/pont-resacap';
+import { saisonResacap, periodeResacap, incidentsResacap } from '@/lib/pont-resacap';
+import type { Incident } from '@/lib/pont-resacap';
 import { Timeline, EntréeMorte } from './vue';
 import type { Entrée, Saison, Revenus } from './vue';
 
@@ -111,21 +112,53 @@ export default async function Page({ params }: { params: { code: string } }) {
         } catch { /* muet par conception */ }
       }
 
+      // ── (22/11) LE PONT DES INCIDENTS — la preuve voyageur déjà
+      // traitée par la conciergerie : les incidents CLOS du bien, frais
+      // compris. Ils vivent dans LA TIMELINE (le propriétaire déjà
+      // informé) et nourrissent LES PROVISIONS de la décomposition.
+      // Un seul appel sur l'année civile — le mois se filtre localement.
+      const débutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
+      const finMois = new Date(maintenant.getFullYear(), maintenant.getMonth() + 1, 1);
+      const débutAn = new Date(maintenant.getFullYear(), 0, 1);
+      const finAn = new Date(maintenant.getFullYear() + 1, 0, 1);
+      let incidents: Incident[] = [];
+      if (bienLié) {
+        try {
+          const r = await incidentsResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn));
+          if (r?.ok) incidents = r.incidents ?? [];
+        } catch { /* muet par conception */ }
+      }
+      const entréesIncidents: Entrée[] = incidents.map((inc, k) => ({
+        id: 'inc-' + k,
+        categorie: 'incident',
+        note: inc.frais?.length
+          ? `${inc.description} — remplacé : ${inc.frais.map((f) => `${f.libelle} (${f.montant.toLocaleString('fr-FR')} €)`).join(', ')}`
+          : inc.description,
+        publie_le: inc.date + 'T12:00:00',
+        durée: null,
+        photos: (inc.photos ?? []).map((u, j) => ({ id: 'incp-' + k + '-' + j, genre: 'incident', chemin: u, horodatage: inc.date + 'T12:00:00' })),
+        réaction: null,
+      }));
+
       // LES REVENUS (21/11, brique ③) — le moteur nourrit, le modèle
       // négocié (commission + frais fixes, SUR LE MANDAT) soustrait :
-      // revenu net = CA − dépenses du bien − frais conciergerie. Le
-      // propriétaire voit le résultat, jamais les règles.
+      // revenu net = CA − dépenses du bien − frais conciergerie −
+      // PROVISIONS (frais d'incidents clos). Le propriétaire voit le
+      // résultat, jamais les règles.
       if (bienLié && mandat.revenus_visible) {
-        const débutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
-        const finMois = new Date(maintenant.getFullYear(), maintenant.getMonth() + 1, 1);
-        const débutAn = new Date(maintenant.getFullYear(), 0, 1);
-        const finAn = new Date(maintenant.getFullYear() + 1, 0, 1);
         try {
           const [pM, pA] = await Promise.all([
             periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutMois), jMA(finMois)),
             periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn)),
           ]);
-          const calcule = (p: { ca?: number; nb_sejours?: number; depenses?: { montant: number }[] }, nbMois: number) => {
+          // LES PROVISIONS — les frais des incidents CLOS de la fenêtre
+          // (déclarés par le voyageur, traités et clos par la
+          // conciergerie : la preuve était déjà dans le journal).
+          const provisionsFenêtre = (du: string, au: string) => incidents
+            .filter((i) => i.date >= du && i.date < au)
+            .flatMap((i, k) => (i.frais ?? []).map((f, j) => ({ libelle: `${f.libelle}`, montant: Number(f.montant) || 0, cle: `${i.date}-${k}-${j}` })));
+          const calcule = (p: { ca?: number; nb_sejours?: number; depenses?: { montant: number }[] }, nbMois: number,
+                           provisions: { libelle: string; montant: number; cle: string }[]) => {
             const ca = Number(p.ca) || 0;
             const dépenses = (p.depenses ?? []).reduce((s: number, d: { montant: number }) => s + Number(d.montant || 0), 0);
             const commission = mandat.commission_pct != null ? (Number(mandat.commission_pct) / 100) * ca : 0;
@@ -136,10 +169,15 @@ export default async function Page({ params }: { params: { code: string } }) {
               return { libelle: nbMois > 1 ? `${f.libelle} (× ${nbMois} mois)` : f.libelle, montant: f.montant * nbMois };
             });
             const frais = fraisDétail.reduce((s: number, f: { montant: number }) => s + f.montant, 0);
-            return { net: ca - dépenses - commission - frais, commission, fraisDétail };
+            const provisionsTotal = provisions.reduce((s, f) => s + f.montant, 0);
+            return {
+              net: ca - dépenses - commission - frais - provisionsTotal,
+              commission, fraisDétail,
+              provisions: provisions.map(({ cle, ...f }) => { void cle; return f; }),
+            };
           };
-          const m = calcule(pM, 1);
-          const a = calcule(pA, 12);
+          const m = calcule(pM, 1, provisionsFenêtre(jMA(débutMois), jMA(finMois)));
+          const a = calcule(pA, 12, provisionsFenêtre(jMA(débutAn), jMA(finAn)));
           revenus = {
             moisLabel: débutMois.toLocaleDateString('fr-FR', { month: 'long' }),
             netMois: Math.round(m.net),
@@ -149,6 +187,7 @@ export default async function Page({ params }: { params: { code: string } }) {
             commission: mandat.commission_pct != null ? Number(mandat.commission_pct) : null,
             commissionMontant: Math.round(m.commission),
             fraisDétail: m.fraisDétail.map((f: { libelle: string; montant: number }) => ({ libelle: f.libelle, montant: Math.round(f.montant) })),
+            provisions: m.provisions.map((f: { libelle: string; montant: number }) => ({ libelle: f.libelle, montant: Math.round(f.montant) })),
             tva: Math.round(Number(pM.tva) || 0),
             taxe: Math.round(Number(pM.taxe) || 0),
           };
@@ -160,7 +199,10 @@ export default async function Page({ params }: { params: { code: string } }) {
         lieu: mandat.lieu ?? '',
         fin: accès.expire_le,
         par: pro ? (pro.enseigne || pro.nom) : null,
-        entrées: [...entrées, ...entréesMissions],
+        // Les incidents (clos) rejoignent la Timeline APRÈS le filtre
+        // de dose : leur publication était la CLOTURE chez la
+        // conciergerie — pas une catégorie de travail à doser.
+        entrées: [...entrées, ...entréesIncidents, ...entréesMissions],
         saison,
         revenus,
       };

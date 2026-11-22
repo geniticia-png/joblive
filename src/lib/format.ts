@@ -6,6 +6,8 @@ export const CATÉGORIES = [
   { cle: 'jardin', label: 'Jardin' },
   { cle: 'piscine', label: 'Piscine' },
   { cle: 'courses', label: 'Courses' },
+  { cle: 'incident', label: 'Incident' },
+  { cle: 'mission', label: 'Mission' },
   { cle: 'autre', label: 'Autre' },
 ] as const;
 

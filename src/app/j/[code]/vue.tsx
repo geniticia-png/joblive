@@ -23,6 +23,10 @@ export type Entrée = {
 export type Données = { client: string; lieu: string; fin: string | null; par: string | null; entrées: Entrée[]; saison?: Saison | null; revenus?: Revenus | null };
 
 function urlPhoto(chemin: string): string {
+  // (22/11, pont des incidents) Les photos d'incident vivent chez la
+  // sœur aînée : elles arrivent en URLs ABSOLUES (bucket public medias
+  // de RésaCap) — elles passent telles quelles, jamais re-préfixées.
+  if (/^https?:\/\//.test(chemin)) return chemin;
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${chemin}`;
 }
 

@@ -26,6 +26,11 @@ export type Période = {
   tva: number; taxe: number;
   depenses: { categorie: string; montant: number }[];
 };
+export type FraisIncident = { libelle: string; montant: number };
+export type Incident = {
+  date: string; categorie: string; description: string;
+  photos: string[]; frais: FraisIncident[];
+};
 
 async function appeler<T>(corps: Record<string, unknown>): Promise<T> {
   const base = process.env.RESACAP_URL ?? 'https://www.resacap.fr';
@@ -67,5 +72,18 @@ export function periodeResacap(email: string, unitId: string, debut: string, fin
   return appeler<Période & { ok: boolean }>({
     action: 'periode', email: e, unit_id: unitId, debut, fin,
     sceau: sceauBien('periode', e, unitId, debut, fin),
+  });
+}
+
+/** LES INCIDENTS (22/11, le pont des incidents) — la preuve voyageur
+ *  déjà traitée par la conciergerie : seuls les CLOS traversent (la
+ *  cloture chez RésaCap est l'acte de publication), frais compris —
+ *  ils nourrissent les Provisions de la décomposition. Jamais le nom
+ *  du voyageur : la dose commence au pont. */
+export function incidentsResacap(email: string, unitId: string, debut: string, fin: string) {
+  const e = email.trim().toLowerCase();
+  return appeler<{ ok: boolean; incidents: Incident[] }>({
+    action: 'incidents', email: e, unit_id: unitId, debut, fin,
+    sceau: sceauBien('incidents', e, unitId, debut, fin),
   });
 }

@@ -1,5 +1,35 @@
 # JOBLIVE — le journal de la maison
 
+## Le 22/11 — LE PONT DES INCIDENTS REÇU : la preuve voyageur au journal du propriétaire (briques 2+ voyageur chez la mère)
+
+La chaîne de la vision du 21/11 se referme : le VOYAGEUR déclare un
+incident sur sa page séjour RésaCap (/s), la CONCIERGERIE le traite
+et le CLOS avec frais — et le journal du propriétaire (/j) le montre
+DÉJÀ. **LA CLOTURE EST L'ACTE DE PUBLICATION** : /api/pont-bien ne
+rend QUE les incidents clos (sceau sceauBien('incidents', …), le
+patron prouvé) — jamais le nom du voyageur, la dose commence au
+pont.
+
+- **LE MIROIR** (src/lib/pont-resacap.ts) : `incidentsResacap(email,
+  unitId, debut, fin)` — un seul appel sur l'année civile, le mois
+  de la décomposition se filtre localement.
+- **LA TIMELINE** (/j/[code]) : les incidents clos rejoignent les
+  entrées APRÈS le filtre de dose — leur publication était la
+  CLOTURE chez la conciergerie, pas une catégorie de travail à
+  doser. Catégorie « Incident » (format.ts), note = description +
+  « remplacé : … » quand les frais vivent, photos en URLs ABSOLUES
+  (urlPhoto laisse passer http(s) — elles vivent dans le bucket
+  public de la sœur aînée, jamais re-préfixées).
+- **LES PROVISIONS** : la décomposition des REVENUS gagne sa ligne —
+  net = CA − dépenses − commission − frais fixes − **provisions**
+  (Σ frais des incidents clos de la fenêtre, libellé par libellé,
+  badge « incident clos »). Le propriétaire voit le résultat, jamais
+  les règles — la doctrine tient.
+- tsc + build verts. La source vit au journal RésaCap du 22/11
+  (0126, banc 24/24 : que les clos traversent, JAMAIS le nom).
+
+## LA NAISSANCE (18/11, direction : « GO »)
+
 > **« Le travail vu en direct. »** La preuve de travail en direct :
 > le prestataire montre, en photos horodatées, que le travail est
 > fait — pendant qu'il le fait. Née de la veille PassPass (16/11) :
