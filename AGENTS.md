@@ -60,6 +60,19 @@ la mère) : la grammaire WhatsApp entre au visage pro.
   compte, et le dev local avec la stack vaut dix suppositions.
 - ⚠ Le modèle ne bouge pas : l'unification est à l'AFFICHAGE (la
   pierre : le terrain dira si la fusion des tables se réclame).
+- **L'ATELIER 2 VOLETS (verdict direction : « un espace avec 2
+  volets sur le même workflow, comme WhatsApp — pas une page puis
+  une autre »)** : le shell `pro/layout.tsx` + `atelier.tsx` porte
+  LA LISTE PERSISTANTE À GAUCHE (380 px, elle ne bouge jamais sur
+  aucune page pro) et LA PAGE OUVERTE À DROITE (le dossier, la
+  console, les missions…) ; sur téléphone, UN VOLET À LA FOIS (la
+  liste, puis le dossier plein écran). NavPro passe au shell
+  (plus un seul rendu par page), la FAB et le lanceur avec lui,
+  `?lancer=` se lit côté navigateur, et **les badges respirent**
+  (l'événement `joblive:dossiers` : le dossier ouvert = lu ravive
+  la liste de gauche sans recharger). Banc re-passé vert + /pro
+  sondé (la liste rend). Le « ← La liste » du dossier se cache sur
+  desktop (md:hidden) — la liste y est déjà.
 
 ## Le 23/11 (4ᵉ) — LA GARDE D'ACCÈS : la maison réservée à RésaCap (direction : « pour l'instant, réserver Joblive à ResaCap »)
 
