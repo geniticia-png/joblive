@@ -1,5 +1,75 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (matin) — LA ROUTE NOTÉE : ce qui reste à faire (consigne direction : « note ce qui reste à faire »)
+
+La photographie du lendemain, dans l'ordre où les choses demandent.
+Rien de neuf n'est codé ce matin — c'est la CARTE, pas le chantier.
+
+**① D'ABORD — VÉRIFIER LE DÉPLOIEMENT DU PONT DES INCIDENTS (22/11,
+commit d3b11ad)** : le pipeline Hostinger ne redéploie pas toujours
+seul (deux redeploys manuels le 21/11 — panneau → Déploiements →
+Redeploy sur le dernier commit si la prod est muette), puis REJOUER
+LE BANC (la leçon du 20/11 2ᵉ : le banc se rejoue après chaque
+déploiement — naissance 24/24 + ordre 13/13). Puis la chaîne réelle
+des incidents, jamais marchée en prod : semer un incident sur le
+bien lié du mandat TEST (Chambre d'hôte, fontainetelga@yahoo.fr) via
+la page séjour /s de la mère, le CLORE avec frais dans
+/incidents — et voir l'entrée « Incident » + les PROVISIONS de la
+décomposition sur la page /j. joblive.app répondait 200 ce matin.
+
+**② LA PRIORITÉ MÉTIER — LE PREMIER VRAI PILOTE CONCIERGERIE** :
+une conciergerie, un mandat, un chien promené. L'argument a ENCORE
+grandi hier chez la mère (saison + revenus + voyageur + EDL signé
+par le voyageur + incidents qui nourrissent le journal propriétaire
+— la transparence des deux côtés). Le kit est PRÊT : la page
+/conciergerie parle d'elle-même, `démarchage-conciergerie.md` (119
+lignes, racine Joblive : SMS · message · mail, signés Tanya,
+gratuit pendant le pilote, installation AVEC la conciergerie en 15
+minutes) — IL RESTE À LE DÉROULER. La friction Play Protect
+Android (texte prêt, entrée du 19/11) resservira à l'installation
+de la tuile.
+
+**③ LA V2 DANS L'ORDRE GRAVÉ (décision 20/11 : les notifications
+EN TÊTE de la v2)** :
+- ① **LES NOTIFICATIONS EN TÊTE** — le téléphone du propriétaire
+  VIBRE quand la photo arrive, la conciergerie est prévenue au
+  geste. Rien n'existe encore côté push (aucun VAPID, aucun service
+  worker de notification — le PWA est installable mais muet) :
+  web push à bâtir, ou Telegram en relais rapide. Aujourd'hui le
+  direct vit à chaque rechargement, personne n'est poussé.
+- ② **LE RELAIS IA** — la voix qui répond « et le véto ? » DEPUIS LE
+  JOURNAL UNIQUEMENT (l'IA ne dit que ce qui est écrit). IA chinoise
+  d'abord (DeepSeek/Qwen/GLM — coût imbattable, modèles ouverts),
+  Mistral en repli, jamais américaine en première intention.
+  Annonce « TEST RELAIS IA EN COURS » sur UN SEUL hébergement, dosé,
+  « pilote automatique quand le pilote dort ». Le libellé INPI
+  classe 42 l'a déjà réservé.
+- ③ **VERITIC** — le moteur commun (la vérité du temps équipe les
+  deux maisons — spec préservée chez la mère, docs/VERITIC.md).
+
+**④ LES FINS DE KIT** (posés le 19/11 nuit, restés ouverts) : les
+photos MULTIPLES par élément de mission (aujourd'hui une par geste)
+· L'HISTORIQUE DES FICHES (les mandats passés d'un client) · LE
+TEST QR (jamais testé — en attente, rien à faire).
+
+**⑤ LES FILETS INFRA À SUIVRE** : les env HOSTINGER de Biendispo et
+Aktivit doivent porter la phrase de passe unifiée du pont (pont
+sœurs activation/vente — à vérifier un jour de passage hPanel) · le
+**Site URL Supabase** dort encore sur localhost:3000 (à repointer
+https://joblive.app — geste direction, 30 secondes, NON bloquant :
+les Redirect URLs couvrent déjà la prod) · la tuile d'icône finit à
+52 % (« on laisse comme ça pour l'instant » — la direction peut
+revenir dessus).
+
+**⑥ CHEZ LA MÈRE, EN RÉSERVE (ça nous touche)** : les CAUTIONS
+Stripe (empreinte bancaire, capture manuelle — tout à bâtir côté
+paiement) et les NOTIFICATIONS 24/7 du séjour (les deux briques
+voyageur non choisies le 22/11) · la publication des AVIS voyageurs
+vers la vitrine /v. La scène Claire vit toujours en prod :
+/j/J4L438 (purge : `node scene-mobile.cjs purger`). Les mondes de
+démo : mandat TEST (Chambre d'hôte + modèle 20 %/50 €/30 €) ·
+simu@resacap.dev (21 hébergements).
+
 ## Le 22/11 — LE PONT DES INCIDENTS REÇU : la preuve voyageur au journal du propriétaire (briques 2+ voyageur chez la mère)
 
 La chaîne de la vision du 21/11 se referme : le VOYAGEUR déclare un
