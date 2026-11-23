@@ -44,11 +44,6 @@ la mère) : la grammaire WhatsApp entre au visage pro.
   - **OUVRIR = LU** (le geste WhatsApp) : le chargement du fil
     éteint les non-vus DU dossier (réactions + missions closes).
     Barre de geste au-dessus de la nav : Démarrer · Confier · Code.
-- **Banc `banc-conversations.cjs`** : 2 dossiers → publication +
-  photo sur A → **réaction du client par son code** → mission close
-  non vue sur B → l'accueil rend dernier + non_vus (A=réaction/1,
-  B=mission/1) → **l'ouverture du dossier A éteint A, B reste
-  allumé** → le fil rend les 4 onglets → purge cascade.
 - **Banc `banc-conversations.cjs` 18/18 VERT SUR LA PROD** : 2
   dossiers → publication + photo sur A → **réaction du client par
   son code** → mission close non vue sur B → l'accueil rend dernier
