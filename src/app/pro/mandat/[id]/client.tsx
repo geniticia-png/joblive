@@ -48,6 +48,10 @@ type Dossier = {
     réactions: number; durée_directe_s: number;
     portail?: { net_mois: number; net_année: number; saison: { sejours: number } | null } | null;
   };
+  // (23/11, direction : « l'agenda, ce sont les RÉSERVATIONS ») — les
+  // séjours confirmés du bien, via le pont saison (la colonne
+  // vertébrale : arrivées et départs structurent la production).
+  séjours?: { debut: string; fin: string; canal: string | null }[];
 };
 
 const ONGLETS = [
@@ -303,28 +307,41 @@ export default function DossierClient({ id }: { id: string }) {
             {onglet === 'agenda' && (
               <section className="mt-2">
                 <p className="px-1 text-xs text-graphite">
-                  La frise du dossier — les passages passés et les missions prévues. (Le pense-bête complet — rappels, véto, révision — arrive avec sa brique.)
+                  Les réservations du bien (le pont RésaCap) et le travail autour — arrivées, départs, passages, missions. (Le pense-bête libre — rappels, véto, révision — arrive avec sa brique.)
                 </p>
                 <div className="mt-3 space-y-1.5">
                   {[
-                    ...d.interventions.filter((i) => i.publie_le).map((i) => ({ le: i.publie_le!, texte: `${labelCatégorie(i.categorie)} — par vous`, passé: true })),
+                    // LES RÉSERVATIONS — la colonne vertébrale : chaque
+                    // séjour porte son arrivée (▸) et son départ (▪),
+                    // le canal de vente dit d'où il vient.
+                    ...(d.séjours ?? []).flatMap((s) => ([
+                      { le: s.debut, texte: `▸ Arrivée${s.canal ? ` · ${s.canal}` : ''}`, passé: new Date(s.debut) < new Date(), résa: true },
+                      { le: s.fin, texte: `▪ Départ${s.canal ? ` · ${s.canal}` : ''}`, passé: new Date(s.fin) <= new Date(), résa: true },
+                    ])),
+                    ...d.interventions.filter((i) => i.publie_le).map((i) => ({ le: i.publie_le!, texte: `${labelCatégorie(i.categorie)} — par vous`, passé: true, résa: false })),
                     ...d.missions.map((m) => ({
                       le: m.prevue_le ?? m.fermee_le ?? '',
                       texte: `${m.titre || 'Mission'} — ${m.tiers?.nom ?? 'un tiers'}${m.statut === 'faite' ? ' (faite)' : m.statut === 'en_cours' ? ' (en cours)' : ''}`,
                       passé: m.statut === 'faite',
+                      résa: false,
                     })),
                   ]
                     .filter((e) => e.le)
                     .sort((a, b) => b.le.localeCompare(a.le))
                     .map((e, k) => (
-                      <div key={k} className={`flex items-center gap-3 rounded-champ px-4 py-2.5 ${e.passé ? 'bg-white' : 'bg-vert-voile'}`}>
+                      <div key={k} className={`flex items-center gap-3 rounded-champ px-4 py-2.5 ${e.résa ? 'border border-vert/25 bg-white' : e.passé ? 'bg-white' : 'bg-vert-voile'}`}>
                         <span className="horodatage w-20 shrink-0 text-[10px] font-bold text-graphite">{dateCourte(e.le)}</span>
-                        <span className="min-w-0 flex-1 truncate text-sm text-encre">{e.texte}</span>
+                        <span className={`min-w-0 flex-1 truncate text-sm ${e.résa ? 'font-bold text-vert' : 'text-encre'}`}>{e.texte}</span>
                         {!e.passé && <span className="shrink-0 rounded-full bg-vert px-2 py-0.5 text-[9px] font-bold text-white">À VENIR</span>}
                       </div>
                     ))}
-                  {d.interventions.length === 0 && d.missions.length === 0 && (
+                  {(d.séjours ?? []).length === 0 && d.interventions.length === 0 && d.missions.length === 0 && (
                     <p className="rounded-carte bg-white px-4 py-6 text-center text-sm text-graphite">Rien à l&apos;agenda — le dossier s&apos;ouvre.</p>
+                  )}
+                  {(d.séjours ?? []).length === 0 && d.mandat.unit_resacap && (
+                    <p className="px-1 pt-1 text-[11px] text-graphite">
+                      Les réservations n&apos;arrivent pas : la dose « saison » est fermée sur ce mandat (Réglages du dossier → le bien RésaCap).
+                    </p>
                   )}
                 </div>
               </section>

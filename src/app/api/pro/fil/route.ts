@@ -74,7 +74,14 @@ export async function GET(req: Request) {
     durée_directe_s: (interventions ?? []).reduce((s: number, i: any) => s + (i.duree_secondes ?? 0), 0),
   };
   const emailResacap = (mandat.pros as any)?.email_resacap;
-  if (mandat.unit_resacap && mandat.revenus_visible && emailResacap) {
+  // ── AGENDA (23/11, direction : « l'agenda, ce sont les RÉSERVATIONS
+  // ») — la colonne vertébrale du dossier : les arrivées et départs
+  // du bien (le pont saison), les missions s'y accrochent. Le même
+  // appel nourrit CHIFFRES (déjà branché) — une seule promesse.
+  let séjours: { debut: string; fin: string; canal: string | null }[] = [];
+  const veutSaison = !!mandat.unit_resacap && !!emailResacap && mandat.saison_visible;
+  const veutPériode = !!mandat.unit_resacap && !!emailResacap && mandat.revenus_visible;
+  if (veutSaison || veutPériode) {
     try {
       const jMA = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const maintenant = new Date();
@@ -82,24 +89,27 @@ export async function GET(req: Request) {
       const finMois = new Date(maintenant.getFullYear(), maintenant.getMonth() + 1, 1);
       const débutAn = new Date(maintenant.getFullYear(), 0, 1);
       const finAn = new Date(maintenant.getFullYear() + 1, 0, 1);
-      const [pM, pA, sR] = await Promise.all([
-        periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutMois), jMA(finMois)),
-        periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn)),
-        mandat.saison_visible
-          ? saisonResacap(emailResacap, mandat.unit_resacap.id, jMA(new Date(maintenant.getTime() - 62 * 86400000)), jMA(new Date(maintenant.getFullYear() + 1, maintenant.getMonth(), maintenant.getDate())))
-          : Promise.resolve(null),
-      ]);
-      const calcule = (p: any, nbMois: number) => {
-        const ca = Number(p?.ca) || 0;
-        const dépenses = (p?.depenses ?? []).reduce((s: number, d: any) => s + Number(d.montant || 0), 0);
-        const commission = mandat.commission_pct != null ? (Number(mandat.commission_pct) / 100) * ca : 0;
-        const frais = (mandat.frais_fixes ?? []).reduce((s: number, f: any) => s + f.montant * (f.base === 'sejour' ? (Number(p?.nb_sejours) || 0) : nbMois), 0);
-        return { net: Math.round(ca - dépenses - commission - frais), ca: Math.round(ca) };
-      };
-      chiffres.portail = {
-        net_mois: calcule(pM, 1).net, net_année: calcule(pA, 12).net,
-        saison: sR?.ok ? { sejours: (sR.sejours ?? []).length } : null,
-      };
+      const sR = veutSaison
+        ? await saisonResacap(emailResacap, mandat.unit_resacap.id, jMA(new Date(maintenant.getTime() - 62 * 86400000)), jMA(new Date(maintenant.getFullYear() + 1, maintenant.getMonth(), maintenant.getDate())))
+        : null;
+      if (sR?.ok) séjours = sR.sejours ?? [];
+      if (veutPériode) {
+        const [pM, pA] = await Promise.all([
+          periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutMois), jMA(finMois)),
+          periodeResacap(emailResacap, mandat.unit_resacap.id, jMA(débutAn), jMA(finAn)),
+        ]);
+        const calcule = (p: any, nbMois: number) => {
+          const ca = Number(p?.ca) || 0;
+          const dépenses = (p?.depenses ?? []).reduce((s: number, d: any) => s + Number(d.montant || 0), 0);
+          const commission = mandat.commission_pct != null ? (Number(mandat.commission_pct) / 100) * ca : 0;
+          const frais = (mandat.frais_fixes ?? []).reduce((s: number, f: any) => s + f.montant * (f.base === 'sejour' ? (Number(p?.nb_sejours) || 0) : nbMois), 0);
+          return { net: Math.round(ca - dépenses - commission - frais), ca: Math.round(ca) };
+        };
+        chiffres.portail = {
+          net_mois: calcule(pM, 1).net, net_année: calcule(pA, 12).net,
+          saison: séjours.length ? { sejours: séjours.length } : null,
+        };
+      }
     } catch { /* muet par conception — le dossier vit sans le pont */ }
   }
 
@@ -112,6 +122,7 @@ export async function GET(req: Request) {
     missions: missions ?? [],
     intervenants: Array.from(intervenants.values()),
     chiffres,
+    séjours,
   });
 }
 
