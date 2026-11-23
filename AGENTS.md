@@ -1,5 +1,63 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (soir) — LE POINT DU RELAIS : la maison a changé de visage (fin de session, tout est mémorisé)
+
+LA JOURNÉE EN SIX ENTRÉES CI-DESSOUS — l'arc complet : la pierre
+**JOBLIVE-DOSSIER** (la vision du système commun pro/particulier,
+l'unité MISSION et son INTERVENANT — chez la mère) → LA REFONTE DU
+VISAGE (la liste des dossiers façon WhatsApp + le dossier au menu
+horizontal) → L'ATELIER 2 VOLETS puis LE BASCULE Web/Mobile (la
+correction direction : le double volet est le mode DESKTOP de
+WhatsApp — téléphone = un volet, desktop = deux, DÉFAUT AUTO, la
+pilule outre passe) → L'AGENDA DEVIENT LES RÉSERVATIONS (le pont
+saison nourrit l'onglet) → LA GRANDE LEÇON **mandats!inner** (le
+trou du 20/11 : l'accueil rendait les publications de tous les
+pros — attrapé par le banc). Avant tout ça dans la journée : la
+garde d'accès famille, les photos par geste (011), l'historique
+des fiches, le pont des incidents vérifié en prod.
+
+**L'ÉTAT** : tout est poussé (origin/main, `c6da56a` en tête) ·
+les deux bancs — naissance et conversations — VERTS sur la prod ·
+la scène Claire vit (**/j/G3K424**, expire 12/12) · le mandat TEST
+porte la Chambre d'hôte liée (saison + revenus + incidents démo en
+Provisions — l'incident démo étiqueté vit jusqu'au geste purge).
+
+**LES MONDES DE DÉMO** : scène Claire /j/G3K424 (fontainetelga
+n'est PAS son pro — la scène a son compte claire-demo) · mandat
+TEST « M et Mme TEST Clienr » (fontainetelga@yahoo.fr, bien lié
+Chambre d'hôte, email_resacap admin@resacap.fr — pour rejouer la
+recherche 70+ : repasser l'email à simu@resacap.dev).
+
+**LA ROUTE (pour la prochaine session)** :
+1. **LE PILOTE CONCIERGE** — LA priorité métier, le kit est prêt
+   (`démarchage-conciergerie.md` + /conciergerie) et la maison est
+   FINIE pour eux (photos par geste, fiches, dossier WhatsApp,
+   agenda-réservations). L'argument a encore grandi.
+2. **LA V2 dans l'ordre gravé** : les notifications EN TÊTE (le
+   poignet du propriétaire vibre) → le relais IA (depuis le
+   journal, chinois d'abord) → VERITIC.
+3. **Les briques du chemin JOBLIVE-DOSSIER** : l'agenda-événements
+   (le pense-bête libre : véto, révision — à côté des réservations)
+   · les lignes de budget (le particulier) · la porte particulier.
+4. **Les fins de kit** : le test QR (jamais testé).
+5. **LES FILETS INFRA** : le Site URL Supabase à repointer
+   https://joblive.app (geste direction 30 s — les liens magiques
+   admin redirigent encore localhost, contourné à la main au
+   navigateur) · le pipeline Hostinger (un rouge isolé après des
+   pushes rapprochés = annulation normale — espacer les pushes) ·
+   les env HOSTINGER Biendispo/Aktivit (phrase de passe famille).
+6. **L'ŒIL DIRECTION ATTENDU** sur le nouveau visage (la bascule en
+   main — la pilule reste tant qu'elle n'a pas dit).
+
+**LES LEÇONS DU JOUR (gravées)** : mandats!inner (filtrer un embed
+l'exige en select ET en !inner sinon LEFT JOIN silencieux) ·
+a?.b++ invalide · PGRST108 · le git add explicite oublie des
+fichiers (git status avant chaque push) · la scène Claire se
+régénère (node scene-mobile.cjs) · le banc de naissance se rejoue
+après CHAQUE déploiement (c'est lui qui attrape les trous masqués).
+
+A+ — la maison n'a plus le même visage, la pierre est posée.
+
 ## Le 23/11 (6ᵉ) — LE BASCULE WEB/MOBILE + LE JOURNAL SCOPÉ POUR DE VRAI (verdict direction : « tout le reste du site a disparu — un bouton à bascule type night/day, Web/Mobile ? »)
 
 - **LE BUG DU VOLET** : l'atelier 2 volets cachait sur téléphone
