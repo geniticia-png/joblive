@@ -132,7 +132,15 @@ export function AtelierPro({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen">
       {/* ══ LE VOLET GAUCHE — la liste, persistante ══ */}
       <aside
-        className={`${listeVisible ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-pierre-sombre bg-pierre md:w-[340px] lg:w-[380px]`}
+        className={
+          // EN VUE WEB (même sur téléphone — le choix explicite) : le
+          // volet garde sa LARGEUR FIXE, les deux volets vivent côte à
+          // côte (w-full l'écrasait — le bug du « pas 2 volets »).
+          // EN VUE MOBILE : seul sur /pro, il occupe tout l'écran.
+          mode === 'web'
+            ? 'flex w-[270px] shrink-0 flex-col border-r border-pierre-sombre bg-pierre sm:w-[340px] lg:w-[380px]'
+            : `${listeVisible ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-pierre-sombre bg-pierre md:w-[340px] lg:w-[380px]`
+        }
       >
         {/* l'en-tête du volet */}
         <header className="bg-vert-nuit px-5 pt-5 pb-4">
