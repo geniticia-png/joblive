@@ -70,10 +70,12 @@ function composerConversations(
   }
   // Les non-vus par dossier : missions faites non regardées + réactions non vues.
   for (const m of missionsToutes) {
-    if (m.mandat_id && m.statut === 'faite' && !m.vue_le) parMandat[m.mandat_id].non_vus++;
+    const c = m.mandat_id ? parMandat[m.mandat_id] : undefined;
+    if (c && m.statut === 'faite' && !m.vue_le) c.non_vus++;
   }
   for (const r of réactions) {
-    if (r.mandat_id && !r.vue_le) parMandat[r.mandat_id].non_vus++;
+    const c = r.mandat_id ? parMandat[r.mandat_id] : undefined;
+    if (c && !r.vue_le) c.non_vus++;
   }
   return parMandat;
 }
