@@ -46,9 +46,36 @@ export function AtelierPro({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [données, setDonnées] = useState<Accueil | null>(null);
-  const dossierOuvert = pathname.startsWith('/pro/mandat/');
-  // Sur liste (pas de dossier ouvert) : le volet gauche occupe l'écran
-  // du téléphone ; dès qu'un dossier s'ouvre, il lui cède la place.
+  const surLaListe = pathname === '/pro';
+
+  // ══ (23/11, direction) LE BASCULE WEB/MOBILE — comme night/day : en
+  // mode MOBILE la configuration WhatsApp (un volet à la fois — la
+  // liste, puis la page pleine largeur) ; en mode WEB l'atelier deux
+  // volets (la liste persistante + la page). DÉFAUT AUTO : téléphone
+  // → mobile, grand écran → web ; le choix manuel se PERSISTE
+  // (localStorage) et prime sur l'écran.
+  const [modeChoisi, setModeChoisi] = useState<'web' | 'mobile' | null>(null);
+  const [étroit, setÉtroit] = useState(false);
+  useEffect(() => {
+    try { setModeChoisi(localStorage.getItem('atelier-mode') as 'web' | 'mobile' | null); } catch { }
+    const requête = window.matchMedia('(max-width: 767px)');
+    setÉtroit(requête.matches);
+    const écouteur = (e: MediaQueryListEvent) => setÉtroit(e.matches);
+    requête.addEventListener('change', écouteur);
+    return () => requête.removeEventListener('change', écouteur);
+  }, []);
+  const mode: 'web' | 'mobile' = modeChoisi ?? (étroit ? 'mobile' : 'web');
+  function basculerMode() {
+    const prochain = mode === 'web' ? 'mobile' : 'web';
+    setModeChoisi(prochain);
+    try { localStorage.setItem('atelier-mode', prochain); } catch { }
+  }
+
+  // Les volets : en WEB toujours deux ; en MOBILE un à la fois (la
+  // liste sur /pro, la page ouverte ailleurs — les consoles comprises,
+  // le bug du volet qui les avalait est mort).
+  const listeVisible = mode === 'web' || surLaListe;
+  const pageVisible = mode === 'web' || !surLaListe;
 
   const charger = useCallback(async () => {
     try {
@@ -105,21 +132,32 @@ export function AtelierPro({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen">
       {/* ══ LE VOLET GAUCHE — la liste, persistante ══ */}
       <aside
-        className={`${dossierOuvert ? 'hidden md:flex' : 'flex'} w-full shrink-0 flex-col border-r border-pierre-sombre bg-pierre md:w-[380px]`}
+        className={`${listeVisible ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-pierre-sombre bg-pierre md:w-[340px] lg:w-[380px]`}
       >
         {/* l'en-tête du volet */}
         <header className="bg-vert-nuit px-5 pt-5 pb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <Link href="/pro" className="inline-flex items-center gap-2.5">
               <img src="/logo-job-nuit.png" alt="JOBLIVE" className="h-7 w-auto" />
               <span className="align-middle font-titre text-sm font-semibold tracking-[0.18em] text-pierre opacity-80">JOBLIVE</span>
             </Link>
-            <button
-              onClick={async () => { await getSupabase().auth.signOut(); router.replace('/'); }}
-              className="text-xs font-semibold tracking-wide text-pierre/70 transition hover:text-pierre"
-            >
-              Se déconnecter
-            </button>
+            <span className="flex shrink-0 items-center gap-2">
+              {/* LE BASCULE WEB/MOBILE — la pilule night/day de l'atelier */}
+              <button
+                onClick={basculerMode}
+                title={mode === 'web' ? 'Vue web (deux volets) — basculer en vue mobile' : 'Vue mobile (un volet à la fois) — basculer en vue web'}
+                aria-label="Basculer entre la vue web et la vue mobile"
+                className="rounded-full bg-pierre px-3 py-1.5 text-[10px] font-bold tracking-wide text-vert transition hover:bg-vert hover:text-white"
+              >
+                {mode === 'web' ? '▣ Web' : '▢ Mobile'}
+              </button>
+              <button
+                onClick={async () => { await getSupabase().auth.signOut(); router.replace('/'); }}
+                className="text-xs font-semibold tracking-wide text-pierre/70 transition hover:text-pierre"
+              >
+                Se déconnecter
+              </button>
+            </span>
           </div>
           <p className="horodatage mt-3 text-[10px] font-semibold tracking-[0.22em] text-pierre/60">
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase()}
@@ -204,9 +242,22 @@ export function AtelierPro({ children }: { children: ReactNode }) {
       </aside>
 
       {/* ══ LE VOLET DROIT — la page ouverte ══ */}
-      <div className={`${dossierOuvert ? 'flex' : 'hidden md:flex'} min-w-0 flex-1 flex-col bg-pierre`}>
+      <div className={`${pageVisible ? 'flex' : 'hidden'} min-w-0 flex-1 flex-col bg-pierre`}>
         {children}
       </div>
+
+      {/* LE BASCULE FLOTTANT — en vue mobile, le volet gauche (et son
+          bouton) se cache sur les pages : la bascule reste atteignable,
+          en bas à gauche, au-dessus de la nav. */}
+      {mode === 'mobile' && !surLaListe && (
+        <button
+          onClick={basculerMode}
+          title="Basculer en vue web (deux volets)"
+          className="fixed bottom-24 left-4 z-20 rounded-full bg-vert px-3.5 py-2 text-[10px] font-bold tracking-wide text-white shadow-carte transition hover:opacity-92"
+        >
+          ▣ Vue web
+        </button>
+      )}
 
       {/* LA FAB — le geste royal, à la place du pouce */}
       {actifs.length > 0 && !lanceurOuvert && (
