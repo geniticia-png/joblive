@@ -1,5 +1,37 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (6ᵉ) — LE BASCULE WEB/MOBILE + LE JOURNAL SCOPÉ POUR DE VRAI (verdict direction : « tout le reste du site a disparu — un bouton à bascule type night/day, Web/Mobile ? »)
+
+- **LE BUG DU VOLET** : l'atelier 2 volets cachait sur téléphone
+  TOUTES les pages pro hors dossier (le volet gauche prenait pleine
+  largeur, les consoles disparaissaient) — le verdict direction
+  l'a vu en direct. **LE BASCULE** (la pilule night/day de
+  l'atelier, en-tête du volet + flottant bas-gauche quand le volet
+  se cache) : **vue MOBILE = la configuration WhatsApp** (un volet
+  à la fois — la liste sur /pro, la page ouverte ailleurs,
+  pleine largeur, consoles comprises) · **vue WEB = l'atelier deux
+  volets** · **DÉFAUT AUTO** selon l'écran (téléphone → mobile,
+  grand écran → web), le choix manuel se PERSISTE
+  (localStorage 'atelier-mode').
+- **⚠ LA GRANDE LEÇON — mandats!inner** : le filtre
+  `.eq('mandats.pro_id', pro.id)` se comporte en **LEFT JOIN**
+  (PostgREST rend TOUT le monde, mandats:null) — l'accueil
+  rendait les publications et réactions de TOUS les pros, trou
+  **masqué depuis le 20/11** par des bases vides, attrapé par le
+  banc de naissance le soir même où la scène Claire publiait.
+  LE REMÈDE (que la route /api/codes connaissait déjà) :
+  **`mandats!inner(...)`** sur chaque embed filtré — posé sur les
+  quatre requêtes de l'accueil (enCours, publiéesToutes,
+  réactions, journal). LES ROUTES interventions/preuves/codes
+  étaient déjà !inner — vérifié.
+- L'assertion « réaction » du banc de naissance se RECENTRE sur SA
+  ligne (jamais la base entière — les vraies données de la
+  direction peuvent vivre) ; les chaînes des scénarios crashés
+  (DIAG, banc conv run 1) purgées ; **la scène Claire
+  RÉGÉNÉRÉE** (le nettoyage l'avait emportée — nouveau code
+  **/j/G3K424**, expire le 12/12). Les deux bancs — naissance et
+  conversations — REJOUÉS VERTS sur la prod scopée.
+
 ## Le 23/11 (5ᵉ) — LA REFONTE DU VISAGE : LA LISTE DES DOSSIERS + LE DOSSIER AU MENU HORIZONTAL (direction : « pas assez convivial, tu connais WhatsApp ? » → la pierre JOBLIVE-DOSSIER chez la mère)
 
 La première brique de la pierre validée (docs/JOBLIVE-DOSSIER.md,
