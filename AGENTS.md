@@ -1,5 +1,41 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (suite) — LE POINT ① DE LA ROUTE REFERMÉ : le pont des incidents VÉRIFIÉ EN PROD, la chaîne entière marchée
+
+Le déploiement confirmé vert par la direction (Hostinger + Vercel),
+puis la vérification complète :
+
+- **LE BANC DE NAISSANCE REJOUÉ SUR LA PROD : 24/24 VERT** (la leçon
+  du 20/11 honorée — le banc se rejoue après chaque déploiement),
+  purge comprise.
+- **LA CHAÎNE RÉELLE DES INCIDENTS, MARCHÉE DE BOUT EN BOUT** : le
+  séjour vivant M. Simulé 1 (21→24/11, Chambre d'hôte) porte un
+  incident déclaré par la VRAIE API au jeton /s
+  (`/api/incidents-voyageur` — jeton forgé côté serveur, mortalité
+  respectée, 200), puis CLOS avec frais par l'écriture cœur
+  (Vitrine 120,50 € + Main d'œuvre 40 €) — et **la page /j/N9L224
+  montre l'entrée « Incident · lundi 23 novembre »** avec le détail
+  « remplacé : … », AU-DESSUS de la saison et des revenus restaurés.
+- **LES PROVISIONS CONFIRMÉES AU CENTIME** : net novembre affiché
+  −72 € ; recalcul indépendant par le pont (`periode` : ca 510 −
+  dépenses 210 − commission 102 − frais 110 − **provisions 160,50**
+  = −72). La ligne Provisions vit dans la décomposition (derrière le
+  clic « voir la décomposition ») et dans le net, mathématiquement.
+- **LE MONDE DE DÉMO RESTAURÉ AU PASSAGE** : le mandat TEST (N9L224)
+  avait perdu son lien de bien (l'email était passé à
+  simu@resacap.dev pour la démo « recherche 70+ » du 21/11 soir —
+  plus aucun /j ne montrait la saison). Restauré l'état documenté :
+  `pros.email_resacap = admin@resacap.fr` + `unit_resacap` =
+  Chambre d'hôte (snapshot {id, slug, nom}). ⚠ Pour rejouer la démo
+  de la recherche à l'échelle : repasser l'email à
+  simu@resacap.dev (le lien de bien est indépendant — on peut le
+  garder). L'incident DÉMO (clairement étiqueté « fictif, semé pour
+  la démo ») VIT sur le bien — à purger d'un UPDATE quand la
+  direction veut la base propre (il alimente délibérément les
+  Provisions de la démo).
+- NB : la déclaration a sonné le Telegram du loueur admin
+  (« INCIDENT déclaré par M. Simulé 1 ») — c'est le canal, vivant.
+
 ## Le 23/11 (matin) — LA ROUTE NOTÉE : ce qui reste à faire (consigne direction : « note ce qui reste à faire »)
 
 La photographie du lendemain, dans l'ordre où les choses demandent.
