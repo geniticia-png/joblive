@@ -9,7 +9,7 @@ import { useRef, useState } from 'react';
 // la dose est l'affaire de la conciergerie (la vision : le pro décide
 // de l'amont ET de l'aval — le tier exécute, simplement).
 
-type Élément = { id: string; libelle: string; genre: string; fait: boolean; ordre: number };
+type Élément = { id: string; libelle: string; genre: string; fait: boolean; commentaire: string | null; ordre: number };
 type Preuve = { id: string; chemin: string; horodatage: string; element_id: string | null };
 export type MissionLégère = {
   id: string; titre: string; statut: string; prevue_le: string | null;
@@ -48,6 +48,8 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
   const [envoi, setEnvoi] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const entréePhoto = useRef<HTMLInputElement>(null);
+  // (013) La brouillon des mots — un par geste, posé AVEC la coche.
+  const [mots, setMots] = useState<Record<string, string>>({});
   // (011) La photo visée : l'élément qu'elle prouve (null = libre).
   const [cible, setCible] = useState<string | null>(null);
   function viser(element: string | null) {
@@ -177,7 +179,12 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
                             type="checkbox"
                             checked={e.fait}
                             disabled={envoi}
-                            onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
+                            onChange={(ev) => geste({
+                              action: 'element-fait', id: e.id, fait: ev.target.checked,
+                              // (013) LE MOT VOYAGE AVEC LA COCHE — un geste =
+                              // cocher + commenter, d'un seul trait.
+                              commentaire: mots[e.id] ?? e.commentaire ?? '',
+                            })}
                             className="h-6 w-6 shrink-0 cursor-pointer accent-[#123F3D]"
                           />
                           <span className={`text-base ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</span>
@@ -191,6 +198,23 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
                           <span className="text-base leading-none">📷</span>
                         </button>
                       </div>
+                      {/* (013, chutjegère) UN MOT SUR CE GESTE — facultatif,
+                          posé avec la coche ; amendable tant que le geste
+                          vit (on blur, le mot se sauvegarde). */}
+                      <input
+                        type="text"
+                        value={mots[e.id] ?? e.commentaire ?? ''}
+                        onChange={(ev) => setMots((m) => ({ ...m, [e.id]: ev.target.value }))}
+                        onBlur={() => {
+                          const mot = (mots[e.id] ?? '').trim();
+                          if (e.fait && mot && mot !== (e.commentaire ?? '')) {
+                            geste({ action: 'element-fait', id: e.id, fait: true, commentaire: mot });
+                          }
+                        }}
+                        placeholder="Un mot sur ce geste ? (facultatif)"
+                        disabled={envoi}
+                        className="mt-2 w-full rounded-champ border border-pierre-sombre/60 bg-pierre/40 px-3 py-2 text-sm text-encre placeholder:text-graphite/60 focus:border-vert focus:bg-white focus:outline-none"
+                      />
                       {photos.length > 0 && (
                         <div className="mt-2.5 grid grid-cols-3 gap-2">
                           {photos.map((p) => (

@@ -22,11 +22,21 @@ function jetonNu(): string {
   return j;
 }
 
-const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, prix, conditions, accepte_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage, element_id)`;
+const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, prix, conditions, accepte_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, commentaire, ordre), mission_preuves(id, chemin, horodatage, element_id)`;
 
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
   if (!pro) return NextResponse.json({ erreur: 'session' }, { status: 401 });
+  // (013) LE RAPPORT demande UNE mission — pleine, avec l'enseigne du
+  // pro pour l'en-tête (la preuve qui voyage porte son émetteur).
+  const voulu = new URL(req.url).searchParams.get('id');
+  if (voulu && /^[0-9a-f-]{36}$/i.test(voulu)) {
+    const { data: une } = await getSupabaseService()
+      .from('missions')
+      .select(`${SELECT_MISSIONS}, pros(enseigne, nom)`)
+      .eq('id', voulu).eq('pro_id', pro.id).maybeSingle();
+    return NextResponse.json({ mission: une ?? null });
+  }
   const { data } = await getSupabaseService()
     .from('missions')
     .select(SELECT_MISSIONS)
@@ -128,7 +138,15 @@ export async function POST(req: Request) {
       if (!élément || !(await missionAuPro(élément.mission_id))) {
         return NextResponse.json({ erreur: 'inconnu' }, { status: 404 });
       }
-      await sb.from('mission_elements').update({ fait: !!corps.fait }).eq('id', corps.id);
+      // (013, 23/11) LE MOT DU GESTE — le commentaire accompagne la
+      // coche, jamais seul : le tiers dit son geste à l'instant où il
+      // le fait (≤ 500, le rapport le rend à côté des photos).
+      const màj: { fait: boolean; commentaire?: string | null } = { fait: !!corps.fait };
+      if (typeof corps.commentaire === 'string') {
+        const mot = corps.commentaire.trim().slice(0, 500);
+        màj.commentaire = mot || null;
+      }
+      await sb.from('mission_elements').update(màj).eq('id', corps.id);
       return NextResponse.json({ ok: true });
     }
     case 'element-jobliviser': {

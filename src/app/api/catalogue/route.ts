@@ -53,6 +53,14 @@ const GABARITS: { nom: string; generale: string[]; particuliere: string[] }[] = 
     generale: ['Arrosage vérifié', 'Tonte passée', 'Allées balayées'],
     particuliere: ['Plantes fragiles du propriétaire'],
   },
+  // (23/11, chutjegère) LA FORMATION — le monde Resafix : la mission
+  // qui se PROUVE. Les étapes d'une session se cochent au fil du
+  // jour, chacune porte son mot — le reporting naît tout seul.
+  {
+    nom: 'Formation',
+    generale: ['Lancer la session et prendre les présences', 'Présentation du cadre et des objectifs', 'Atelier pratique — mise en situation', 'Évaluation des participants', 'Bilan de la session et attestation'],
+    particuliere: ['Consignes du client de la formation'],
+  },
 ];
 
 /** POST — les gestes du catalogue. */

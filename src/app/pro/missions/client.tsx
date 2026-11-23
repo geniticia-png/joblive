@@ -7,7 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { heure } from '@/lib/format';
 
-type Élément = { id: string; libelle: string; genre: string; joblivise: boolean; fait: boolean; ordre: number };
+type Élément = { id: string; libelle: string; genre: string; joblivise: boolean; fait: boolean; commentaire: string | null; ordre: number };
 type Mission = {
   id: string; jeton: string | null; titre: string; prevue_le: string | null; statut: string;
   vue_le: string | null; fermee_le: string | null;
@@ -190,27 +190,34 @@ export function MissionsClient() {
               </button>
             </div>
             {m.mission_elements.map((e) => (
-              <div key={e.id} className="flex items-center gap-2 rounded-carte bg-pierre px-3 py-2">
-                <input
-                  type="checkbox"
-                  checked={e.fait}
-                  onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
-                  aria-label={`Fait : ${e.libelle}`}
-                  className="h-5 w-5 shrink-0 cursor-pointer accent-[#123F3D]"
-                />
-                <p className={`min-w-0 flex-1 text-sm ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</p>
-                {(m.mission_preuves ?? []).some((p) => p.element_id === e.id) && (
-                  <span className="horodatage shrink-0 text-[10px] font-bold text-vert/70">
-                    📷 {(m.mission_preuves ?? []).filter((p) => p.element_id === e.id).length}
-                  </span>
+              <div key={e.id} className="rounded-carte bg-pierre px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={e.fait}
+                    onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
+                    aria-label={`Fait : ${e.libelle}`}
+                    className="h-5 w-5 shrink-0 cursor-pointer accent-[#123F3D]"
+                  />
+                  <p className={`min-w-0 flex-1 text-sm ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</p>
+                  {(m.mission_preuves ?? []).some((p) => p.element_id === e.id) && (
+                    <span className="horodatage shrink-0 text-[10px] font-bold text-vert/70">
+                      📷 {(m.mission_preuves ?? []).filter((p) => p.element_id === e.id).length}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => geste({ action: 'element-jobliviser', id: e.id, joblivise: !e.joblivise })}
+                    aria-label={`Partager ${e.libelle} via JOBLIVE`}
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide transition ${e.joblivise ? 'bg-vert text-white' : 'bg-pierre-sombre text-graphite'}`}
+                  >
+                    {e.joblivise ? '●' : '○'}
+                  </button>
+                </div>
+                {/* (013) LE MOT DU GESTE — sous le libellé : la preuve
+                    racontée par le tiers lui-même (le reporting naît). */}
+                {e.commentaire && (
+                  <p className="mt-1 pl-7 text-xs italic leading-relaxed text-graphite">« {e.commentaire} »</p>
                 )}
-                <button
-                  onClick={() => geste({ action: 'element-jobliviser', id: e.id, joblivise: !e.joblivise })}
-                  aria-label={`Partager ${e.libelle} via JOBLIVE`}
-                  className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide transition ${e.joblivise ? 'bg-vert text-white' : 'bg-pierre-sombre text-graphite'}`}
-                >
-                  {e.joblivise ? '●' : '○'}
-                </button>
               </div>
             ))}
             <div className="flex gap-2 pt-1">
@@ -287,6 +294,19 @@ export function MissionsClient() {
                   </div>
                 )}
               </div>
+            )}
+            {/* (013, chutjegère) LE RAPPORT — la preuve qui voyage :
+                cochages, mots, photos horodatées — imprimable en PDF
+                par le navigateur, pour Sixt et les autres. */}
+            {m.jeton && (
+              <a
+                href={`/pro/mission/${m.id}/rapport`}
+                target="_blank"
+                rel="noopener"
+                className="mt-3 block rounded-full border-[1.5px] border-vert px-4 py-2.5 text-center text-xs font-bold text-vert transition hover:bg-vert-voile"
+              >
+                Le rapport — la preuve de la mission (imprimable)
+              </a>
             )}
             {vivante && (
               <div className="flex gap-2 pt-2">

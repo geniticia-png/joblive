@@ -13,7 +13,7 @@ import { getSupabaseService } from '@/lib/supabase';
 async function missionDuJeton(jeton: string) {
   const sb = getSupabaseService();
   const { data } = await sb.from('missions')
-    .select('id, titre, statut, prevue_le, fermee_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage, element_id)')
+    .select('id, titre, statut, prevue_le, fermee_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, commentaire, ordre), mission_preuves(id, chemin, horodatage, element_id)')
     .eq('jeton', jeton.toUpperCase().replace(/[^A-Z0-9]/g, ''))
     .maybeSingle();
   return data ?? null;
@@ -96,7 +96,14 @@ export async function POST(req: Request, { params }: { params: { jeton: string }
       // l'élément appartient-il à cette mission ?
       const élément = (mission.mission_elements ?? []).find((e: any) => e.id === corps.id);
       if (!élément) return NextResponse.json({ erreur: 'inconnu' }, { status: 404 });
-      await sb.from('mission_elements').update({ fait: !!corps.fait }).eq('id', corps.id);
+      // (013, 23/11) LE MOT DU GESTE — le commentaire voyage avec la
+      // coche (jamais seul) : ≤ 500, posé en même temps que le fait.
+      const màj: { fait: boolean; commentaire?: string | null } = { fait: !!corps.fait };
+      if (typeof corps.commentaire === 'string') {
+        const mot = corps.commentaire.trim().slice(0, 500);
+        màj.commentaire = mot || null;
+      }
+      await sb.from('mission_elements').update(màj).eq('id', corps.id);
       return NextResponse.json({ ok: true });
     }
     case 'photo-supprimer': {
