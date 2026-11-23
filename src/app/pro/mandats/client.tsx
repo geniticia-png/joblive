@@ -17,7 +17,10 @@ import { NavPro } from '@/lib/nav-pro';
 // La transparence est l'outil du pro, pas son procureur.
 
 type Code = { id: string; code: string; expire_le: string | null; revoque_le: string | null; vu_le: string | null };
-type Fiche = { id: string; nom: string; type: string; telephone: string | null };
+// (23/11) LA FICHE PORTE SON HISTOIRE — ses mandats et leurs codes
+// (l'historique client, le registre de la conciergerie).
+type MandatFiche = { id: string; lieu: string; debut: string | null; fin: string | null; statut: string; codes: Code[] };
+type Fiche = { id: string; nom: string; type: string; telephone: string | null; mandats?: MandatFiche[] };
 type UnitéResacap = { id: string; slug: string; nom: string };
 type FraisFixe = { libelle: string; montant: number; base: 'sejour' | 'mois' };
 type Mandat = {
@@ -50,6 +53,7 @@ export function MandatsClient() {
   const [form, setForm] = useState({ lieu: '', debut: '', fin: '' });
   const [fiches, setFiches] = useState<Fiche[]>([]);
   const [ficheChoisie, setFicheChoisie] = useState<string | null>(null); // id de fiche, ou 'nouveau'
+  const [ficheOuverte, setFicheOuverte] = useState<string | null>(null); // (23/11) l'histoire dépliée
   const [nouveau, setNouveau] = useState({ nom: '', type: 'regulier', tel: '' });
   const [enVent, setEnVent] = useState(false);
   const [partagé, setPartagé] = useState<string | null>(null);
@@ -628,6 +632,78 @@ export function MandatsClient() {
                 <p className="text-xs text-graphite">mandat terminé</p>
               </div>
             ))}
+          </section>
+        )}
+
+        {/* ══ (23/11) VOS CLIENTS — le registre : chaque fiche et son
+            histoire (mandats, codes), dépliable. Un clic préselectionne
+            la fiche pour un nouveau mandat — « Mme Perrin revient ». ══ */}
+        {fiches.length > 0 && (
+          <section className="mt-8">
+            <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vert">Vos clients ({fiches.length})</h2>
+            <p className="mt-1 text-xs text-graphite">L&apos;histoire de chacun — un clic prépare son prochain mandat.</p>
+            {fiches.map((f) => {
+              const histoire = f.mandats ?? [];
+              const ouverte = ficheOuverte === f.id;
+              return (
+                <div key={f.id} className={`mt-2 rounded-carte border bg-white px-4 py-3 ${ouverte ? 'border-vert' : 'border-pierre-sombre'}`}>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => { setFicheOuverte(ouverte ? null : f.id); if (!ouverte) { setCréation(true); setFicheChoisie(f.id); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                      title="Préparer un mandat pour ce client"
+                    >
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${f.type === 'regulier' ? 'bg-vert text-white' : 'bg-vert-voile text-vert'}`}>
+                        {f.type === 'regulier' ? '● RÉGULIER' : '○ OCCASIONNEL'}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate font-titre text-sm font-bold text-encre">{f.nom}</span>
+                      <span className="horodatage shrink-0 text-[10px] text-graphite">
+                        {histoire.length} mandat{histoire.length > 1 ? 's' : ''}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setFicheOuverte(ouverte ? null : f.id)}
+                      aria-label="L'histoire de ce client"
+                      className="shrink-0 rounded-full bg-pierre px-3 py-1.5 text-xs font-bold text-vert transition hover:bg-vert-voile"
+                    >
+                      {ouverte ? 'replier ▲' : 'histoire ▼'}
+                    </button>
+                  </div>
+                  {f.telephone && (
+                    <a href={`tel:${f.telephone.replace(/[^+\d]/g, '')}`} className="mt-1 inline-block text-xs font-semibold text-vert">
+                      {f.telephone}
+                    </a>
+                  )}
+                  {ouverte && (
+                    <div className="mt-3 space-y-2">
+                      {histoire.length === 0 ? (
+                        <p className="text-xs text-graphite">Aucun mandat pour l&apos;instant — le premier attend sa fiche.</p>
+                      ) : histoire.map((md) => {
+                        const vivant = md.statut === 'actif';
+                        const code = md.codes?.[0];
+                        const codeMort = code && (code.revoque_le || (code.expire_le && new Date(code.expire_le) < new Date()));
+                        return (
+                          <div key={md.id} className={`rounded-champ px-3.5 py-2.5 ${vivant ? 'bg-vert-voile' : 'bg-pierre'}`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className={`font-titre text-sm font-bold ${vivant ? 'text-vert' : 'text-graphite'}`}>
+                                {md.lieu || '—'}
+                              </span>
+                              <span className={`text-[10px] font-bold tracking-wide ${vivant ? 'text-vert' : 'text-graphite'}`}>
+                                {vivant ? 'VIVANT' : 'TERMINÉ'}
+                              </span>
+                            </div>
+                            <p className="horodatage mt-0.5 text-[10px] text-graphite">
+                              {[md.debut, md.fin].filter(Boolean).map((d) => new Date(d!).toLocaleDateString('fr-FR')).join(' → ')}
+                              {code && ` · code ${codeAffiché(code.code)}${codeMort ? ' (mort)' : ' (vivant)'}`}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </section>
         )}
       </div>
