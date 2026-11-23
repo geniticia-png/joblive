@@ -22,7 +22,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ autorise: false, raison: 'email' }, { status: 400 });
   }
 
-  // ① Un compte vit déjà ? (l'API admin — jamais enfermer un pro dehors)
+  // ① Un compte vit déjà ? (l'API admin — jamais enfermer un pro dehors.
+  // ⚠ Le filtre ?email= n'est pas garanti exact : la RÉPONSE fait foi,
+  // on ne passe que si l'un des utilisateurs rendus porte EXACTEMENT
+  // cet email — un filtre ignoré ne laisse rien passer.)
   try {
     const r = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
@@ -30,7 +33,7 @@ export async function POST(req: Request) {
     );
     if (r.ok) {
       const { users } = await r.json();
-      if (Array.isArray(users) && users.length > 0) {
+      if (Array.isArray(users) && users.some((u: { email?: string }) => (u.email ?? '').toLowerCase() === email)) {
         return NextResponse.json({ autorise: true, connu: 'pro' });
       }
     }
