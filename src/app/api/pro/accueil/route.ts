@@ -16,15 +16,15 @@ function composerConversations(
   réactions: any[],
 ): Record<string, { dernier: Événement | null; non_vus: number }> {
   const parMandat: Record<string, { dernier: Événement | null; non_vus: number }> = {};
+  // LE BLINDAGE : seuls les mandats DU PRO vivent (parMandat est la
+  // frontière — un événement d'ailleurs ne crée jamais de ligne).
   const posé = (mandatId: string, e: Événement) => {
-    const c = parMandat[mandatId] ?? (parMandat[mandatId] = { dernier: null, non_vus: 0 });
+    if (!(mandatId in parMandat)) return;
+    const c = parMandat[mandatId];
     if (!c.dernier || e.le > c.dernier.le) c.dernier = e;
   };
   for (const m of mandats) {
-    parMandat[m.id] ??= { dernier: null, non_vus: 0 };
-    if (!parMandat[m.id].dernier) {
-      parMandat[m.id].dernier = { genre: 'création', texte: 'Dossier ouvert', le: m.cree_le ?? '' };
-    }
+    parMandat[m.id] = { dernier: { genre: 'création', texte: 'Dossier ouvert', le: m.cree_le ?? '' }, non_vus: 0 };
   }
   for (const i of enCours) {
     if (!i.mandat_id) continue;
@@ -107,9 +107,12 @@ export async function GET(req: Request) {
       .limit(5),
     // (23/11) LES CONVERSATIONS — tout le récent du pro, pour
     // l'aperçu « dernier message » par dossier (≤ 80, les vieux
-    // dossiers tombent sur leur création).
+    // dossiers tombent sur leur création). ⚠ PGRST108 : filtrer sur
+    // une table imbriquée EXIGE qu'elle vive dans le select —
+    // mandats(pro_id) sélectionné, sinon PostgREST répond 400 et
+    // la liste devient aveugle (piège payé au banc).
     sb.from('interventions')
-      .select('id, mandat_id, categorie, statut, debut_le, publie_le, preuves(id)')
+      .select('id, mandat_id, categorie, statut, debut_le, publie_le, preuves(id), mandats(pro_id)')
       .eq('mandats.pro_id', pro.id)
       .in('statut', ['publie'])
       .order('publie_le', { ascending: false })
@@ -121,7 +124,7 @@ export async function GET(req: Request) {
       .order('cree_le', { ascending: false })
       .limit(80),
     sb.from('reactions')
-      .select('id, mandat_id, intervention_id, genre, cree_le, vue_le')
+      .select('id, mandat_id, intervention_id, genre, cree_le, vue_le, mandats(pro_id)')
       .eq('mandats.pro_id', pro.id)
       .order('cree_le', { ascending: false })
       .limit(80),
