@@ -1219,3 +1219,27 @@ Tout est poussé, origin/main. A+.
 
 
 
+
+## Le 23/11 — LE MOT DU GESTE + LE RAPPORT (013, chutjegère/Resafix) : la mission qui prouve
+
+Sa mission de formation chez Sixt doit se PROUVER : chaque tâche
+présélectionnée cochée porte un commentaire, le reporting naît tout
+seul. **`mission_elements.commentaire`** (013) : le mot voyage AVEC la
+coche, jamais seul (≤ 500, coupé serveur) — posé par le tier dans
+/m (« Un mot sur ce geste ? », amendable on blur tant que le geste
+vit), rendu sous le libellé dans la carte conciergerie, imbriqué dans
+les GET missions + mission-jeton. **LE RAPPORT** — nouvelle page
+`/pro/mission/[id]/rapport` : la feuille blanche IMPRIMABLE
+(`window.print()` → PDF par le navigateur, ZÉRO dépendANCE) — en-tête
+(émetteur pros.enseigne, client/lieu, tiers, avancement), le déroulé
+(chaque geste ✓/✗ + son mot + ses photos horodatées), l'ordre de
+mission, le pied chronologique + LE SCEAU JOBLIVE tourné comme un
+tampon. Y mène un bouton depuis chaque carte mission. Le GABARIT
+**Formation** entre aux GABARITS du catalogue (lancer la session,
+présentation du cadre, atelier pratique, évaluation, bilan &
+attestation + la consigne du client). GET /api/missions gagne `?id=`
+(la mission pleine avec l'enseigne — la source du rapport). Banc
+`banc-commentaires.cjs` 18/18 : gabarits → mission de formation → 2
+mots posés (dont un de 520 coupé à 500) → base + GET + source du
+rapport + page 200 → purge. La pierre JOBLIVE-DOSSIER dans la vraie
+vie : RésaCap encaisse le terme (0128), Joblive prouve le geste.
