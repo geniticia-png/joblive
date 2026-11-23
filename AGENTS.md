@@ -24,6 +24,17 @@
   quatre requêtes de l'accueil (enCours, publiéesToutes,
   réactions, journal). LES ROUTES interventions/preuves/codes
   étaient déjà !inner — vérifié.
+- **L'AGENDA, CE SONT LES RÉSERVATIONS (direction : « il me
+  semblait que c'était les réservations » — ELLE AVAIT RAISON)** :
+  le pont saison nourrit désormais l'onglet AGENDA du dossier —
+  chaque séjour porte son **arrivée (▸, canal)** et son **départ
+  (▪)** sur la frise, en vert gras (la colonne vertébrale : la
+  production s'y accroche), les passages et missions autour ; la
+  même promesse nourrit CHIFFRES ; si la dose saison est fermée,
+  l'onglet DIT le chemin (Réglages → le bien RésaCap). PROUVÉ en
+  chaîne réelle : mandat + email admin + bien Chambre d'hôte lié +
+  saison visible → **le fil rend les 9 séjours avec leurs
+  canaux**. Le pense-bête libre (rappels) reste la brique suivante.
 - L'assertion « réaction » du banc de naissance se RECENTRE sur SA
   ligne (jamais la base entière — les vraies données de la
   direction peuvent vivre) ; les chaînes des scénarios crashés
