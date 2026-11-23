@@ -169,10 +169,15 @@ async function api(chemin, { jeton, corps, form } = {}) {
 
   // ── 8. LA VUE CONCIERGERIE porte les liaisons ──
   étape = 'la conciergerie voit les liaisons';
-  const mv = await (await fetch(`${BASE}/api/missions`, { headers: { authorization: `Bearer ${jeton}` } })).json();
+  const mvR = await fetch(`${BASE}/api/missions`, { headers: { authorization: `Bearer ${jeton}` } });
+  const mv = await mvR.json().catch(() => ({}));
   const mc = (mv.missions ?? []).find((m) => m.id === mission.id);
-  const liéesVue = (mc?.mission_preuves ?? []).filter((p) => p.element_id === el1.id).length;
-  if (liéesVue === 2) ok('SELECT_MISSIONS imbrique element_id (les rangées par geste)'); else ko(`${liéesVue} liées dans la vue`);
+  if (!mc) ko(`GET ${mvR.status} — mission absente : ${JSON.stringify(mv).slice(0, 160)}`);
+  else {
+    const liéesVue = (mc.mission_preuves ?? []).filter((p) => p.element_id === el1.id).length;
+    if (liéesVue === 2) ok('SELECT_MISSIONS imbrique element_id (les rangées par geste)');
+    else ko(`${liéesVue} liées — preuves brutes : ${JSON.stringify(mc.mission_preuves).slice(0, 200)}`);
+  }
 
   // ── 9. PURGE (la règle : le banc ne laisse rien) ──
   étape = 'purge';

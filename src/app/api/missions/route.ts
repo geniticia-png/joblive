@@ -22,7 +22,7 @@ function jetonNu(): string {
   return j;
 }
 
-const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, prix, conditions, accepte_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage)`;
+const SELECT_MISSIONS = `id, tiers_id, mandat_id, service_id, titre, prevue_le, statut, jeton, vue_le, fermee_le, prix, conditions, accepte_le, tiers(nom, role, telephone), mandats(client_nom, lieu), services(nom), mission_elements(id, libelle, genre, joblivise, fait, ordre), mission_preuves(id, chemin, horodatage, element_id)`;
 
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
