@@ -49,6 +49,20 @@ la mère) : la grammaire WhatsApp entre au visage pro.
   non vue sur B → l'accueil rend dernier + non_vus (A=réaction/1,
   B=mission/1) → **l'ouverture du dossier A éteint A, B reste
   allumé** → le fil rend les 4 onglets → purge cascade.
+- **Banc `banc-conversations.cjs` 18/18 VERT SUR LA PROD** : 2
+  dossiers → publication + photo sur A → **réaction du client par
+  son code** → mission close non vue sur B → l'accueil rend dernier
+  + non_vus (A=réaction/1, B=mission/1) → **l'ouverture du dossier
+  A éteint A, B reste allumé** → le fil rend les 4 onglets → purge
+  cascade.
+- ⚠ **DEUX LEÇONS PAYÉES (gravées)** : ① **PGRST108** — filtrer
+  sur une table imbriquée (`mandats.pro_id`) EXIGE qu'elle vive
+  dans le select (`mandats(pro_id)`), sinon PostgREST répond 400
+  EN SILENCE et la liste devient aveugle (le banc l'a pris ; le
+  compositeur porte désormais le blindage : seuls les mandats du
+  pro créent des lignes) ; ② **`a?.b++` est du JS invalide** (SWC
+  le refuse — le 500 ne disait rien) : la variable intermédiaire
+  compte, et le dev local avec la stack vaut dix suppositions.
 - ⚠ Le modèle ne bouge pas : l'unification est à l'AFFICHAGE (la
   pierre : le terrain dira si la fusion des tables se réclame).
 
