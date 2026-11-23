@@ -1,5 +1,47 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (3ᵉ) — FINIR LA MAISON POUR LES CONCIERGERIES : les photos par geste (011) + l'historique des fiches (direction : « on doit finir joblive, pour conciergerie »)
+
+Les deux « fins de kit » du 19/11 nuit, livrées — ce qu'une vraie
+conciergerie touchera en pilote.
+
+**① LES PHOTOS MULTIPLES PAR GESTE (011, appliquée au pooler)** — le
+constat de l'exploration : aucune limite « une photo » n'existait, ce
+qui manquait était le LIEN — `mission_preuves` ne savait pas de quel
+geste une photo est la preuve. DÉSORMAIS : `element_id uuid →
+mission_elements` (nullable — les photos LIBRES de mission restent
+libres, rétro-compat totale, index posé). **L'API du tier** accepte
+le champ `element` au multipart — la garde vérifie qu'il appartient
+à LA mission (le patron element-fait étendu, un geste d'ailleurs est
+refusé 404). **L'écran de Marie** : chaque ligne de geste gagne son
+bouton 📷 et SES vignettes dessous (l'horodatage né à la prise,
+l'idiome intact) ; la section « Mes photos » vit pour les photos
+sans geste. **La vue conciergerie** : la carte mission regroupe les
+photos PAR GESTE (rangées nommées + compteur 📷 n sur la ligne),
+les libres dans le bloc du tier — `SELECT_MISSIONS` imbrique
+`element_id`. L'AVAL ne bouge pas : les photos coulent déjà dans
+l'entrée mission du journal propriétaire, la dose est inchangée.
+
+**② L'HISTORIQUE DES FICHES CLIENTS** — tout vivait en base
+(`mandats.client_id`, `codes.mandat_id`), la vue manquait. `GET
+/api/clients` enrichit chaque fiche de ses MANDATS imbriqués (lieu,
+dates, statut, codes avec leur état — mort/vivant), du plus récent
+au plus ancien. LA PAGE /pro/mandats gagne la section **« Vos
+clients »** : badge ● régulier / ○ occasionnel, téléphone (tel:),
+« N mandats », l'HISTOIRE DÉPLIABLE (une ligne par mandat : lieu ·
+dates · VIVANT/TERMINÉ · code et son état) — et le clic sur une
+fiche la PRÉSÉLECTIONNE pour un nouveau mandat (« Mme Perrin
+revient → sa fiche → son mandat »).
+
+**BANC `banc-photos-fiches.cjs` VERT SUR LA PROD** (patron
+naissance, BANC_BASE) : fiche → mandat → code → service 2 tâches →
+tier → mission → acceptation → photo LIÉE + photo LIBRE + 2ᵉ photo
+sur le MÊME geste (la multiplicité prouvée) → geste FAUX refusé →
+les liaisons lues EN BASE (2 liées / 1 libre) → l'écran du tier et
+la vue conciergerie servent element_id → l'histoire de la fiche
+(mandat + code vivant) → purge complète (base cascade + storage).
+tsc + build verts.
+
 ## Le 23/11 (2ᵉ) — LA BASCULE : « on fera après — il faut passer aux publications » (direction)
 
 Le point ② de la route (le pilote conciergerie, le démarchage) et la

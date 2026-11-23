@@ -16,7 +16,7 @@ type Mission = {
   tiers: { nom: string; role: string; telephone: string | null } | null;
   mandats: { client_nom: string; lieu: string } | null;
   mission_elements: Élément[];
-  mission_preuves: { id: string; chemin: string; horodatage: string }[];
+  mission_preuves: { id: string; chemin: string; horodatage: string; element_id: string | null }[];
 };
 type Tier = { id: string; nom: string; role: string; telephone: string | null };
 type Fiche = { id: string; nom: string; type: string };
@@ -200,6 +200,11 @@ export function MissionsClient() {
                   className="h-5 w-5 shrink-0 cursor-pointer accent-[#123F3D]"
                 />
                 <p className={`min-w-0 flex-1 text-sm ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</p>
+                {(m.mission_preuves ?? []).some((p) => p.element_id === e.id) && (
+                  <span className="horodatage shrink-0 text-[10px] font-bold text-vert/70">
+                    📷 {(m.mission_preuves ?? []).filter((p) => p.element_id === e.id).length}
+                  </span>
+                )}
                 <button
                   onClick={() => geste({ action: 'element-jobliviser', id: e.id, joblivise: !e.joblivise })}
                   aria-label={`Partager ${e.libelle} via JOBLIVE`}
@@ -253,14 +258,35 @@ export function MissionsClient() {
             {m.mission_preuves.length > 0 && (
               <div className="mt-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-vert">Les photos de {m.tiers?.nom} ({m.mission_preuves.length})</p>
-                <div className="mt-2 grid grid-cols-4 gap-1.5">
-                  {m.mission_preuves.map((p) => (
-                    <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
-                    </a>
-                  ))}
-                </div>
+                {/* (011) LES PHOTOS PAR GESTE — d'abord celles qui prouvent
+                    un élément (rangées nommées), puis les libres. */}
+                {(m.mission_elements ?? []).map((e) => {
+                  const photos = m.mission_preuves.filter((p) => p.element_id === e.id);
+                  if (photos.length === 0) return null;
+                  return (
+                    <div key={'ph-' + e.id} className="mt-2">
+                      <p className="text-[11px] font-semibold text-graphite">📷 {e.libelle}</p>
+                      <div className="mt-1 grid grid-cols-4 gap-1.5">
+                        {photos.map((p) => (
+                          <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                {m.mission_preuves.some((p) => !p.element_id) && (
+                  <div className="mt-2 grid grid-cols-4 gap-1.5">
+                    {m.mission_preuves.filter((p) => !p.element_id).map((p) => (
+                      <a key={p.id} href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} target="_blank" rel="noopener">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/preuves/${p.chemin}`} alt="" className="aspect-square w-full rounded-champ object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {vivante && (

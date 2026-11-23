@@ -13,7 +13,7 @@ import { getSupabaseService } from '@/lib/supabase';
 async function missionDuJeton(jeton: string) {
   const sb = getSupabaseService();
   const { data } = await sb.from('missions')
-    .select('id, titre, statut, prevue_le, fermee_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage)')
+    .select('id, titre, statut, prevue_le, fermee_le, prix, conditions, accepte_le, tiers(nom), mandats(client_nom, lieu), mission_elements(id, libelle, genre, fait, ordre), mission_preuves(id, chemin, horodatage, element_id)')
     .eq('jeton', jeton.toUpperCase().replace(/[^A-Z0-9]/g, ''))
     .maybeSingle();
   return data ?? null;
@@ -40,13 +40,23 @@ export async function POST(req: Request, { params }: { params: { jeton: string }
     return NextResponse.json({ erreur: 'à accepter' }, { status: 403 });
   }
 
-  // la photo : multipart (horodatage à la prise, le bucket des preuves)
+  // la photo : multipart (horodatage à la prise, le bucket des preuves).
+  // (011) Le champ optionnel `element` lie la photo à SON geste — la
+  // preuve du travail point par point ; sans lui, la photo reste libre
+  // de mission (l'ancien comportement, rétro-compatible).
   if (req.headers.get('content-type')?.includes('multipart/form-data')) {
     const form = await req.formData();
     const fichier = form.get('fichier') as File | null;
     const horodatage = form.get('horodatage');
+    const element = form.get('element');
     if (!fichier || !fichier.size || fichier.size > 8 * 1024 * 1024) {
       return NextResponse.json({ erreur: 'photo' }, { status: 400 });
+    }
+    // L'élément, s'il est invoqué, appartient-il à cette mission ?
+    // (la même garde qu'element-fait — jamais un geste d'ailleurs.)
+    if (element && typeof element === 'string' && element) {
+      const élément = (mission.mission_elements ?? []).find((e: any) => e.id === element);
+      if (!élément) return NextResponse.json({ erreur: 'inconnu' }, { status: 404 });
     }
     const extension = (fichier.name.split('.').pop() ?? 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
     const chemin = `${mission.id}/${crypto.randomUUID()}.${extension}`;
@@ -59,6 +69,7 @@ export async function POST(req: Request, { params }: { params: { jeton: string }
       mission_id: mission.id,
       chemin,
       horodatage: typeof horodatage === 'string' && horodatage ? horodatage : new Date().toISOString(),
+      element_id: typeof element === 'string' && element ? element : null,
     });
     return NextResponse.json({ ok: true, chemin });
   }

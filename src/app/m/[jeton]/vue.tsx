@@ -10,7 +10,7 @@ import { useRef, useState } from 'react';
 // de l'amont ET de l'aval — le tier exécute, simplement).
 
 type Élément = { id: string; libelle: string; genre: string; fait: boolean; ordre: number };
-type Preuve = { id: string; chemin: string; horodatage: string };
+type Preuve = { id: string; chemin: string; horodatage: string; element_id: string | null };
 export type MissionLégère = {
   id: string; titre: string; statut: string; prevue_le: string | null;
   prix: string | null; conditions: string | null; accepte_le: string | null;
@@ -48,6 +48,12 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
   const [envoi, setEnvoi] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const entréePhoto = useRef<HTMLInputElement>(null);
+  // (011) La photo visée : l'élément qu'elle prouve (null = libre).
+  const [cible, setCible] = useState<string | null>(null);
+  function viser(element: string | null) {
+    setCible(element);
+    entréePhoto.current?.click();
+  }
 
   const api = `${jeton}`;
   async function geste(corps: Record<string, unknown>) {
@@ -62,12 +68,15 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
     } finally { setEnvoi(false); }
   }
 
-  async function photographier(fichier: File) {
-    // l'horodatage naît à la PRISE (la doctrine : la vérité du geste)
+  async function photographier(fichier: File, element?: string) {
+    // l'horodatage naît à la PRISE (la doctrine : la vérité du geste).
+    // (011) `element` lie la photo à SON geste — la preuve point par
+    // point ; sans lui, la photo reste libre de mission.
     const horodatage = new Date().toISOString();
     const form = new FormData();
     form.set('fichier', fichier);
     form.set('horodatage', horodatage);
+    if (element) form.set('element', element);
     setEnvoi(true);
     try {
       await fetch(`/api/mission-jeton/${api}`, { method: 'POST', body: form });
@@ -156,29 +165,58 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
             <section key={titre} className="mt-6">
               <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vert">{titre}</h2>
               <div className="mt-2 space-y-2">
-                {liste.map((e) => (
-                  <label key={e.id} className="flex cursor-pointer items-center gap-3 rounded-carte border border-pierre-sombre bg-white px-4 py-3.5">
-                    <input
-                      type="checkbox"
-                      checked={e.fait}
-                      disabled={envoi}
-                      onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
-                      className="h-6 w-6 shrink-0 cursor-pointer accent-[#123F3D]"
-                    />
-                    <span className={`text-base ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</span>
-                  </label>
-                ))}
+                {liste.map((e) => {
+                  // (011) LES PHOTOS DU GESTE — la preuve point par point,
+                  // plusieurs par geste (la vraie vie du terrain).
+                  const photos = mission.mission_preuves.filter((p) => p.element_id === e.id);
+                  return (
+                    <div key={e.id} className="rounded-carte border border-pierre-sombre bg-white px-4 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={e.fait}
+                            disabled={envoi}
+                            onChange={(ev) => geste({ action: 'element-fait', id: e.id, fait: ev.target.checked })}
+                            className="h-6 w-6 shrink-0 cursor-pointer accent-[#123F3D]"
+                          />
+                          <span className={`text-base ${e.fait ? 'text-graphite line-through' : 'text-encre'}`}>{e.libelle}</span>
+                        </label>
+                        <button
+                          onClick={() => viser(e.id)}
+                          disabled={envoi}
+                          title="Photographier ce geste"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-[1.5px] border-dashed border-vert text-vert transition hover:bg-vert-voile disabled:opacity-50"
+                        >
+                          <span className="text-base leading-none">📷</span>
+                        </button>
+                      </div>
+                      {photos.length > 0 && (
+                        <div className="mt-2.5 grid grid-cols-3 gap-2">
+                          {photos.map((p) => (
+                            <figure key={p.id} className="relative overflow-hidden rounded-champ">
+                              <Image src={URL_PHOTO(p.chemin)} alt="" width={200} height={150} className="aspect-[4/3] w-full object-cover" unoptimized />
+                              <figcaption className="horodatage absolute bottom-1 left-1 rounded bg-vert-nuit/80 px-1.5 py-0.5 text-[9px] font-semibold text-pierre">
+                                {new Date(p.horodatage).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                              </figcaption>
+                            </figure>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ) : null,
         )}
 
-        {/* LES PHOTOS — la preuve du geste, horodatée à la prise */}
+        {/* LES PHOTOS LIBRES — celles d'aucun geste en particulier */}
         <section className="mt-7">
           <h2 className="font-titre text-sm font-bold uppercase tracking-wide text-vert">Mes photos</h2>
           <p className="mt-1 text-xs text-graphite">Chaque photo porte l&apos;heure de sa prise — c&apos;est elle qui parle pour vous.</p>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            {mission.mission_preuves.map((p) => (
+            {mission.mission_preuves.filter((p) => !p.element_id).map((p) => (
               <figure key={p.id} className="relative overflow-hidden rounded-champ">
                 <Image src={URL_PHOTO(p.chemin)} alt="" width={200} height={150} className="aspect-[4/3] w-full object-cover" unoptimized />
                 <figcaption className="horodatage absolute bottom-1 left-1 rounded bg-vert-nuit/80 px-1.5 py-0.5 text-[9px] font-semibold text-pierre">
@@ -187,7 +225,7 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
               </figure>
             ))}
             <button
-              onClick={() => entréePhoto.current?.click()}
+              onClick={() => viser(null)}
               disabled={envoi}
               className="flex aspect-[4/3] flex-col items-center justify-center gap-1 rounded-champ border-[1.5px] border-dashed border-vert text-vert transition hover:bg-vert-voile disabled:opacity-50"
             >
@@ -201,7 +239,7 @@ export function MissionDuTier({ jeton, mission: m0 }: { jeton: string; mission: 
             accept="image/*"
             capture="environment"
             className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) photographier(f); e.target.value = ''; }}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) photographier(f, cible ?? undefined); e.target.value = ''; }}
           />
         </section>
 

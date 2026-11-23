@@ -7,15 +7,23 @@ import { getSupabaseService } from '@/lib/supabase';
 // régulier ou occasionnel, la fiche vit, les mandats s'y rattachent.
 // ═══════════════════════════════════════════════════════════════════
 
-/** GET — les fiches du pro, les récentes d'abord. */
+/** GET — les fiches du pro, les récentes d'abord. (23/11) Chaque
+ *  fiche porte SON HISTOIRE : ses mandats (lieu, dates, statut) et
+ *  leurs codes — le registre de la conciergerie, un regard. */
 export async function GET(req: Request) {
   const pro = await proDeLaRequête(req);
   if (!pro) return NextResponse.json({ erreur: 'session' }, { status: 401 });
   const { data } = await getSupabaseService()
     .from('clients')
-    .select('id, nom, type, telephone, cree_le')
+    .select(`id, nom, type, telephone, cree_le,
+             mandats(id, lieu, debut, fin, statut, codes(id, code, expire_le, revoque_le, vu_le))`)
     .eq('pro_id', pro.id)
     .order('cree_le', { ascending: false });
+  // Les mandats du plus récent au plus ancien, dans chaque fiche.
+  for (const c of data ?? []) {
+    if (Array.isArray(c.mandats)) c.mandats.sort((a: { debut: string | null }, b: { debut: string | null }) =>
+      (b.debut ?? '').localeCompare(a.debut ?? ''));
+  }
   return NextResponse.json({ clients: data ?? [] });
 }
 
