@@ -1,5 +1,57 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (5ᵉ) — LA REFONTE DU VISAGE : LA LISTE DES DOSSIERS + LE DOSSIER AU MENU HORIZONTAL (direction : « pas assez convivial, tu connais WhatsApp ? » → la pierre JOBLIVE-DOSSIER chez la mère)
+
+La première brique de la pierre validée (docs/JOBLIVE-DOSSIER.md,
+la mère) : la grammaire WhatsApp entre au visage pro.
+
+- **012 (appliquée au pooler)** : `reactions.vue_le` — le « Tout va
+  bien » du client devient un MESSAGE ENTRANT avec son non-vu (le
+  patron de missions.vue_le et codes.vu_le).
+- **/api/pro/accueil apprend `conversations`** : par mandat, le
+  DERNIER événement (l'aperçu de la ligne — intervention publiée ·
+  en cours · mission close · réaction · code ouvert par le client ·
+  création) et les NON-VUS (missions closes non vues + réactions
+  non vues) ; mandat_id entre au select missions, les requêtes
+  « récentes » (≤ 80) nourrissent l'agrégat.
+- **/pro DEVIENT LA LISTE** : une ligne par dossier — avatar
+  initiales, client + lieu, l'heure à droite (HH:MM aujourd'hui,
+  date sinon), LE BADGE VERMILLON, l'aperçu du dernier message ;
+  triés par activité, les dossiers clos pliés grisés en bas. Le CTA
+  royal devient **FAB flottante vermillon** (le « + » de WhatsApp)
+  qui ouvre le lanceur en voile — `?lancer=<mandat>` l'ouvre déjà
+  choisi (la barre de geste du dossier y ramène). Les sections
+  « travail indirect / en cours / journal du jour » meurent : la
+  liste les contient.
+- **/pro/mandat/[id] = LE DOSSIER**, menu horizontal MISSION ·
+  INTERVENANT · AGENDA · CHIFFRES (via /api/pro/fil?id= qui charge
+  ET MARQUE LU) :
+  - **MISSION** — LE FIL UNIFIÉ : l'intervention est une mission
+    dont l'intervenant est le pro (« par vous »), les missions
+    déléguées portent leur tier (« par Marie ») ; les gestes du
+    dossier à DROITE (vert-voile), **les « Tout va bien » du
+    client à GAUCHE** (carte blanche — le message entrant) ;
+    groupés par jour (patron /j), diptyque AVANT/APRÈS, photos de
+    mission par geste (011).
+  - **INTERVENANT** — les gens du dossier : « Vous — N gestes
+    directs » + chaque tier (rôle, téléphone, missions, dernière) ;
+    le « + confier une mission » vers /pro/missions.
+  - **AGENDA** — v1 dérivée : la frise des passages passés et à
+    venir (le pense-bête complet = la brique suivante du chemin).
+  - **CHIFFRES** — v1 : les compteurs (gestes, missions tierces,
+    photos, réactions, temps direct) + LE PORTAIL RésAcap si le
+    bien est lié (net mois/année, saison — le calcul de /j).
+  - **OUVRIR = LU** (le geste WhatsApp) : le chargement du fil
+    éteint les non-vus DU dossier (réactions + missions closes).
+    Barre de geste au-dessus de la nav : Démarrer · Confier · Code.
+- **Banc `banc-conversations.cjs`** : 2 dossiers → publication +
+  photo sur A → **réaction du client par son code** → mission close
+  non vue sur B → l'accueil rend dernier + non_vus (A=réaction/1,
+  B=mission/1) → **l'ouverture du dossier A éteint A, B reste
+  allumé** → le fil rend les 4 onglets → purge cascade.
+- ⚠ Le modèle ne bouge pas : l'unification est à l'AFFICHAGE (la
+  pierre : le terrain dira si la fusion des tables se réclame).
+
 ## Le 23/11 (4ᵉ) — LA GARDE D'ACCÈS : la maison réservée à RésaCap (direction : « pour l'instant, réserver Joblive à ResaCap »)
 
 La porte de connexion ne laisse plus passer tout le monde. **LA
