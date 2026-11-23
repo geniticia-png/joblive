@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { labelCatégorie, heure } from '@/lib/format';
-import { NavPro } from '@/lib/nav-pro';
 
 // ═══════════════════════════════════════════════════════════════════
 // LE DOSSIER, côté vivant — le menu horizontal MISSION · INTERVENANT
@@ -81,7 +80,14 @@ export default function DossierClient({ id }: { id: string }) {
       } else setErreur('Le dossier ne charge pas — réessayez.');
     }
   }, [id, router]);
-  useEffect(() => { charger(); }, [charger]);
+  useEffect(() => {
+    charger();
+  }, [charger]);
+  // (23/11, l'atelier) Le dossier ouvert est LU — la liste de gauche
+  // ravive ses badges sans recharger la page.
+  useEffect(() => {
+    if (d) window.dispatchEvent(new Event('joblive:dossiers'));
+  }, [d]);
 
   // ── LE FIL UNIFIÉ : les événements du dossier, du plus récent au
   // plus ancien, groupés par jour. L'INTERVENTION est une mission
@@ -193,7 +199,6 @@ export default function DossierClient({ id }: { id: string }) {
           <p className="rounded-champ bg-vermillon-voile px-4 py-3 text-sm text-vermillon">{erreur}</p>
           <Link href="/pro" className="mt-4 inline-block text-sm font-semibold text-vert">← La liste</Link>
         </div>
-        <NavPro />
       </main>
     );
   }
@@ -206,7 +211,7 @@ export default function DossierClient({ id }: { id: string }) {
       <header className="bg-vert-nuit px-5 pt-5 pb-5">
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between">
-            <Link href="/pro" className="inline-flex items-center gap-2 text-sm font-semibold text-pierre/80 transition hover:text-pierre">
+            <Link href="/pro" className="inline-flex items-center gap-2 text-sm font-semibold text-pierre/80 transition hover:text-pierre md:hidden">
               ← La liste
             </Link>
             <Link href="/pro/mandats" className="text-xs font-semibold tracking-wide text-pierre/70 transition hover:text-pierre">
@@ -403,8 +408,6 @@ export default function DossierClient({ id }: { id: string }) {
           </div>
         </div>
       )}
-
-      <NavPro />
     </main>
   );
 }

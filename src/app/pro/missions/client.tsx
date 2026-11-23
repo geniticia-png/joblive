@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { heure } from '@/lib/format';
-import { NavPro } from '@/lib/nav-pro';
 
 type Élément = { id: string; libelle: string; genre: string; joblivise: boolean; fait: boolean; ordre: number };
 type Mission = {
@@ -470,8 +469,6 @@ export function MissionsClient() {
         )}
 
       </div>
-
-      <NavPro />
     </main>
   );
 }

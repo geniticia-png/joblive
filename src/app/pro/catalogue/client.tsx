@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
-import { NavPro } from '@/lib/nav-pro';
 
 type Tâche = { id: string; libelle: string; genre: string; joblivise: boolean };
 type Service = { id: string; nom: string; ordre: number; joblivise: boolean; taches: Tâche[] };
@@ -181,9 +180,7 @@ export function CatalogueClient() {
             </section>
           );
         })}
-      </div>
-
-      <NavPro />
+      </div>
     </main>
   );
 }

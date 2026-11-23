@@ -9,7 +9,6 @@ import { getSupabase } from '@/lib/supabase';
 import { appeller } from '@/lib/appels';
 import { CATÉGORIES, heure } from '@/lib/format';
 import { Icône, P_CLE } from '@/lib/icones';
-import { NavPro } from '@/lib/nav-pro';
 
 // LES MANDATS — le lien vivant pro ↔ client. Chaque mandat porte :
 // ses codes d'accès (mortels : révocables, expirant à la fin), et LA
@@ -706,9 +705,7 @@ export function MandatsClient() {
             })}
           </section>
         )}
-      </div>
-
-      <NavPro />
+      </div>
     </main>
   );
 }

@@ -1,7 +1,8 @@
 import { DashboardPro } from './client';
 
-// (23/11) ?lancer=<mandat> — la barre de geste du dossier ramène ici,
-// le lanceur s'ouvre tout seul, le dossier déjà choisi.
-export default function Page({ searchParams }: { searchParams: { lancer?: string } }) {
-  return <DashboardPro lancerMandat={searchParams.lancer} />;
+// (23/11, l'atelier 2 volets) Le volet droit sans dossier — la carte
+// du nom, la première fois, le hint. La liste vit dans le shell
+// (layout.tsx), la FAB avec lui ; ?lancer= se lit côté navigateur.
+export default function Page() {
+  return <DashboardPro />;
 }
