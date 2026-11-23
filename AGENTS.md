@@ -42,6 +42,17 @@ la vue conciergerie servent element_id → l'histoire de la fiche
 (mandat + code vivant) → purge complète (base cascade + storage).
 tsc + build verts.
 
+**⚠ LEÇON PAYÉE (gravée)** : le premier push (6beb0db) avait
+OUBLIÉ DEUX FICHIERS dans son git add par liste explicite —
+`api/missions/route.ts` (le SELECT_MISSIONS) et
+`pro/mandats/client.tsx` (la section Vos clients entière !). LE
+BANC A ATTRAPÉ le premier en prod (la vue servait l'ancien select
+pendant que la base portait les liaisons — symptôme « impossible »,
+deux pushes de réparation d356a81 + b93d029, banc REJOUÉ VERT
+18/18). AVANT CHAQUE PUSH : `git status` lu, ou `git add -u` —
+jamais une liste explicite quand la session a touché beaucoup de
+fichiers.
+
 ## Le 23/11 (2ᵉ) — LA BASCULE : « on fera après — il faut passer aux publications » (direction)
 
 Le point ② de la route (le pilote conciergerie, le démarchage) et la
