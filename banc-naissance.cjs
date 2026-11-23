@@ -145,7 +145,7 @@ async function api(chemin, { jeton, corps, form } = {}) {
   étape = 'réaction client';
   r = await api('/api/reaction', { corps: { code: codeNu, intervention_id: itvId } });
   r.status === 200 ? ok('« Tout va bien » enregistré') : ko(JSON.stringify(r.j));
-  const { rows: [réac] } = await c.query('select count(*)::int as n from reactions');
+  const { rows: [réac] } = await c.query('select count(*)::int as n from reactions where intervention_id = $1', [itvId]);
   réac.n === 1 ? ok('une ligne en base') : ko(`${réac.n} lignes`);
   const doublon = await api('/api/reaction', { corps: { code: codeNu, intervention_id: itvId } });
   doublon.j.déjà === true ? ok('le doublon reste une seule ligne') : ko('doublon accepté !');

@@ -94,7 +94,7 @@ export async function GET(req: Request) {
       .eq('pro_id', pro.id)
       .order('cree_le', { ascending: false }),
     sb.from('interventions')
-      .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats(client_nom, lieu), preuves(id, genre, chemin, horodatage)')
+      .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats!inner(client_nom, lieu), preuves(id, genre, chemin, horodatage)')
       .eq('statut', 'en_cours')
       .eq('mandats.pro_id', pro.id)
       .order('debut_le', { ascending: false }),
@@ -114,7 +114,7 @@ export async function GET(req: Request) {
     // mandats(pro_id) sélectionné, sinon PostgREST répond 400 et
     // la liste devient aveugle (piège payé au banc).
     sb.from('interventions')
-      .select('id, mandat_id, categorie, statut, debut_le, publie_le, preuves(id), mandats(pro_id)')
+      .select('id, mandat_id, categorie, statut, debut_le, publie_le, preuves(id), mandats!inner(pro_id)')
       .eq('mandats.pro_id', pro.id)
       .in('statut', ['publie'])
       .order('publie_le', { ascending: false })
@@ -126,7 +126,7 @@ export async function GET(req: Request) {
       .order('cree_le', { ascending: false })
       .limit(80),
     sb.from('reactions')
-      .select('id, mandat_id, intervention_id, genre, cree_le, vue_le, mandats(pro_id)')
+      .select('id, mandat_id, intervention_id, genre, cree_le, vue_le, mandats!inner(pro_id)')
       .eq('mandats.pro_id', pro.id)
       .order('cree_le', { ascending: false })
       .limit(80),
@@ -138,7 +138,7 @@ export async function GET(req: Request) {
   const début = new Date(); début.setHours(0, 0, 0, 0);
   const { data: publiées } = await sb
     .from('interventions')
-    .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats(client_nom, lieu), preuves(id, genre, chemin, horodatage), reactions(id, genre, cree_le)')
+    .select('id, mandat_id, categorie, note, statut, debut_le, publie_le, duree_secondes, mandats!inner(client_nom, lieu), preuves(id, genre, chemin, horodatage), reactions(id, genre, cree_le)')
     .eq('statut', 'publie')
     .eq('mandats.pro_id', pro.id)
     .gte('publie_le', début.toISOString())
