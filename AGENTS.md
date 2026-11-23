@@ -1,5 +1,28 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (4ᵉ) — LA GARDE D'ACCÈS : la maison réservée à RésaCap (direction : « pour l'instant, réserver Joblive à ResaCap »)
+
+La porte de connexion ne laisse plus passer tout le monde. **LA
+GARDE** (`/api/acces`) parle AVANT le lien magique — jamais de lien
+mort dans une boîte inconnue : ① les comptes DÉJÀ vivants passent
+toujours (l'API admin auth/users — aucun pro enfermé dehors, les
+comptes de la direction compris) ; ② sinon, **l'email doit avoir un
+compte chez la mère** — le pont `unites` scellé HMAC sert
+d'annuaire (un client RésaCap = la famille). Les autres voient LA
+PORTE PARLÉE : *« JOBLIVE est en accès réservé aux clients de la
+famille RésaCap (pendant le pilote). Rejoignez la famille sur
+resacap.fr »* — la porte fermée VEND la mère. **FAIL-CLOSED
+assumé** : si le pont se tait, la porte reste fermée (raison
+« indisponible » → réessayer). La page /connexion porte la mention
+vermillon « Accès réservé aux clients RésaCap pendant le pilote ».
+**Pour ROUVRIR à tous un jour** : retirer l'appel de garde dans
+/connexion (la route devient inerte) — noté aussi au
+CREDENTIALS-ADMIN. C'est le niveau ① du document JOBLIVE × RESAFIX
+(chez la mère) qui prend vie : le pilote se vit ENTRE clients de la
+famille. Vérifié en prod : email inconnu refusé (raison famille) ·
+compte RésaCap passé (connu resacap) · compte existant passé
+(connu pro). tsc + build verts.
+
 ## Le 23/11 (3ᵉ) — FINIR LA MAISON POUR LES CONCIERGERIES : les photos par geste (011) + l'historique des fiches (direction : « on doit finir joblive, pour conciergerie »)
 
 Les deux « fins de kit » du 19/11 nuit, livrées — ce qu'une vraie

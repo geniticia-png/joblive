@@ -39,6 +39,20 @@ export default function Connexion() {
     setErreur(null);
     setAttente(true);
     try {
+      // (23/11) LA GARDE D'ACCÈS — pour l'instant, la maison est
+      // réservée aux clients RésaCap (les comptes vivants passent
+      // toujours). La garde parle AVANT le lien magique : jamais de
+      // lien mort dans une boîte inconnue.
+      const g = await (await fetch('/api/acces', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })).json();
+      if (!g?.autorise) {
+        setErreur(g?.raison === 'indisponible'
+          ? 'La porte vérifie votre compte RésaCap — réessayez dans un instant.'
+          : 'JOBLIVE est en accès réservé aux clients de la famille RésaCap (pendant le pilote). Rejoignez la famille sur resacap.fr.');
+        return;
+      }
       const { error } = await getSupabase().auth.signInWithOtp({
         email: email.trim(),
         options: { emailRedirectTo: `${window.location.origin}/connexion` },
@@ -82,6 +96,7 @@ export default function Connexion() {
             <form onSubmit={envoyer}>
               <h1 className="font-titre text-xl font-bold text-vert">Entrer dans la maison</h1>
               <p className="mt-1.5 text-sm text-graphite">Votre email, un lien, aucun mot de passe.</p>
+              <p className="mt-1 text-xs font-semibold text-vermillon">Accès réservé aux clients RésaCap pendant le pilote.</p>
               <label className="mt-5 block text-sm font-bold text-vert" htmlFor="email">
                 Email professionnel
               </label>
