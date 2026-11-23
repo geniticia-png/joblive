@@ -1,5 +1,13 @@
 # JOBLIVE — le journal de la maison
 
+## Le 23/11 (2ᵉ) — LA BASCULE : « on fera après — il faut passer aux publications » (direction)
+
+Le point ② de la route (le pilote conciergerie, le démarchage) et la
+v2 RESTENT NOTÉS CI-DESSOUS — la direction les remet à après : la
+priorité passe aux PUBLICATIONS de la famille (le travail de vague —
+moule gravé du 18/11, les prompts vivent à la mère :
+`vague-*.md` à la racine RésaCap). La route est intacte, elle attend.
+
 ## Le 23/11 (suite) — LE POINT ① DE LA ROUTE REFERMÉ : le pont des incidents VÉRIFIÉ EN PROD, la chaîne entière marchée
 
 Le déploiement confirmé vert par la direction (Hostinger + Vercel),
