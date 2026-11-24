@@ -1243,3 +1243,29 @@ attestation + la consigne du client). GET /api/missions gagne `?id=`
 mots posés (dont un de 520 coupé à 500) → base + GET + source du
 rapport + page 200 → purge. La pierre JOBLIVE-DOSSIER dans la vraie
 vie : RésaCap encaisse le terme (0128), Joblive prouve le geste.
+
+## Le 23/11 (2ᵉ, soir) — LE POINT DU RELAIS (fin de session, tout est mémorisé)
+
+LA JOURNÉE EN UNE PIERRE : **chutjegère (Resafix) prépare son compte**
+— ses formations Sixt se paient à terme et sa mission se prouve geste
+par geste. Livré des deux côtés de la famille : RésaCap **0128** le
+paiement à X jours (option `a_x_jours` + `jours` 1-120 ⇒ 0 € sans
+caisse, `payment_mode` + `echeance_le` figés, facture/vitrine/CGV/reçu
+disent l'échéance) · Joblive **013** le mot du geste + LE RAPPORT
+`/pro/mission/[id]/rapport` (imprimable, window.print → PDF, sceau
+JOBLIVE) + le GABARIT Formation au catalogue. BANCS VERTS PARTOUT :
+`test:paiementxjours` 14/14 (local **et** www.resacap.fr) ·
+`banc-commentaires.cjs` 18/18 (local **et** joblive.app) — mondes
+purgés. tsc + build verts, 3023 relancé sur le nouveau build, tout
+poussé (RésaCap ef3da9f→dd937fb, Joblive 8fcf395→525c852).
+
+LA ROUTE (pour la prochaine session) : **accompagner chutjegère en
+vrai** — elle complète son compte Resafix : élément de catalogue
+(gabarit Formation), mission de formation Sixt, premier rapport
+imprimé pour son client (c'est LA vitrine commerciale du rapport) ·
+vérifier que la garde d'accès la laisse passer (les comptes RésaCap
+passent — Resafix inclus, banc déjà vert) · reste en attente : le
+premier VRAI pilote conciergerie (`démarchage-conciergerie.md`), le
+test QR (jamais testé), v2 notifications en tête, relais IA, VERITIC ·
+Insta Resafix toujours bloqué (les visuels « Le temps, c'est de l'or »
+attendent). Scène Claire toujours en prod : /j/G3K424.
